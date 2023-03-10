@@ -9,3 +9,4 @@ A web platform to manage and participate of championships of online games, devel
 | Márcio Gabriel Pereira de Campos | 1817892     |
 | Rafael Dalacqua dos Santos | 2252805     |
 | Caio Luiz dos Santos | 1903683     |
+| João Mateus Munuera de Souza | 2300532     |
