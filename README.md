@@ -4,3 +4,6 @@ A web platform to manage and participate of championships of online games, devel
 
 Reginaldo Gregório de Souza Neto
 RA: 2252813
+
+Rafael Dalacqua dos Santos
+RA: 2252805
