@@ -13,3 +13,8 @@ A web platform to manage and participate of championships of online games, devel
 | 2300532 |     João Mateus Munuera de Souza |
 
 
+### Databse Model
+
+
+![database](https://user-images.githubusercontent.com/37910437/225983763-b8349082-d4a1-4470-ad44-f203d1b87cfd.png)
+
