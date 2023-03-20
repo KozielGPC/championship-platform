@@ -10,6 +10,8 @@
 ## Related Pull Request
 <!--- Please link to the related pull request here: -->
 
+## Additional information
+Add any other context about the problem here.
 
 ## Checklist:
 - [ ] My code solves the related issue or at least one of its tasks.
