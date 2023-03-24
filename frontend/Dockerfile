@@ -1,23 +1,16 @@
-# Utiliza uma imagem do Node.js como base
-FROM node:14-alpine
+FROM node:12
 
-# Cria uma pasta para a aplicação
+ADD package.json /package.json
+
+ENV NODE_PATH=/node_modules
+ENV PATH=$PATH:/node_modules/.bin
+RUN npm install
+
 WORKDIR /app
+ADD . /app
 
-# Copia os arquivos de configuração do projeto para a pasta da aplicação
-COPY package.json yarn.lock ./
+EXPOSE 8000
+EXPOSE 35729
 
-# Instala as dependências do projeto
-RUN yarn install
-
-# Copia os arquivos da aplicação para a pasta da aplicação
-COPY . .
-
-# Compila a aplicação
-RUN yarn build
-
-# Expõe a porta 3000
-EXPOSE 3000
-
-# Comando para rodar a aplicação
-CMD ["yarn", "start"]
+ENTRYPOINT ["/bin/bash", "/app/run.sh"]
+CMD ["start"]
