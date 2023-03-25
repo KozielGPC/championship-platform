@@ -87,6 +87,7 @@ npm start
 
 This should redirect you to http://localhost:3000
 
+
 ### Frontend Tests
 
 ```
@@ -94,6 +95,19 @@ cd frontend
 npm install
 npm test
 ```
+
+### Backend Development
+
+Alternatively to running inside docker, you can run it manually using
+
+```
+python3 -m venv venv
+.\venv\Scripts\activate if you are on Windows or source .\venv\bin/activate if using
+pip install -r requirements.txt
+uvicorn run:app --reload
+```
+
+This should redirect you to http://localhost:3000
 
 ## Migrations
 
