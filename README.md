@@ -181,4 +181,4 @@ frontend
 
 _If you see an Nginx error at first with a `502: Bad Gateway` page, you may have to wait for webpack to build the development server (the nginx container builds much more quickly)._
 
-_If there is an error building frontend with docker like '$'\r': command not found', you may change in the Visual Studio Code the type of the line separator symbol from CRLF to LF. Press F1 and input "Change End of Line Sequence"_
+_If you are using windows 10 and there is an error building frontend with docker like '$'\r': command not found', you may change in the Visual Studio Code the type of the line separator symbol from CRLF to LF. Press F1 and input "Change End of Line Sequence"_
