@@ -1,20 +1,12 @@
-## Description
-<!--- Describe your changes in detail -->
+## Descrição
 
-## Related Issue
-<!--- This project only accepts pull requests related to open issues -->
-<!--- If suggesting a new feature or change, please discuss it in an issue first -->
-<!--- If fixing a bug, there should be an issue describing it with steps to reproduce -->
-<!--- Please link to the issue here: -->
+## Issues Relacionadas
 
-## Related Pull Request
-<!--- Please link to the related pull request here: -->
+## Pull Requests Relacionados
 
-## Additional information
-Add any other context about the problem here.
+## Informações Adicionais
 
 ## Checklist:
-- [ ] My code solves the related issue or at least one of its tasks.
-- [ ] My code follows the code style of this project.
-- [ ] I have updated the documentation accordingly.
-- [ ] I have updated the **CHANGELOG** document.
+- [ ] Meu código resolve o problema da issue relacionada
+- [ ] Meu código segue o padrão estrutural definido para esse projeto
+- [ ] O documento **CHANGELOG** foi atualizado
