@@ -7,19 +7,17 @@ assignees: ''
 
 ---
 
-### Related Story
-- [ ]
+### História de Usuário Relacionada
+- 
 
-### Detailed Description
+### Descrição Detalhada
 
-<!--- Provide a detailed description of the change or addition you are proposing -->
 
-### Additional context
+### Informações Adicionais
 
-### Task requirements
+### Requerimentos da Tarefa
 
 - [ ] 
 
 
-### Possible Implementation
-<!--- Not obligatory, but suggest an idea for implementing addition or change -->
+### Possível Implementação
