@@ -8,19 +8,17 @@ assignees: ''
 ---
 
 
-### Detailed Description
+### Descrição Detalhada
 
-<!--- Provide a detailed description of the change or addition you are proposing -->
+### Critério de Aceite
 
-### Acceptance Criteria
+### Critério de Sucesso
 
-### Success Criteria
-
-### Related Issues - Backend
+### Issues Relacionadas - Backend
 
 - [ ] 
 
-### Related Issues - Frontend
+### Issues Relacionadas - Frontend
 
 - [ ] 
 
