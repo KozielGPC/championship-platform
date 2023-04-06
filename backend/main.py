@@ -1,12 +1,15 @@
 from fastapi import FastAPI, APIRouter
+from models import models
+from database.config import engine
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-router = APIRouter()
 
 
-@router.get("/")
-def first():
+@app.get("/")
+async def first():
     return "hello world"
 
 
-app.include_router(router=router, prefix="/first")
+app.include_router(router.router, prefix="/user", tags=["user"])
