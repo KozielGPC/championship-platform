@@ -1,8 +1,9 @@
 from fastapi import FastAPI, APIRouter
-from models import models
-from database.config import engine
 
-models.Base.metadata.create_all(bind=engine)
+from api.models import users
+from api.database.config import engine
+
+users.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
@@ -12,4 +13,4 @@ async def first():
     return "hello world"
 
 
-app.include_router(router.router, prefix="/user", tags=["user"])
+# app.include_router(router.router, prefix="/user", tags=["user"])
