@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Path, Depends
-from .config import SessionLocal
+from .config import Session
 from sqlalchemy.orm import Session
 from .schemas import *
 from . import *
@@ -8,7 +8,7 @@ router = APIRouter()
 
 
 def get_db():
-    db = SessionLocal()
+    db = Session()
     try:
         yield db
     finally:

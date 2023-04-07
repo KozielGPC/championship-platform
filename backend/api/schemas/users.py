@@ -14,8 +14,12 @@ class UserSchema(BaseModel):
         orm_mode = True
 
 
-class RequestUser(BaseModel):
-    parameter: UserSchema = Field(...)
+class UserInput(UserSchema):
+    username: str
+    password: str
+
+    class Config:
+        orm_mode = True
 
 
 class Response(GenericModel, Generic[T]):
@@ -23,3 +27,10 @@ class Response(GenericModel, Generic[T]):
     status: str
     message: str
     result: Optional[T]
+
+
+class Item(BaseModel):
+    name: str
+    description: str | None = None
+    price: float
+    tax: float | None = None
