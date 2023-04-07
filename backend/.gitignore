@@ -1,4 +1,4 @@
+.env
 pgdata/
 venv
 __pycache__
-.env

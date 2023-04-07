@@ -10,11 +10,3 @@ users.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 for route in routes.routes:
     app.include_router(route)
-
-
-@app.get("/")
-async def first():
-    return "hello world"
-
-
-# app.include_router(router.router, prefix="/user", tags=["user"])
