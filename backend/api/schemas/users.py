@@ -27,10 +27,3 @@ class Response(GenericModel, Generic[T]):
     status: str
     message: str
     result: Optional[T]
-
-
-class Item(BaseModel):
-    name: str
-    description: str | None = None
-    price: float
-    tax: float | None = None
