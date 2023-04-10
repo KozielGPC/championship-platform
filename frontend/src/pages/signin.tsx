@@ -5,10 +5,6 @@ import { ColorMode, useColorMode, Text, Box, Flex
 import { useState } from "react"
 
 export default function Signin() {
-    const { colorMode } = useColorMode()
-    const lightBlue = {light:"main.lightBlue", dark:"main.lightBlue"}
-    const darkGrey = {light:"main.darkGrey", dark:"main.darkGrey"}
-
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
@@ -41,7 +37,7 @@ export default function Signin() {
         w={{ base: "90%", sm: "80%", md: "50%" }}
       >
         <Heading mb="6" textAlign="center">
-          Login
+          Signin
         </Heading>
         <form onSubmit={handleSubmit}>
           <FormControl id="username" mb="4" isRequired>
