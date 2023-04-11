@@ -27,3 +27,10 @@ class Response(GenericModel, Generic[T]):
     status: str
     message: str
     result: Optional[T]
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: str | None = None
