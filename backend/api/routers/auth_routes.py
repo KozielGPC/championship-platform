@@ -20,7 +20,7 @@ session = Session(bind=engine)
 
 
 @router.post("/token/{id}", response_model=Token)
-async def Login(id: int):
+async def getUserAccessToken(id: int):
     user = session.query(User).filter(User.id == id).first()
     if user == None:
         raise HTTPException(
