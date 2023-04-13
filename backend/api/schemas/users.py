@@ -9,6 +9,7 @@ class UserSchema(BaseModel):
     id: Optional[int] = None
     username: Optional[str] = None
     password: Optional[str] = None
+    email: Optional[str] = None
 
     class Config:
         orm_mode = True
