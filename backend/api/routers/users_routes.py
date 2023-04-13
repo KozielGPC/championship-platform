@@ -1,8 +1,9 @@
 from api.database.config import Session, engine
 from api.schemas.users import Response, UserInput, UserSchema
 from api.models.users import User
-from api.utils.auth_services import get_password_hash
-from fastapi import APIRouter, HTTPException
+from api.utils.auth_services import get_password_hash, oauth2_scheme, get_current_user
+from fastapi import APIRouter, HTTPException, Depends
+from typing import Annotated
 
 from fastapi.encoders import jsonable_encoder
 
@@ -21,7 +22,7 @@ session = Session(bind=engine)
     response_model=list[UserSchema],
     response_description="Sucesso de resposta da aplicação.",
 )
-async def getAll(skip: int = 0, limit: int = 100):
+async def getAll(token: Annotated[str, Depends(oauth2_scheme)], skip: int = 0, limit: int = 100):
     return session.query(User).offset(skip).limit(limit).all()
 
 
@@ -30,7 +31,7 @@ async def getAll(skip: int = 0, limit: int = 100):
     response_model=UserSchema,
     response_description="Sucesso de resposta da aplicação.",
 )
-async def getById(id: int):
+async def getById(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
     user = session.query(User).filter(User.id == id).first()
     if user == None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -52,7 +53,12 @@ async def create(data: UserInput):
     session.add(user_input)
     session.commit()
     session.refresh(user_input)
-    response = {"id": user_input.id, "username": user_input.username, "email": user_input.email, "password": user_input.password}
+    response = {
+        "id": user_input.id,
+        "username": user_input.username,
+        "email": user_input.email,
+        "password": user_input.password,
+    }
     return response
 
 
@@ -62,7 +68,7 @@ async def create(data: UserInput):
     response_model=UserSchema,
     response_description="Sucesso de resposta da aplicação.",
 )
-async def delete(id: int):
+async def delete(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
     user = session.query(User).filter(User.id == id).first()
     if user == None:
         raise HTTPException(status_code=404, detail="User not found")
