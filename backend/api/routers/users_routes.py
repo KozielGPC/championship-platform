@@ -1,6 +1,7 @@
 from api.database.config import Session, engine
 from api.schemas.users import Response, UserInput, UserSchema
 from api.models.users import User
+from api.utils.auth_services import get_password_hash
 from fastapi import APIRouter, HTTPException
 
 from fastapi.encoders import jsonable_encoder
@@ -43,7 +44,11 @@ async def getById(id: int):
     response_description="Sucesso de resposta da aplicação.",
 )
 async def create(data: UserInput):
-    user_input = User(username=data.username, password=data.password)
+    user = session.query(User).filter(User.username == data.username).first()
+    if user:
+        raise HTTPException(status_code=400, detail="User with this username already exists")
+    hashed_password = get_password_hash(data.password)
+    user_input = User(username=data.username, password=hashed_password)
     session.add(user_input)
     session.commit()
     session.refresh(user_input)
