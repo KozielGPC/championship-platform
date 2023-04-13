@@ -18,6 +18,7 @@ class UserSchema(BaseModel):
 class UserInput(UserSchema):
     username: str
     password: str
+    email: str
 
     class Config:
         orm_mode = True
@@ -29,9 +30,5 @@ class Response(GenericModel, Generic[T]):
     message: str
     result: Optional[T]
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
 
-class TokenData(BaseModel):
-    username: str | None = None
+

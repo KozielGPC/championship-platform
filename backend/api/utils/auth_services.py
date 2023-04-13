@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordBearer
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from typing import Annotated
-from api.schemas.users import TokenData
+from api.schemas.auth import TokenData
 from api.database.config import Session, engine
 from api.models.users import User
 
@@ -30,6 +30,7 @@ def verify_password(plain_password, hashed_password):
 
 def get_password_hash(password):
     return pwd_context.hash(password)
+
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()

@@ -48,11 +48,11 @@ async def create(data: UserInput):
     if user:
         raise HTTPException(status_code=400, detail="User with this username already exists")
     hashed_password = get_password_hash(data.password)
-    user_input = User(username=data.username, password=hashed_password)
+    user_input = User(username=data.username, password=hashed_password, email=data.email)
     session.add(user_input)
     session.commit()
     session.refresh(user_input)
-    response = {"id": user_input.id, "username": user_input.username, "password": user_input.password}
+    response = {"id": user_input.id, "username": user_input.username, "email": user_input.email, "password": user_input.password}
     return response
 
 
