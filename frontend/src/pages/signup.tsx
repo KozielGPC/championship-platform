@@ -13,8 +13,6 @@ import { useRouter } from "next/router";
         const [confirmPassword, setConfirmPassword] = useState("");
         const [loading, setLoading] = useState(false);
         const toast = useToast();
-
-      
     
         const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             setUsername(event.target.value);
