@@ -9,6 +9,7 @@ class UserSchema(BaseModel):
     id: Optional[int] = None
     username: Optional[str] = None
     password: Optional[str] = None
+    email: Optional[str] = None
 
     class Config:
         orm_mode = True
@@ -17,6 +18,7 @@ class UserSchema(BaseModel):
 class UserInput(UserSchema):
     username: str
     password: str
+    email: str
 
     class Config:
         orm_mode = True
@@ -27,3 +29,6 @@ class Response(GenericModel, Generic[T]):
     status: str
     message: str
     result: Optional[T]
+
+
+
