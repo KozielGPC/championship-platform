@@ -24,8 +24,8 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
         sa.Column("name", sa.String(50), nullable=False),
         sa.Column("password", sa.String(50), unique=True, nullable=False),
-        sa.Column('owner_id', sa.Integer(), sa.ForeignKey('users.id'), unique=True, nullable=False),
-        sa.Column('game_id', sa.Integer(), sa.ForeignKey('games.id'), unique=True, nullable=False),
+        sa.Column('owner_id', sa.Integer(), sa.ForeignKey('users.id'), nullable=False),
+        sa.Column('game_id', sa.Integer(), sa.ForeignKey('games.id'), nullable=False),
         sa.Column('created_at', sa.DateTime(), default=datetime.utcnow),
     )
 

@@ -1,6 +1,7 @@
 from api.database.config import Session, engine
 from api.schemas.teams import Response, TeamInput, TeamSchema
 from api.models.teams import Team
+from api.utils.auth_services import get_password_hash, oauth2_scheme, get_current_user
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
 
@@ -27,7 +28,7 @@ async def getAll(token: Annotated[str, Depends(oauth2_scheme)], skip: int = 0, l
 
 @router.get(
     "/{id}",
-    response_model=UserSchema,
+    response_model=TeamSchema,
     response_description="Sucesso de resposta da aplicação.",
 )
 async def getById(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
@@ -69,12 +70,14 @@ async def create(data: TeamInput, token: Annotated[str, Depends(oauth2_scheme)],
     response_description="Sucesso de resposta da aplicação.",
 )
 async def delete(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
-    user = get_current_user(token)
-    team = session.query(Team).filter(Team.id == id, Team.owner_id == user.id).first()
+    user = await get_current_user(token)
+    print(user)
+    team = session.query(Team).filter(Team.id == id, user.id == team.owner_id).first()
     if team == None:
         raise HTTPException(status_code=404, detail="Team not found or You aren't the owner of the team")
-
+    
     session.delete(team)
     session.commit()
 
     return user
+
