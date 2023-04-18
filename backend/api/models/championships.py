@@ -1,7 +1,16 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Enum, DateTime, Text
 from sqlalchemy.orm import relationship
 from api.database.config import Base
+import enum
 
+class EnumFormat(enum.Enum):
+    chaveamento = "chaveamento"
+    pontos_corridos = "pontos_corridos"
+
+class EnumVisibility(enum.Enum):
+    publico = "publico"
+    privado = "privado"
+ 
 
 class Championship(Base):
     __tablename__ = "championships"
@@ -12,11 +21,11 @@ class Championship(Base):
     min_teams = Column(Integer)
     max_teams = Column(Integer)
     prizes = Column(Text)
-    format = Column(Enum('chaveamento','pontos_corridos'))
+    format = Column(Enum(EnumFormat))
     rules = Column(Text)
     contact = Column(Text)
-    visibility = Column(Enum('publico','privado'))
+    visibility = Column(Enum(EnumVisibility))
     created_at = Column(DateTime)
     admin_id = Column(Integer, ForeignKey("users.id"))
-    game_id = Column(Integer, ForeignKey("games.id")) 
+    game_id = Column(Integer) #colocar foreignkey
  
