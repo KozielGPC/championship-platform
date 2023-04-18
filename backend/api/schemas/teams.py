@@ -19,7 +19,6 @@ class TeamSchema(BaseModel):
 class TeamInput(TeamSchema):
     name: str
     password: str
-    owner_id: int
     game_id: int
 
     class Config:

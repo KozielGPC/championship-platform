@@ -22,7 +22,7 @@ session = Session(bind=engine)
     response_model=list[TeamSchema],
     response_description="Sucesso de resposta da aplicação.",
 )
-async def getAll(token: Annotated[str, Depends(oauth2_scheme)], skip: int = 0, limit: int = 100):
+async def getAll(skip: int = 0, limit: int = 100):
     return session.query(Team).offset(skip).limit(limit).all()
 
 
@@ -31,7 +31,7 @@ async def getAll(token: Annotated[str, Depends(oauth2_scheme)], skip: int = 0, l
     response_model=TeamSchema,
     response_description="Sucesso de resposta da aplicação.",
 )
-async def getById(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
+async def getById(id: int):
     team = session.query(Team).filter(Team.id == id).first()
     if team == None:
         raise HTTPException(status_code=404, detail="Team not found")
@@ -44,13 +44,13 @@ async def getById(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
     response_model=TeamSchema,
     response_description="Sucesso de resposta da aplicação.",
 )
-
-async def create(data: TeamInput, token: Annotated[str, Depends(oauth2_scheme)], skip: int = 0, limit: int = 100):
+async def create(data: TeamInput, token: Annotated[str, Depends(oauth2_scheme)]):
     #Falta fazer as validações para criar o time
     #if user:
         #raise HTTPException(status_code=400, detail="Team with this name already exists")
     hashed_password = get_password_hash(data.password)
-    team_input = Team(name=data.name, password=hashed_password, owner_id=data.owner_id, game_id=data.game_id,)
+    user = await get_current_user(token)
+    team_input = Team(name=data.name, password=hashed_password, owner_id=user.id, game_id=data.game_id,)
     session.add(team_input)
     session.commit()
     session.refresh(team_input)
@@ -78,5 +78,5 @@ async def delete(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
     session.delete(team)
     session.commit()
 
-    return user
+    return team
 
