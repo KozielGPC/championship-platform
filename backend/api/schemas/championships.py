@@ -1,0 +1,57 @@
+from typing import List, Optional, Generic, TypeVar
+from pydantic import BaseModel, Field
+from pydantic.generics import GenericModel
+from datetime import datetime
+
+T = TypeVar("T")
+
+class EnumFormat(Enum):
+    option1 = "chaveamento"
+    option2 = "pontos_corridos"
+
+class EnumVisibility(Enum):
+    option1 = "publico"
+    option2 = "privado"
+ 
+class ChampionshipSchema(BaseModel):
+    id: Optional[int] = None
+    name: Optional[str] = None
+    start_time: Optional[datetime = datetime.utcnow()] = None
+    min_teams: Optional[int] = None
+    max_teams: Optional[int] = None
+    prizes: Optional[str] = None
+    format: Optional[EnumFormat] = None
+    rules: Optional[str] = None
+    contact: Optional[str] = None
+    visibility: Optional[EnumVisibility] = None
+    game_id: Optional[int] = Field(default=None, foreign_key="games.id")
+    admin_id: Optional[int] = Field(default=None, foreign_key="users.id")
+
+
+
+class Config:
+    orm_mode = True
+
+
+class ChampionshipInput(ChampionshipSchema):
+    name: str
+    start_time: datetime = datetime.utcnow()
+    min_teams: Optional[int]
+    max_teams: Optional[int] 
+    prizes: Optional[str]
+    format: EnumFormat
+    rules: Optional[str]
+    contact: Optional[str]
+    visibility: EnumVisibility
+    game_id: int
+   
+
+    class Config:
+        orm_mode = True
+
+
+class Response(GenericModel, Generic[T]):
+    code: str
+    status: str
+    message: str
+    result: Optional[T]
