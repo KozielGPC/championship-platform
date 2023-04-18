@@ -24,9 +24,7 @@ def upgrade() -> None:
         sa.Column("password", sa.String(50), nullable=False),
         sa.Column("email", sa.String(50), nullable=False),
     )
-    pass
 
 
 def downgrade() -> None:
     op.drop_table("users")
-    pass
