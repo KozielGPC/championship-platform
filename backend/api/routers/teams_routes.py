@@ -71,8 +71,7 @@ async def create(data: TeamInput, token: Annotated[str, Depends(oauth2_scheme)],
 )
 async def delete(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
     user = await get_current_user(token)
-    print(user)
-    team = session.query(Team).filter(Team.id == id, user.id == team.owner_id).first()
+    team = session.query(Team).filter(Team.id == id, user.id == Team.owner_id).first()
     if team == None:
         raise HTTPException(status_code=404, detail="Team not found or You aren't the owner of the team")
     

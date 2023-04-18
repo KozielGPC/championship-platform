@@ -54,7 +54,7 @@ async def get_current_user(token: str):
         id: str = payload.get("id")
         if id is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
+        token_data = TokenData(id=id)
     except JWTError:
         raise credentials_exception
     user = session.query(User).filter(User.id == id).first()
