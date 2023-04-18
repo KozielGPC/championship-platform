@@ -2,6 +2,7 @@ from typing import List, Optional, Generic, TypeVar
 from pydantic import BaseModel, Field
 from pydantic.generics import GenericModel
 from datetime import datetime
+from enum import Enum
 
 T = TypeVar("T")
 
@@ -16,7 +17,7 @@ class EnumVisibility(Enum):
 class ChampionshipSchema(BaseModel):
     id: Optional[int] = None
     name: Optional[str] = None
-    start_time: Optional[datetime = datetime.utcnow()] = None
+    start_time: Optional[datetime] = None
     min_teams: Optional[int] = None
     max_teams: Optional[int] = None
     prizes: Optional[str] = None
@@ -35,13 +36,13 @@ class Config:
 
 class ChampionshipInput(ChampionshipSchema):
     name: str
-    start_time: datetime = datetime.utcnow()
-    min_teams: Optional[int]
-    max_teams: Optional[int] 
-    prizes: Optional[str]
+    start_time: datetime = datetime
+    min_teams: int
+    max_teams: int
+    prizes: str
     format: EnumFormat
-    rules: Optional[str]
-    contact: Optional[str]
+    rules: str
+    contact: str
     visibility: EnumVisibility
     game_id: int
    

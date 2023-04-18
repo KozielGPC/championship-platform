@@ -7,7 +7,7 @@ Create Date: 2023-04-18 17:30:55.752864
 """
 from alembic import op
 import sqlalchemy as sa
-
+from datetime import datetime 
 
 # revision identifiers, used by Alembic.
 revision = '69f5210af90e'
@@ -31,7 +31,7 @@ def upgrade() -> None:
         sa.Column("visibility", sa.Enum('publico','privado'), nullable=False),
         sa.Column("created_at", sa.DateTime(), default=datetime.utcnow),
         sa.Column("admin_id", sa.Integer, sa.ForeignKey('users.id'), nullable=False),
-        sa.Column("game_id", sa.Integer, sa.ForeignKey('games.id') nullable=False),
+        sa.Column("game_id", sa.Integer, sa.ForeignKey('games.id'), nullable=False),
     )
     
 

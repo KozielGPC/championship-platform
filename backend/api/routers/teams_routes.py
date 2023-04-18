@@ -50,7 +50,7 @@ async def create(data: TeamInput, token: Annotated[str, Depends(oauth2_scheme)])
         #raise HTTPException(status_code=400, detail="Team with this name already exists")
     hashed_password = get_password_hash(data.password)
     user = await get_current_user(token)
-    team_input = Team(name=data.name, password=hashed_password, owner_id=user.id, game_id=data.game_id,)
+    team_input = Team(name=data.name, password=hashed_password, owner_id=user.id, game_id=data.game_id)
     session.add(team_input)
     session.commit()
     session.refresh(team_input)
@@ -78,5 +78,5 @@ async def delete(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
     session.delete(team)
     session.commit()
 
-    return team
+    return user
 
