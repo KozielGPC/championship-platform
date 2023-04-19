@@ -21,11 +21,10 @@ def upgrade() -> None:
         "users",
         sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
         sa.Column("username", sa.String(50), unique=True, nullable=False),
-        sa.Column("password", sa.String(50), unique=True, nullable=False),
+        sa.Column("password", sa.String(50), nullable=False),
+        sa.Column("email", sa.String(50), nullable=False),
     )
-    pass
 
 
 def downgrade() -> None:
     op.drop_table("users")
-    pass
