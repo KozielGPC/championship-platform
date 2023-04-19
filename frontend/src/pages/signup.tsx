@@ -103,8 +103,8 @@ export default function Signup() {
               duration: 3000,
               isClosable: true,
             });
+            setLoading(false);
             if(response.status=="success"){
-              setLoading(false);
               router.push('/signin');
             }
         }
