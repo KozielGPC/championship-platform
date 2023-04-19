@@ -1,25 +1,27 @@
 import axios, { AxiosResponse } from "axios";
-
-export interface User {
+export interface AuthData {
     username: string;
-    email: string;
     password: string;
 }
 export  type Status = "success" | "error";
 export  interface ResponseRequest {
     status: Status;
     message: string;
-    data?: User;
+    data?: {
+        access_token: string;
+        token_type: string;
+    };
 }
-export const createUser = async (data: User): Promise<ResponseRequest> => {
 
-  const response = await axios.post<User>(process.env.NEXT_PUBLIC_URL_SERVER+"/users/create", data)
+export const getToken = async (data: AuthData): Promise<ResponseRequest> => {
+
+  const response = await axios.post<AuthData>(process.env.NEXT_PUBLIC_URL_SERVER+"/auth/token", data)
     .then(
-        (response: AxiosResponse<User>) => {
+        (response: AxiosResponse) => {
             const status: Status = "success";
             return {
                 status:status,
-                data: response?.data,
+                data: response.data,
                 message: "User created successfully"
             }}
     )
@@ -28,7 +30,7 @@ export const createUser = async (data: User): Promise<ResponseRequest> => {
             const status: Status = "error";
             return {
                 status: status,
-                message: "Error creating user"
+                message: error.response?.data?.detail  
             }
         }
     );

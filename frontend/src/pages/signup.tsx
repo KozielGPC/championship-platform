@@ -1,3 +1,5 @@
+import { parseCookies } from 'nookies'
+import { GetServerSideProps } from 'next'
 import { ColorMode, useColorMode, Text, Box, Flex
     , Heading, Button, FormControl, FormLabel, Input, useColorModeValue, useToast} from "@chakra-ui/react"
 import { redirect } from "next/dist/server/api-utils";
@@ -6,7 +8,7 @@ import { useEffect, useState } from "react"
 
 import { createUser } from "@/services/users/create";
     
-export default function Signup() {
+function Signup() {
     const router = useRouter();
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
@@ -169,8 +171,40 @@ export default function Signup() {
             {loading?"Signing up...":"Signup"}
           </Button>
         </form>
+        <Flex pt={3} width={"100%"} justifyContent="center">
+          <Text onClick={()=>router.push("/signin")}
+           width={"max-content"} fontSize={"0.9rem"} borderBottom={"1px solid transparent"} cursor="pointer"
+           _hover={
+            {
+              borderBottom: "1px solid"
+            }
+           }
+          >
+            Already have an account? Signin.
+          </Text>
+        </Flex>
       </Box>
     </Box>
     )
   }
   
+interface Props {
+  cookie: Record<string, string>;
+}
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { "championship-token" : cookie } = parseCookies(context);
+  if(cookie){
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      }
+    }
+  }
+  return {
+    props: {
+    }
+  };
+};  
+  
+export default Signup
