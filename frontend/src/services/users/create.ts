@@ -15,7 +15,7 @@ interface ResponseRequest {
 
 export const createUser = async (data: User): Promise<ResponseRequest> => {
 
-  const response = await axios.post<User>(process.env.NEXT_PUBLIC_URL_SERVER+"/users", data)
+  const response = await axios.post<User>(process.env.NEXT_PUBLIC_URL_SERVER+"/users/create", data)
     .then(
         (response: AxiosResponse<User>) => {
             const status: Status = "success";
