@@ -4,21 +4,22 @@ from pydantic.generics import GenericModel
 
 T = TypeVar("T")
 
-
-class UserSchema(BaseModel):
+ 
+class TeamSchema(BaseModel):
     id: Optional[int] = None
-    username: Optional[str] = None
+    name: Optional[str] = None
     password: Optional[str] = None
-    email: Optional[str] = None
+    owner_id: Optional[int] = Field(default=None, foreign_key="users.id")
+    game_id: Optional[int] = Field(default=None, foreign_key="games.id")
 
     class Config:
         orm_mode = True
 
 
-class UserInput(UserSchema):
-    username: str
+class TeamInput(TeamSchema):
+    name: str
     password: str
-    email: str
+    game_id: int
 
     class Config:
         orm_mode = True
@@ -29,6 +30,3 @@ class Response(GenericModel, Generic[T]):
     status: str
     message: str
     result: Optional[T]
-
-
-
