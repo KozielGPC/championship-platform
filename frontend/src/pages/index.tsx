@@ -5,21 +5,28 @@ import { useEffect } from 'react'
 import jwt_decode from "jwt-decode"
 import { User } from "../interfaces";
 import { Box } from '@chakra-ui/react';
+import { useContext } from 'react';
+import {UserContext} from '../context/UserContext'
 
 function Home(data:User) {
+  const { id,setId,username,setUsername} = useContext(UserContext);
 
   useEffect(
     () => {
-      console.log(data)
+      if(data.id && data.username){
+        setId(data.id)
+        setUsername(data.username)
+      }
     },[data]
   )
 
   return (
     <Box>
         <h1>CHAMPIONSHIP-PLATAFORM</h1>
-        {
-          data && <h2>ID: {data.id}; NAME: {data.username}</h2>
-        }
+        <>
+          Name: {username}
+          ID: {id}
+        </>
     </Box>
 
       
