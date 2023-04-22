@@ -9,6 +9,7 @@ type UserContextType = {
     setId: (id: Number) => void;
     username: String;
     setUsername: (username: String) => void;
+    clearUser: () => void;
 }
 
 
@@ -16,7 +17,8 @@ const initialValue = {
     id: -1,
     setId: () => {},
     username: "",
-    setUsername: () => {}
+    setUsername: () => {},
+    clearUser: () => {}
 }
 
 
@@ -27,12 +29,17 @@ export const UserProvider = ({ children }: UserContextProps)=>{
     const [id, setId] = useState<Number>(initialValue.id);
     const [username, setUsername] = useState<String>(initialValue.username);
 
+    function clearUser(){
+        setId(-1);
+        setUsername("");
+    }
     return (
         <UserContext.Provider
             
             value={{
                 id, setId,
-                username,setUsername
+                username,setUsername,
+                clearUser
             }}
 
         >
