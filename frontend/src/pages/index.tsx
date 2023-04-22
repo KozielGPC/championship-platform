@@ -7,7 +7,7 @@ import { User } from "../interfaces";
 import { Box } from '@chakra-ui/react';
 import { useContext } from 'react';
 import {UserContext} from '../context/UserContext'
-
+import Layout from '@/components/layout';
 function Home(data:User) {
   const { id,setId,username,setUsername} = useContext(UserContext);
 
@@ -21,13 +21,13 @@ function Home(data:User) {
   )
 
   return (
-    <Box>
-        <h1>CHAMPIONSHIP-PLATAFORM</h1>
-        <>
-          Name: {username}
-          ID: {id}
-        </>
-    </Box>
+    <Layout>
+      <Box>
+        <h1>Home</h1>
+        <h2><>{id}</></h2>
+        <h2>{username}</h2>
+      </Box>
+    </Layout>
 
       
   )
