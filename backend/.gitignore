@@ -1,4 +1,5 @@
 .env
+.env.example
 pgdata/
 venv
 __pycache__

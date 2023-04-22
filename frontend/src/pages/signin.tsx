@@ -1,13 +1,20 @@
+import { parseCookies } from 'nookies'
+import { GetServerSideProps } from 'next'
 import { ColorMode, useColorMode, Text, Box, Flex
-, Heading, Button, FormControl, FormLabel, Input, useColorModeValue
-
+, Heading, Button, FormControl, FormLabel, Input, useColorModeValue, useToast,
 } from "@chakra-ui/react"
 import { useState } from "react";
+import { useRouter } from "next/router";
+import { setCookie } from "nookies";
+import {getToken} from '../services/auth/getToken' 
 
-export default function Signin() {
+
+function Signin() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-
+    const [isLoading, setIsLoading] = useState(false);
+    const toast = useToast()
+    const router = useRouter()
     const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setUsername(event.target.value);
     };
@@ -16,9 +23,29 @@ export default function Signin() {
         setPassword(event.target.value);
     };
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log(`Username: ${username}, Password: ${password}`);
+        setIsLoading(true)
+        const response = await getToken({username, password})
+        if(response){
+          setIsLoading(false)
+          if( response.status == "error"){
+            toast(
+              {
+                title: "Authentication failed",
+                description: response.message,
+                status: "error",
+                duration: 3000,
+                position: "top"
+              }
+            )
+            return
+          }
+          if(response.data?.access_token){
+            setCookie(null, "championship-token", response.data.access_token, {})
+            router.push("/")
+          }
+        }
     };
 
     return (
@@ -60,8 +87,46 @@ export default function Signin() {
             Login
           </Button>
         </form>
+        <Flex pt={3} width={"100%"} justifyContent="center">
+          <Text onClick={()=>router.push("/signup")}
+           width={"max-content"} fontSize={"0.9rem"} borderBottom={"1px solid transparent"} cursor="pointer"
+           _hover={
+            {
+              borderBottom: "1px solid"
+            }
+           }
+          >
+            Creat an account
+          </Text>
+        </Flex>
       </Box>
     </Box>
     )
   }
+
+
+interface Props {
+  cookie: Record<string, string>;
+}
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { "championship-token" : cookie } = parseCookies(context);
+  if(cookie){
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      }
+    }
+  }
+  return {
+    props: {
+    },
+  };
+};  
+
+
+
+
+  
+export default Signin;
   
