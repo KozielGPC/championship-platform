@@ -4,3 +4,4 @@ pgdata/
 venv
 __pycache__
 *.db
+.vercel

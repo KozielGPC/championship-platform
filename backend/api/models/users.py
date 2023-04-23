@@ -6,6 +6,6 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    username = Column(String)
+    username = Column(String, )
     password = Column(String)
     email = Column(String)
