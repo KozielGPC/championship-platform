@@ -5,6 +5,7 @@
 -   [#65](https://github.com/KozielGPC/championship-platform/issues/65) - Atualizado banco de dados para postgresql
 
 ### Added
+-   [#53](https://github.com/KozielGPC/championship-platform/issues/53) - Adicionado CRUD de campeonatos
 -   [#61](https://github.com/KozielGPC/championship-platform/issues/61) - Adicionado Botão de Signout
 -   [#58](https://github.com/KozielGPC/championship-platform/issues/58) - Adicionado Tela de login
 -   [#57](https://github.com/KozielGPC/championship-platform/issues/57) - Adicionado Formulário de cadastro de usuário
