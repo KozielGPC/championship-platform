@@ -13,7 +13,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <Box w={"100%"} height="100vh">
-      <Flex align="center" p="4" bg={'#f9f9f9'} position="fixed" width={"100%"}>
+      <Flex height={'6vh'} align="center" p="4" bg={'#f9f9f9'} position="fixed" width={"100%"}>
         <Box>
           <h1>Logo</h1>
         </Box>
@@ -23,6 +23,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <Spacer />
         <SignoutButton/>
       </Flex>
+      <Box bg={"black"} width="100%" height={"6vh"} ></Box>
         {children}
     </Box>
   );
