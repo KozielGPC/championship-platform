@@ -11,19 +11,9 @@ import { User } from '@/interfaces';
 import { useContext } from 'react';
 import {UserContext} from '../../context/UserContext'
 import jwt_decode from "jwt-decode"
+import Layout from '@/components/layout';
 
 function CreateTeam(data:User) {
-
-    const { id,setId,username,setUsername} = useContext(UserContext);
-
-    useEffect(
-      () => {
-        if(data.id && data.username){
-          setId(data.id)
-          setUsername(data.username)
-        }
-      },[data]
-    )
 
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
@@ -141,66 +131,87 @@ function CreateTeam(data:User) {
     };
 
     return (
-       <Box
-      bg="#555555"
-      h="100vh"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-    >
-      <Box
-        bg="#ffffff"
-        p="8"
-        rounded="md"
-        boxShadow="md"
-        w={{ base: "90%", sm: "80%", md: "50%" }}
-      >
-        <Heading mb="6" textAlign="center">
-          Create Team
-        </Heading>
-        <form onSubmit={handleSubmit}>
-          <FormControl id="name" mb="4" isRequired>
-            <FormLabel>Name:</FormLabel>
-            <Input
-              type="text"
-              value={name}
-              onChange={handleNameChange}
-            />
-          </FormControl>
-          <FormControl id="password" mb="4" isRequired>
-            <FormLabel>Password:</FormLabel>
-            <Input
-              type="password"
-              value={password}
-              onChange={handlePasswordChange}
-            />
-          </FormControl>
-          <FormControl id="confirmPassword" mb="4" isRequired>
-            <FormLabel>Confirm your Password:</FormLabel>
-            <Input
-              type="password"
-              value={confirmPassword}
-              onChange={handleConfirmPasswordChange}
-            />
-          </FormControl>
-          <FormControl id="game" mb="4" isRequired>
-            <FormLabel>Game:</FormLabel>
-            <Select value={game} onChange={()=>handleGameChange}
-                placeholder='Select option'
-                >
+      <Layout>
+        <Box
+            bg="#555555"
+            h="100vh"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Box
+              bg="#ffffff"
+              p="8"
+              rounded="md"
+              boxShadow="md"
+              w={{ base: "90%", sm: "80%", md: "50%" }}
+            >
+              <Heading mb="6" textAlign="center">
+                Create Team
+              </Heading>
+              <form onSubmit={handleSubmit}>
+                <FormControl id="name" mb="4" isRequired>
+                  <FormLabel>Name:</FormLabel>
+                  <Input
+                    type="text"
+                    value={name}
+                    onChange={handleNameChange}
+                  />
+                </FormControl>
+                <FormControl id="password" mb="4" isRequired>
+                  <FormLabel>Password:</FormLabel>
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={handlePasswordChange}
+                  />
+                </FormControl>
+                <FormControl id="confirmPassword" mb="4" isRequired>
+                  <FormLabel>Confirm your Password:</FormLabel>
+                  <Input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={handleConfirmPasswordChange}
+                  />
+                </FormControl>
+                <FormControl id="game" mb="4" isRequired>
+                  <FormLabel>Game:</FormLabel>
+                  <Select value={game} onChange={()=>handleGameChange}
+                      placeholder='Select option'
+                      >
 
-                <option value='1'>game 1</option>
-            </Select>
-          </FormControl>
-          <Button colorScheme="blue" type="submit" w="100%">
-            Create team
-          </Button>
-        </form>
-      </Box>
-    </Box>
+                      <option value='1'>game 1</option>
+                  </Select>
+                </FormControl>
+                <Button colorScheme="blue" type="submit" w="100%">
+                  Create team
+                </Button>
+              </form>
+            </Box>
+          </Box>
+      </Layout>
+       
     )
   }
 
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { "championship-token" : token } = parseCookies(context);
+  if(!token){
+    return {
+      redirect: {
+        destination: '/signin',
+        permanent: false,
+      }
+    }
+  }
+
+  return(
+    {
+      props: {}
+    }
+  )
+
+};    
 
 export default CreateTeam;
   

@@ -24,8 +24,6 @@ function Home(data:User) {
     <Layout>
       <Box>
         <h1>Home</h1>
-        <h2><>{id}</></h2>
-        <h2>{username}</h2>
       </Box>
     </Layout>
 
