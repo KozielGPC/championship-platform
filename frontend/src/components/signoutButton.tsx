@@ -6,18 +6,9 @@ import { useContext } from 'react';
 import UserContext from '../context/UserContext';
 export const SignoutButton: React.FC = () => {
     
-    const router = useRouter();
-    const { clearUser} = useContext(UserContext);
+    const { signout } = useContext(UserContext);
     const handleSignout = () => {
-        destroyCookie(
-            null,
-            'championship-token',
-            {
-                path: '/',
-            }
-        );
-        clearUser();
-        router.push('/signin');
+        signout();
     };
 
     return (

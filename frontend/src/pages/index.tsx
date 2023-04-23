@@ -24,8 +24,6 @@ function Home(data:User) {
     <Layout>
       <Box>
         <h1>Home</h1>
-        <h2><>{id}</></h2>
-        <h2>{username}</h2>
       </Box>
     </Layout>
 
@@ -44,33 +42,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   }
 
-  try {
-    // Decodifique o token e armazene o resultado em decodedToken
-    const userData:User = jwt_decode(token);
-
-    if(userData.id && userData.username){
-      return {
-        props: userData
-      };
-    }else{
-      return {
-        redirect: {
-          destination: '/signin',
-          permanent: false,
-        },
-      };
+  return(
+    {
+      props: {}
     }
-    
-  } catch (error) {
-
-    // Se houver um erro ao decodificar o token, redirecione para a página de login
-    return {
-      redirect: {
-        destination: '/signin',
-        permanent: false,
-      },
-    };
-  }
+  )
 
 };  
 
