@@ -6,7 +6,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*'],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -15,6 +15,3 @@ app.add_middleware(
 
 for route in routes.routes:
     app.include_router(route)
-
-if __name__ == "__main__":
-    app.run()
