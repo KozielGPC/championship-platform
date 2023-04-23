@@ -1,7 +1,7 @@
 """add_championships_table
 
 Revision ID: 69f5210af90e
-Revises: dc174979d7a3
+Revises: d40c92d9fdac
 Create Date: 2023-04-18 17:30:55.752864
 
 """
@@ -11,7 +11,7 @@ from datetime import datetime
 
 # revision identifiers, used by Alembic.
 revision = '69f5210af90e'
-down_revision = 'dc174979d7a3'
+down_revision = 'd40c92d9fdac'
 branch_labels = None
 depends_on = None
 
@@ -25,10 +25,10 @@ def upgrade() -> None:
         sa.Column("min_teams", sa.Integer, nullable=True),
         sa.Column("max_teams", sa.Integer, nullable=True),
         sa.Column("prizes", sa.Text(), nullable=True),
-        sa.Column("format", sa.Enum('chaveamento','pontos_corridos'), nullable=False),
+        sa.Column("format", sa.Enum('chaveamento','pontos_corridos', name='championship_format'), nullable=False),
         sa.Column("rules", sa.Text(), nullable=True),
         sa.Column("contact", sa.Text(), nullable=True),
-        sa.Column("visibility", sa.Enum('publico','privado'), nullable=False),
+        sa.Column("visibility", sa.Enum('publico','privado', name='championship_visibility'), nullable=False),
         sa.Column("created_at", sa.DateTime(), default=datetime.utcnow),
         sa.Column("admin_id", sa.Integer, sa.ForeignKey('users.id'), nullable=False),
         sa.Column("game_id", sa.Integer, sa.ForeignKey('games.id'), nullable=False),
