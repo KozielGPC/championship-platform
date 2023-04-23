@@ -1,5 +1,5 @@
 from api.database.config import Session, engine
-from api.schemas.championships import Response, ChampionshipInput, ChampionshipSchema
+from api.schemas.championships import Response, ChampionshipInput, ChampionshipSchema, FindManyChampionshipFilters
 from api.models.championships import Championship
 from api.models.games import Game
 from api.utils.auth_services import get_password_hash, oauth2_scheme, get_current_user
@@ -23,8 +23,29 @@ session = Session(bind=engine)
     response_model=list[ChampionshipSchema],
     response_description="Sucesso de resposta da aplicação.",
 )
-async def getAll(skip: int = 0, limit: int = 100):
-    championships = session.query(Championship).offset(skip).limit(limit).all()
+async def getAll(filters: FindManyChampionshipFilters | None=None, skip: int = 0, limit: int = 100):
+    query = session.query(Championship)
+    
+    """if filters is not None:
+        if filters.game_id is not None:
+            query.filter(Championship.game_id  == filters.game_id) 
+        if filters.max_teams is not None:
+            query.filter(Championship.max_teams <= filters.max_teams)      
+        if filters.min_teams is not None:
+            query.filter(Championship.min_teams >= filters.min_teams) 
+        if filters.format is not None:
+            query.filter(Championship.format == filters.format)  """
+            
+    for i, filt in enumerate(filters, 1):
+        if filt is not None:
+            d = {'filter{}'.format(i): filt}
+            query = query.filter(**d)
+            
+    print("INICIO\n\n\n\n")
+    print (query) 
+    print("FIM\n\n\n\n")                  
+    championships = query.offset(skip).limit(limit).all()
+
     return jsonable_encoder(championships)
 
 @router.get(
