@@ -9,7 +9,7 @@ import { setCookie } from "nookies";
 import { createTeam } from '@/services/team/create';
 import { User } from '@/interfaces';
 import { useContext } from 'react';
-import {UserContext} from '../context/UserContext'
+import {UserContext} from '../../context/UserContext'
 import jwt_decode from "jwt-decode"
 
 function CreateTeam(data:User) {
@@ -47,8 +47,8 @@ function CreateTeam(data:User) {
     };
 
     const handleGameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setGame(event.target.value);
         console.log(event.target.value)
+        setGame(event.target.value);
     };
 
 
@@ -185,7 +185,7 @@ function CreateTeam(data:User) {
           </FormControl>
           <FormControl id="game" mb="4" isRequired>
             <FormLabel>Game:</FormLabel>
-            <Select value={game} onChange={handleGameChange}
+            <Select value={game} onChange={()=>handleGameChange}
                 placeholder='Select option'
                 >
 
