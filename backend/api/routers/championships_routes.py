@@ -5,7 +5,6 @@ from api.utils.auth_services import get_password_hash, oauth2_scheme, get_curren
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
 
-from fastapi.encoders import jsonable_encoder
 
 router = APIRouter(
     prefix="/championships",

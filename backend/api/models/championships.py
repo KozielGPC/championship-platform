@@ -27,5 +27,5 @@ class Championship(Base):
     visibility = Column(Enum(EnumVisibility))
     created_at = Column(DateTime)
     admin_id = Column(Integer, ForeignKey("users.id"))
-    game_id = Column(Integer) #colocar foreignkey
+    game_id = Column(Integer, ForeignKey("games.id"))
  

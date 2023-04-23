@@ -10,5 +10,5 @@ class Team(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
     password = Column(String)
-    game_id = Column(Integer) #colocar foreignkey
+    game_id = Column(Integer, ForeignKey("games.id"))
     owner_id = Column(Integer, ForeignKey("users.id"))
