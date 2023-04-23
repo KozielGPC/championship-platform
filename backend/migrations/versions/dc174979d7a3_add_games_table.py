@@ -1,7 +1,7 @@
 """add_games_table
 
 Revision ID: dc174979d7a3
-Revises: d40c92d9fdac
+Revises: b885273e8a0d
 Create Date: 2023-04-12 20:38:24.452256
 
 """
@@ -10,10 +10,9 @@ import sqlalchemy as sa
 from datetime import datetime
 
 
-
 # revision identifiers, used by Alembic.
-revision = 'dc174979d7a3'
-down_revision = 'd40c92d9fdac'
+revision = "dc174979d7a3"
+down_revision = "b885273e8a0d"
 branch_labels = None
 depends_on = None
 
@@ -23,7 +22,7 @@ def upgrade() -> None:
         "games",
         sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
         sa.Column("name", sa.String(50), nullable=False),
-        sa.Column('created_at', sa.DateTime(), default=datetime.utcnow)
+        sa.Column("created_at", sa.DateTime(), default=datetime.utcnow),
     )
 
 
