@@ -31,12 +31,9 @@ class ChampionshipSchema(BaseModel):
     visibility: EnumVisibility
     game_id: Optional[int] = Field(default=None, foreign_key="games.id")
     admin_id: Optional[int] = Field(default=None, foreign_key="users.id")
-
-
-class Config:
-    orm_mode = True
-    use_enum_values = True
-
+    class Config:
+        orm_mode = True
+        use_enum_values = True
 
 class ChampionshipInput(ChampionshipSchema):
     name: str

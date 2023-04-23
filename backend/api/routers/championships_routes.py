@@ -5,6 +5,7 @@ from api.models.games import Game
 from api.utils.auth_services import get_password_hash, oauth2_scheme, get_current_user
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
+from fastapi.encoders import jsonable_encoder
 
 
 router = APIRouter(
@@ -23,8 +24,8 @@ session = Session(bind=engine)
     response_description="Sucesso de resposta da aplicação.",
 )
 async def getAll(skip: int = 0, limit: int = 100):
-    return session.query(Championship).offset(skip).limit(limit).all()
-
+    championships = session.query(Championship).offset(skip).limit(limit).all()
+    return jsonable_encoder(championships)
 
 @router.get(
     "/{id}",
@@ -35,7 +36,7 @@ async def getById(id: int):
     championship = session.query(Championship).filter(Championship.id == id).first()
     if championship == None:
         raise HTTPException(status_code=404, detail="Championship not found")
-    return championship
+    return jsonable_encoder(championship)
 
 
 @router.post(
@@ -77,8 +78,9 @@ async def create(data: ChampionshipInput, token: Annotated[str, Depends(oauth2_s
         "visibility": championship_input.visibility,
         "admin_id": championship_input.admin_id,
         "game_id": championship_input.game_id,
+        "prizes": championship_input.prizes
     }
-    return response
+    return jsonable_encoder(response)
 
 
 @router.delete(
@@ -98,4 +100,4 @@ async def delete(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
     session.delete(championship)
     session.commit()
 
-    return championship
+    return jsonable_encoder(championship)
