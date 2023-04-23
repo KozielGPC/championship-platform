@@ -26,24 +26,16 @@ session = Session(bind=engine)
 async def getAll(filters: FindManyChampionshipFilters | None=None, skip: int = 0, limit: int = 100):
     query = session.query(Championship)
     
-    """if filters is not None:
+    if filters is not None:
         if filters.game_id is not None:
-            query.filter(Championship.game_id  == filters.game_id) 
+            query=query.filter(Championship.game_id  == filters.game_id) 
         if filters.max_teams is not None:
-            query.filter(Championship.max_teams <= filters.max_teams)      
+            query=query.filter(Championship.max_teams <= filters.max_teams)      
         if filters.min_teams is not None:
-            query.filter(Championship.min_teams >= filters.min_teams) 
+            query=query.filter(Championship.min_teams >= filters.min_teams) 
         if filters.format is not None:
-            query.filter(Championship.format == filters.format)  """
-            
-    for i, filt in enumerate(filters, 1):
-        if filt is not None:
-            d = {'filter{}'.format(i): filt}
-            query = query.filter(**d)
-            
-    print("INICIO\n\n\n\n")
-    print (query) 
-    print("FIM\n\n\n\n")                  
+            query=query.filter(Championship.format == filters.format)  
+                            
     championships = query.offset(skip).limit(limit).all()
 
     return jsonable_encoder(championships)
