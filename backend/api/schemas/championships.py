@@ -6,14 +6,17 @@ from enum import Enum
 
 T = TypeVar("T")
 
+
 class EnumFormat(str, Enum):
     chaveamento = "chaveamento"
     pontos_corridos = "pontos_corridos"
 
+
 class EnumVisibility(Enum):
     publico = "publico"
     privado = "privado"
- 
+
+
 class ChampionshipSchema(BaseModel):
     id: Optional[int] = None
     name: Optional[str] = None
@@ -30,7 +33,6 @@ class ChampionshipSchema(BaseModel):
     admin_id: Optional[int] = Field(default=None, foreign_key="users.id")
 
 
-
 class Config:
     orm_mode = True
     use_enum_values = True
@@ -38,7 +40,7 @@ class Config:
 
 class ChampionshipInput(ChampionshipSchema):
     name: str
-    start_time: str
+    start_time: datetime
     min_teams: int
     max_teams: int
     prizes: str
@@ -47,7 +49,6 @@ class ChampionshipInput(ChampionshipSchema):
     contact: str
     visibility: EnumVisibility
     game_id: int
-   
 
     class Config:
         orm_mode = True

@@ -1,6 +1,7 @@
 from api.database.config import Session, engine
 from api.schemas.championships import Response, ChampionshipInput, ChampionshipSchema
 from api.models.championships import Championship
+from api.models.games import Game
 from api.utils.auth_services import get_password_hash, oauth2_scheme, get_current_user
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
@@ -44,8 +45,8 @@ async def getById(id: int):
     response_description="Sucesso de resposta da aplicação.",
 )
 async def create(data: ChampionshipInput, token: Annotated[str, Depends(oauth2_scheme)]):
-    #Falta fazer as validações para criar o time
-    #if user:
+    # Falta fazer as validações para criar o time
+    # if user:
     #    raise HTTPException(status_code=400, detail="Championship with this name already exists")
     user = await get_current_user(token)
     championship_input = Championship(
@@ -58,7 +59,8 @@ async def create(data: ChampionshipInput, token: Annotated[str, Depends(oauth2_s
         contact=data.contact,
         visibility=data.visibility,
         admin_id=user.id,
-        game_id=data.game_id)
+        game_id=data.game_id,
+    )
     session.add(championship_input)
     session.commit()
     session.refresh(championship_input)
@@ -77,6 +79,7 @@ async def create(data: ChampionshipInput, token: Annotated[str, Depends(oauth2_s
     }
     return response
 
+
 @router.delete(
     "/delete/{id}",
     status_code=200,
@@ -87,10 +90,11 @@ async def delete(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
     user = await get_current_user(token)
     championship = session.query(Championship).filter(Championship.id == id, user.id == Championship.admin_id).first()
     if championship == None:
-        raise HTTPException(status_code=404, detail="Championship not found or You aren't the admin of the championship")
-    
+        raise HTTPException(
+            status_code=404, detail="Championship not found or You aren't the admin of the championship"
+        )
+
     session.delete(championship)
     session.commit()
 
     return championship
-
