@@ -60,6 +60,7 @@ async def create(data: ChampionshipInput, token: Annotated[str, Depends(oauth2_s
         visibility=data.visibility,
         admin_id=user.id,
         game_id=data.game_id,
+        prizes=data.prizes,
     )
     session.add(championship_input)
     session.commit()
