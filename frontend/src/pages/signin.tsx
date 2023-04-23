@@ -7,7 +7,8 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { setCookie } from "nookies";
 import {getToken} from '../services/auth/getToken' 
-
+import UserContext from '@/context/UserContext';
+import { useContext } from 'react';
 
 function Signin() {
     const [username, setUsername] = useState("");
@@ -15,6 +16,8 @@ function Signin() {
     const [isLoading, setIsLoading] = useState(false);
     const toast = useToast()
     const router = useRouter()
+    const { signin } = useContext(UserContext);
+
     const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setUsername(event.target.value);
     };
@@ -42,8 +45,7 @@ function Signin() {
             return
           }
           if(response.data?.access_token){
-            setCookie(null, "championship-token", response.data.access_token, {})
-            router.push("/")
+            signin(response.data?.access_token);
           }
         }
     };
