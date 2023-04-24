@@ -23,7 +23,12 @@ function Home(data:User) {
   return (
     <Layout>
       <Box>
-        <h1>Home</h1>
+        <h1>Home Lorem, ipsum dolor sit amet consectetur adipisicing elit. Enim atque, cupiditate molestias nam explicabo quaerat ut natus tempora perspiciatis, asperiores optio ratione eaque repellat iste corporis quos aspernatur mollitia labore?lorem</h1>
+        <h1>Home Lorem, ipsum dolor sit amet consectetur adipisicing elit. Enim atque, cupiditate molestias nam explicabo quaerat ut natus tempora perspiciatis, asperiores optio ratione eaque repellat iste corporis quos aspernatur mollitia labore?lorem</h1>
+        <h1>Home Lorem, ipsum dolor sit amet consectetur adipisicing elit. Enim atque, cupiditate molestias nam explicabo quaerat ut natus tempora perspiciatis, asperiores optio ratione eaque repellat iste corporis quos aspernatur mollitia labore?lorem</h1>
+        <h1>Home Lorem, ipsum dolor sit amet consectetur adipisicing elit. Enim atque, cupiditate molestias nam explicabo quaerat ut natus tempora perspiciatis, asperiores optio ratione eaque repellat iste corporis quos aspernatur mollitia labore?lorem</h1>
+        <h1>Home Lorem, ipsum dolor sit amet consectetur adipisicing elit. Enim atque, cupiditate molestias nam explicabo quaerat ut natus tempora perspiciatis, asperiores optio ratione eaque repellat iste corporis quos aspernatur mollitia labore?lorem</h1>
+        <h1>Home Lorem, ipsum dolor sit amet consectetur adipisicing elit. Enim atque, cupiditate molestias nam explicabo quaerat ut natus tempora perspiciatis, asperiores optio ratione eaque repellat iste corporis quos aspernatur mollitia labore?lorem</h1>
         <h2><>{id}</></h2>
         <h2>{username}</h2>
       </Box>
