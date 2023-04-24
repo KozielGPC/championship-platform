@@ -1,4 +1,6 @@
 import axios, { AxiosResponse } from "axios";
+import { parseCookies } from "nookies";
+
 export interface createTeam {
     name: string;
     password: string;
@@ -17,8 +19,15 @@ export  interface ResponseRequest {
 }
 
 export const createTeam = async (data: createTeam): Promise<ResponseRequest> => {
-
-  const response = await axios.post<createTeam>(process.env.NEXT_PUBLIC_URL_SERVER+"/teams/create", data)
+    const { "championship-token" : token } = parseCookies();
+    console.log(token)
+    const response = await axios.post<createTeam>(process.env.NEXT_PUBLIC_URL_SERVER+"/teams/create",
+    data,
+    {
+       headers:{
+            'Authorization': token
+       } 
+    })
     .then(
         (response: AxiosResponse) => {
             const status: Status = "success";

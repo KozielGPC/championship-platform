@@ -18,11 +18,16 @@ function CreateTeam(data:User) {
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [owner, setOwner] = useState("");
+    const [owner, setOwner] = useState<Number>(0);
     const [game, setGame] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const toast = useToast()
-    const router = useRouter()
+    const toast = useToast();
+    const router = useRouter();
+    const {id} = useContext(UserContext);
+
+    useEffect (() => {
+      setOwner(id);
+    }, [owner])
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
@@ -36,9 +41,8 @@ function CreateTeam(data:User) {
         setConfirmPassword(event.target.value);
     };
 
-    const handleGameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(event.target.value)
-        setGame(event.target.value);
+    const handleGameChange = (value: string) => {
+        setGame(value);
     };
 
 
@@ -176,7 +180,7 @@ function CreateTeam(data:User) {
                 </FormControl>
                 <FormControl id="game" mb="4" isRequired>
                   <FormLabel>Game:</FormLabel>
-                  <Select value={game} onChange={()=>handleGameChange}
+                  <Select value={game} onChange={(e)=>handleGameChange(e.target.value)}
                       placeholder='Select option'
                       >
 
