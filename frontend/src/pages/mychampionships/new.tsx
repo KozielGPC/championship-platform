@@ -12,6 +12,7 @@ import {
   Select,
   Heading
 } from "@chakra-ui/react";
+import { createChampionship,createChampionshipTest } from "../../services/championship/create";
 
 interface ChampionshipFormData {
     name: string;
@@ -46,29 +47,32 @@ const defaultFormData: ChampionshipFormData = {
 
 
 
-export default function createChampionship() {
+export default function CreateChampionship() {
 
+    //eslint-disable-next-line react-hooks/rules-of-hooks
     const [formData, setFormData] = useState<ChampionshipFormData>(defaultFormData);
     
-      const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        console.log(formData);
-        // Aqui você pode enviar o formData para o backend utilizando axios, fetch ou outra biblioteca de requisições HTTP.
-      };
-    
-      const handleInputChange = (
-        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-      ) => {
-        const { name, value } = event.target;
-        setFormData((prevState) => ({ ...prevState, [name]: value }));
-      };
-    
-      const handleSelectChange = (
-        event: React.ChangeEvent<HTMLSelectElement>
-      ) => {
-        const { name, value } = event.target;
-        setFormData((prevState) => ({ ...prevState, [name]: value }));
-      };
+    const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      console.log(formData);
+
+      const response = await createChampionshipTest(formData);
+      console.log(response)
+    };
+  
+    const handleInputChange = (
+      event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+      const { name, value } = event.target;
+      setFormData((prevState) => ({ ...prevState, [name]: value }));
+    };
+  
+    const handleSelectChange = (
+      event: React.ChangeEvent<HTMLSelectElement>
+    ) => {
+      const { name, value } = event.target;
+      setFormData((prevState) => ({ ...prevState, [name]: value }));
+    };
 
 
     return (
@@ -96,7 +100,7 @@ export default function createChampionship() {
                                 name="name"
                                 value={formData.name}
                                 onChange={handleInputChange}
-                                placeholder="Digite o nome do campeonato"
+                                placeholder="Type the name of championship"
                                 />
                             </FormControl>
 
@@ -136,18 +140,18 @@ export default function createChampionship() {
                                 name="prizes"
                                 value={formData.prizes}
                                 onChange={handleInputChange}
-                                placeholder="Digite os prêmios para as equipes vencedoras"
+                                placeholder="Type the prizes of championship"
                                 />
                             </FormControl>
                             <FormControl mt={4}>
-                                <FormLabel>Formato</FormLabel>
+                                <FormLabel>Format</FormLabel>
                                 <Select
                                 name="format"
                                 value={formData.format}
                                 onChange={handleSelectChange}
                                 >
                                 <option value="chaveamento">Brackets</option>
-                                <option value="pontos-corridos">Round-Robin</option>
+                                <option value="pontos_corridos">Round-Robin</option>
                                 </Select>
                             </FormControl>
                             <FormControl mt={4}>
@@ -156,18 +160,18 @@ export default function createChampionship() {
                                 name="rules"
                                 value={formData.rules}
                                 onChange={handleInputChange}
-                                placeholder="Digite as regras do campeonato"
+                                placeholder="Type the rules of championship"
                                 />
                             </FormControl>
 
                             <FormControl mt={4}>
-                                <FormLabel>Contato</FormLabel>
+                                <FormLabel>Contact</FormLabel>
                                 <Input
                                 type="text"
                                 name="contact"
                                 value={formData.contact}
                                 onChange={handleInputChange}
-                                placeholder="Digite o contato do organizador do campeonato"
+                                placeholder="Type the contact of championship"
                                 />
                             </FormControl>
 
