@@ -1,8 +1,8 @@
-name: championship-platform-image
+name: fastapi-crud
 services:
   fastapi:
     public: true
-    image: marciogpc/championship-platform-image:latest
+    image: marciogpc/fastapi-crud:latest
     build: .
     replicas: 1
     ports:

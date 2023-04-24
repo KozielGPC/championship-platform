@@ -1,11 +1,12 @@
 FROM python:3.10.2
 
-WORKDIR /usr/src/app
+WORKDIR /api
 
-COPY requirements.txt ./
+ADD . .
+RUN pip install -r requirements.txt
 
-RUN pip install --no-cache-dir -r requirements.txt
+EXPOSE 8080
 
-COPY . .
+COPY ./api /api
 
-CMD ["uvicorn", "main:app"]
+CMD ["python3", "main.py"]
