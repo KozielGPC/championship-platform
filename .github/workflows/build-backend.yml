@@ -33,3 +33,7 @@ jobs:
           dockerfile: ./backend/Dockerfile
           push: true
           tags: ${{ github.sha }}
+      - name: Deploy on Fly.io
+        run: |
+          cd backend
+          flyctl deploy
