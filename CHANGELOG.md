@@ -5,6 +5,7 @@
 -   [#65](https://github.com/KozielGPC/championship-platform/issues/65) - Atualizado banco de dados para postgresql
 
 ### Added
+-   [#74](https://github.com/KozielGPC/championship-platform/issues/74) - Adicionado arquivos de configuração para deploy no fly.io
 -   [#47](https://github.com/KozielGPC/championship-platform/issues/47) - Adicionado filtros de campeonatos
 -   [#53](https://github.com/KozielGPC/championship-platform/issues/53) - Adicionado CRUD de campeonatos
 -   [#61](https://github.com/KozielGPC/championship-platform/issues/61) - Adicionado Botão de Signout
