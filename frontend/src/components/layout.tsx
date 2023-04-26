@@ -55,15 +55,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     borderBottomWidth="1px"
                     borderColor="white" 
                     borderStyle="solid" 
-                    pt="15px" pb="10px" 
+                    pt="5px" pb="5px" 
                     w="100%">
-                      <Box display="inline-block" pl='10px' p="15px">
+                      <Box display="inline-block" pl='15px' p="10px" pb="5px">
                         <Stack direction='row' spacing={4}>
                           <Avatar>
                             <AvatarBadge boxSize='1em' bg='green.500' />
                           </Avatar>
                         </Stack>
-                        <Box pt='' p="5px">
+                        <Box pt="5px" pl="5px" pr="5px">
                           <Text >
                             {username}
                           </Text>
