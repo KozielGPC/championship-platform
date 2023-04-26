@@ -12,7 +12,7 @@ import {
   Select,
   Heading
 } from "@chakra-ui/react";
-import { createChampionship,createChampionshipTest } from "../../services/championship/create";
+import { createChampionship } from "../../services/championship/create";
 
 interface ChampionshipFormData {
     name: string;
@@ -56,7 +56,7 @@ export default function CreateChampionship() {
       event.preventDefault();
       console.log(formData);
 
-      const response = await createChampionshipTest(formData);
+      const response = await createChampionship(formData);
       console.log(response)
     };
   
