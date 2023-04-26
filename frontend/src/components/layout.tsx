@@ -1,8 +1,11 @@
 import React from 'react';
-import { Box, Flex, Spacer, Button, Text, StackDivider, VStack, Grid, GridItem} from '@chakra-ui/react';
+import { Link, LinkBox, LinkOverlay, Box, Flex, Spacer, Button, Text, StackDivider, VStack, Grid, GridItem, Heading, AvatarGroup, Avatar, Stack, AvatarBadge, textDecoration} from '@chakra-ui/react';
 import {SignoutButton} from './signoutButton'
 import {UserContext} from '../context/UserContext'
 import { useContext } from 'react';
+import { ExternalLinkIcon } from '@chakra-ui/icons'
+
+
 interface LayoutProps {
   children: React.ReactNode;
 }
@@ -24,7 +27,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     >
       <GridItem pl='2' bg='gray.700' area={'nav'}
         borderRightWidth="4px"
-        borderRightColor="white"
+        borderRightColor="#00B3B2"
         borderStyle="solid"
       >
         <Box position="fixed" top="0" left="0">
@@ -33,11 +36,64 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               gridTemplateRows={'100vh'}
               gridTemplateColumns={'38vh'}
               gap='0'
-              color='blackAlpha.700'
+              color='#003C3B'
               fontWeight='bold'
             >
               <Box position="relative" w="100%" h="100%">
-                <Box color="White" borderBottomWidth="1px" borderColor="white" borderStyle="solid" textAlign="center" pt="10px" pb="10px" w="100%">JuegosHub</Box>
+                <Box color="#00EEEE"
+                  borderBottomWidth="1px"
+                  borderColor="white" 
+                  borderStyle="solid" 
+                  textAlign="center" 
+                  pt="10px" pb="10px" 
+                  w="100%">
+                    JuegosHub
+                </Box>
+                <Link href='/myprofile'>
+                  <Box
+                    color="#00EEEE"
+                    borderBottomWidth="1px"
+                    borderColor="white" 
+                    borderStyle="solid" 
+                    pt="15px" pb="10px" 
+                    w="100%">
+                      <Box display="inline-block" pl='10px' p="15px">
+                        <Stack direction='row' spacing={4}>
+                          <Avatar>
+                            <AvatarBadge boxSize='1em' bg='green.500' />
+                          </Avatar>
+                        </Stack>
+                        <Box pt='' p="5px">
+                          <Text >
+                            {username}
+                          </Text>
+                        </Box>
+                      </Box>
+                  </Box>
+                </Link>
+
+                <Box display="inline-block" textAlign={'left'} textColor='white'>
+                  <Box p='10px'>
+                    <Link
+                        pt='5px'
+                        pb='10px'
+                        display='block' href='/myteams' isExternal>
+                      My teams<ExternalLinkIcon mx='2px' />
+                    </Link>
+                    <Link 
+                        pt='5px'
+                        pb='10px'
+                        display='block' href='/mychampionships' isExternal>
+                      My championships<ExternalLinkIcon mx='2px' />
+                    </Link>
+                    <Link
+                        pt='5px'
+                        pb='10px' 
+                        display='block' href='/mychampionships/new' isExternal>
+                      Create Championship<ExternalLinkIcon mx='2px' />
+                    </Link>
+                  </Box>
+                </Box>
                 <Box position="absolute" left="10px" bottom="10px"><SignoutButton></SignoutButton></Box>
               </Box>
             </Grid>
@@ -46,27 +102,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           
       </GridItem>
       <GridItem pl='2' bg='gray.600' area={'main'}>
-        <Box>
-          {children}
-          Main
-        </Box>
-        <Box>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam quas eum itaque ea illum vero, voluptatem, iste aliquid sequi ut labore! Molestias recusandae ratione, quisquam similique iure voluptas sint perspiciatis?
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam quas eum itaque ea illum vero, voluptatem, iste aliquid sequi ut labore! Molestias recusandae ratione, quisquam similique iure voluptas sint perspiciatis?
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam quas eum itaque ea illum vero, voluptatem, iste aliquid sequi ut labore! Molestias recusandae ratione, quisquam similique iure voluptas sint perspiciatis?
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam quas eum itaque ea illum vero, voluptatem, iste aliquid sequi ut labore! Molestias recusandae ratione, quisquam similique iure voluptas sint perspiciatis?
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam quas eum itaque ea illum vero, voluptatem, iste aliquid sequi ut labore! Molestias recusandae ratione, quisquam similique iure voluptas sint perspiciatis?
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam quas eum itaque ea illum vero, voluptatem, iste aliquid sequi ut labore! Molestias recusandae ratione, quisquam similique iure voluptas sint perspiciatis?
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam quas eum itaque ea illum vero, voluptatem, iste aliquid sequi ut labore! Molestias recusandae ratione, quisquam similique iure voluptas sint perspiciatis?
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam quas eum itaque ea illum vero, voluptatem, iste aliquid sequi ut labore! Molestias recusandae ratione, quisquam similique iure voluptas sint perspiciatis?
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam quas eum itaque ea illum vero, voluptatem, iste aliquid sequi ut labore! Molestias recusandae ratione, quisquam similique iure voluptas sint perspiciatis?
+        <Box minHeight='70vh'>
+          Main{children}          
         </Box>
       </GridItem>
-      <GridItem pl='2' bg='green.600' area={'footer'}>
-        <Box>
-          Footer
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam quas eum itaque ea illum vero, voluptatem, iste aliquid sequi ut labore! Molestias recusandae ratione, quisquam similique iure voluptas sint perspiciatis?
-          
+      <GridItem pl='2' bg='#007777' area={'footer'}>
+        <Box textColor="white">
+          Footer     
         </Box>
       </GridItem>
     </Grid>
