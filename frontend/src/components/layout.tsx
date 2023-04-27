@@ -1,9 +1,10 @@
 import React from 'react';
-import { Link, LinkBox, LinkOverlay, Box, Flex, Spacer, Button, Text, StackDivider, VStack, Grid, GridItem, Heading, AvatarGroup, Avatar, Stack, AvatarBadge, textDecoration} from '@chakra-ui/react';
+import { Link, Box, Text, Icon, Grid, GridItem, Avatar, Stack, AvatarBadge, Flex} from '@chakra-ui/react';
 import {SignoutButton} from './signoutButton'
 import {UserContext} from '../context/UserContext'
 import { useContext } from 'react';
 import { ExternalLinkIcon } from '@chakra-ui/icons'
+import { MdAdd, MdOutlineSupervisorAccount, MdOutlineVideogameAsset } from 'react-icons/md'
 
 
 interface LayoutProps {
@@ -77,20 +78,23 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     <Link
                         pt='5px'
                         pb='10px'
-                        display='block' href='/myteams' isExternal>
-                      My teams<ExternalLinkIcon mx='2px' />
+                        display='flex' href='/myteams' isExternal>
+                      <Icon boxSize='25px' as={MdOutlineSupervisorAccount} />
+                      <Flex pl="5px" >My teams</Flex>
                     </Link>
                     <Link 
                         pt='5px'
                         pb='10px'
-                        display='block' href='/mychampionships' isExternal>
-                      My championships<ExternalLinkIcon mx='2px' />
+                        display='flex' href='/mychampionships' isExternal>
+                      <Icon boxSize='25px' as={MdOutlineVideogameAsset} />
+                      <Flex pl="5px" >My championships</Flex>
                     </Link>
                     <Link
                         pt='5px'
                         pb='10px' 
-                        display='block' href='/mychampionships/new' isExternal>
-                      Create Championship<ExternalLinkIcon mx='2px' />
+                        display='flex' href='/mychampionships/new' isExternal>
+                      <Icon boxSize='25px' as={MdAdd} />
+                      <Flex pl="5px">Create Championship</Flex>
                     </Link>
                   </Box>
                 </Box>
@@ -103,7 +107,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </GridItem>
       <GridItem pl='2' bg='gray.600' area={'main'}>
         <Box minHeight='70vh'>
-          Main{children}          
+          {children}          
         </Box>
       </GridItem>
       <GridItem pl='2' bg='#007777' area={'footer'}>

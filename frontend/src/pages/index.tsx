@@ -39,7 +39,6 @@ function Home(data:User) {
                 position: "top"
               }
             )
-            console.log('opa')
             return
           }
           if(response.data){
