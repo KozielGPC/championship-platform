@@ -46,8 +46,8 @@ async def getById(id: int):
 )
 async def create(data: TeamInput, token: Annotated[str, Depends(oauth2_scheme)]):
     # Falta fazer as validações para criar o time (acho q nao falta mais)
-    time = session.query(Team).filter(Team.name == data.name).first()
-    if time:
+    team = session.query(Team).filter(Team.name == data.name).first()
+    if team != None:
         raise HTTPException(status_code=400, detail="Team with this name already exists")
     hashed_password = get_password_hash(data.password)
     user = await get_current_user(token)
