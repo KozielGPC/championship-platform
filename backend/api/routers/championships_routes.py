@@ -59,9 +59,10 @@ async def getById(id: int):
     response_description="Sucesso de resposta da aplicação.",
 )
 async def create(data: ChampionshipInput, token: Annotated[str, Depends(oauth2_scheme)]):
-    # Falta fazer as validações para criar o time
-    # if user:
-    #    raise HTTPException(status_code=400, detail="Championship with this name already exists")
+    # Falta fazer as validações para criar o campeonato (acho q nao falta mais)
+    camp = session.query(Championship).filter(Championship.name == data.name).first()
+    if camp != None:
+        raise HTTPException(status_code=400, detail="Championship with this name already exists")
     user = await get_current_user(token)
     championship_input = Championship(
         name=data.name,
