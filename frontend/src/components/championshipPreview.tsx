@@ -20,7 +20,6 @@ const ChampionshipPreview: React.FC<ChampionshipPreviewProps> = ({ championship 
   useEffect(
     () => {
         setChampionship(championship);
-        console.log(championship_state)
     },[championship]
   )
  
