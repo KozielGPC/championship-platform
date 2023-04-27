@@ -25,8 +25,7 @@ function Home(data:User) {
         setUsername(data.username)
       }
       setIsLoading(true)
-      
-      const response = async () => {
+      const fetchData = async () => {
         const response = await getChampionships();
         if(response){
           setIsLoading(false)
@@ -40,15 +39,17 @@ function Home(data:User) {
                 position: "top"
               }
             )
+            console.log('opa')
             return
           }
           if(response.data){
-            console.log(response.data)
             setChampionships(response.data)
           }
         }
-      }      
-    },[data]
+      }
+      fetchData()
+      .catch(console.error);
+    }, [] 
   )
 
   return (

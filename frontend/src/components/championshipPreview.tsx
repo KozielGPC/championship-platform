@@ -5,30 +5,33 @@ import {UserContext} from '../context/UserContext'
 import { useContext } from 'react';
 import { ExternalLinkIcon } from '@chakra-ui/icons'
 import { Championship } from '@/interfaces';
-import ChampionshipPreview from './championshipPreview';
 
 
-interface ChampionshipProps {
-  championships: Array<Championship>;
+interface ChampionshipPreviewProps {
+  championship: Championship;
 }
 
-const ShowChampionships: React.FC<ChampionshipProps> = ({ championships }) => {
+let cp: Championship;
 
-  const [championships_state, setChampionships] = useState(Array<Championship>);
+const ChampionshipPreview: React.FC<ChampionshipPreviewProps> = ({ championship }) => {
+
+  const [championship_state, setChampionship] = useState(cp);
 
   useEffect(
     () => {
-        setChampionships(championships);
-    },[championships]
+        setChampionship(championship);
+        console.log(championship_state)
+    },[championship]
   )
  
   return (
         <Box>
-            {championships_state ? championships_state.map(championship => <ChampionshipPreview championship={championship}></ChampionshipPreview>)
-                    :<></>}
+            <Text>
+                {championship_state.name}
+            </Text>
         </Box>
   );
 };
 
 
-export default ShowChampionships;
+export default ChampionshipPreview;
