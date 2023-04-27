@@ -6,7 +6,6 @@ import { useContext } from 'react';
 import { ExternalLinkIcon } from '@chakra-ui/icons'
 import { MdAdd, MdOutlineSupervisorAccount, MdOutlineVideogameAsset } from 'react-icons/md'
 
-
 interface LayoutProps {
   children: React.ReactNode;
 }
