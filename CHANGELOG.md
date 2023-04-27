@@ -5,6 +5,7 @@
 -   [#65](https://github.com/KozielGPC/championship-platform/issues/65) - Atualizado banco de dados para postgresql
 
 ### Added
+-   [#79](https://github.com/KozielGPC/championship-platform/issues/79) - Adicionado validação nos nomes de times e campeonatos
 -   [#75](https://github.com/KozielGPC/championship-platform/issues/75) - Adicionado Rotas de busca jogos
 -   [#47](https://github.com/KozielGPC/championship-platform/issues/47) - Adicionado Filtros de campeonatos
 -   [#53](https://github.com/KozielGPC/championship-platform/issues/53) - Adicionado CRUD de campeonatos
