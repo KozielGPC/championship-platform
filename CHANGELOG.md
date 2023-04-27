@@ -6,6 +6,7 @@
 
 ### Added
 -   [#79](https://github.com/KozielGPC/championship-platform/issues/79) - Adicionado validação nos nomes de times e campeonatos
+-   [#39](https://github.com/KozielGPC/championship-platform/issues/39) - Adicionado frontend da Home Screen
 -   [#74](https://github.com/KozielGPC/championship-platform/issues/74) - Adicionado arquivos de configuração para deploy no fly.io
 -   [#75](https://github.com/KozielGPC/championship-platform/issues/75) - Adicionado Rotas de busca jogos
 -   [#47](https://github.com/KozielGPC/championship-platform/issues/47) - Adicionado Filtros de campeonatos
