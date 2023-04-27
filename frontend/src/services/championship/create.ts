@@ -24,15 +24,15 @@ export  interface ResponseRequest {
 export const createChampionship = async (data: Championship): Promise<ResponseRequest> => {
     
     const { "championship-token" : token } = parseCookies();  
-    console.log(token)
 
     const response = await axios.post<Championship>(
         process.env.NEXT_PUBLIC_URL_SERVER+"/championships/create", 
         data,
         {
             headers:{
-                "www-authenticate": `Bearer ${token}`
-
+                "Authorization": `Bearer ${token}`,
+                "Content-Length": JSON.stringify(data).length,
+                "Content-Type": 'application/json'
             }
         }
     )

@@ -1,8 +1,9 @@
 import  Layout  from "../../components/layout";
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Flex, useToast } from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
 import { parseCookies } from "nookies";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FormControl,
   FormLabel,
@@ -13,6 +14,9 @@ import {
   Heading
 } from "@chakra-ui/react";
 import { createChampionship } from "../../services/championship/create";
+import {useContext} from "react";
+import {UserContext} from '../../context/UserContext'
+import {dateTime} from '../../utils/dateTime'
 
 interface ChampionshipFormData {
     name: string;
@@ -32,32 +36,60 @@ interface ChampionshipFormData {
 const defaultFormData: ChampionshipFormData = {
   name: "",
   start_time: "",
-  created_at: "",
+  created_at: dateTime(),
   min_teams: 0,
   max_teams: 0,
   prizes: "",
-  format: "",
+  format: "chaveamento",
   rules: "",
   contact: "",
-  visibility: "",
-  game_id: 0,
+  visibility: "publico",
+  game_id: 1,
   admin_id: 0,
 };
 
-
-
-
 export default function CreateChampionship() {
-
+    const router = useRouter();
+    const {id} = useContext(UserContext)
     //eslint-disable-next-line react-hooks/rules-of-hooks
     const [formData, setFormData] = useState<ChampionshipFormData>(defaultFormData);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const toast = useToast();
+    useEffect(
+      () => {
+        if(id){
+          let createdAt = dateTime();
+          setFormData((prevState:ChampionshipFormData) => (
+            { 
+              ...prevState, 
+              created_at: createdAt,
+              admin_id: Number(id)
+            }
+            ));
+        }
+      },[id]
+    )
     
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      console.log(formData);
-
+      setIsLoading(true)
       const response = await createChampionship(formData);
-      console.log(response)
+      if(response){
+        toast(
+          {
+            title: response.message,
+            status: response.status,
+            duration: 3000,
+            isClosable: true,
+          }
+        )
+        if(response.status=="success"){
+          setFormData(defaultFormData);
+          router.push("/mychampionships");
+        }
+        setIsLoading(false)
+      }
+      
     };
   
     const handleInputChange = (
@@ -78,7 +110,6 @@ export default function CreateChampionship() {
     return (
         <Layout>
             <Flex width="100%" height="94vh" bg="#555555" justifyContent={"center"} alignItems="center">
-                
                 <Box
                 bg="#ffffff"
                 p="8"
@@ -93,6 +124,7 @@ export default function CreateChampionship() {
                         New Championship
                     </Heading>
                     <form onSubmit={handleFormSubmit}>
+                            
                             <FormControl>
                                 <FormLabel>Name</FormLabel>
                                 <Input
@@ -182,8 +214,8 @@ export default function CreateChampionship() {
                                 value={formData.visibility}
                                 onChange={handleSelectChange}
                                 >
-                                <option value="public">Public</option>
-                                <option value="private">Private</option>
+                                <option value="publico">Public</option>
+                                <option value="privado">Private</option>
                                 </Select>
                             </FormControl>
 
@@ -199,8 +231,8 @@ export default function CreateChampionship() {
                                 </Select>
                             </FormControl>
 
-                            <Button type="submit" mt={4}>
-                                Create Championship
+                            <Button type="submit" mt={4} disabled={isLoading}>
+                                <>{isLoading?"Creating...":"Create Championship"}</>
                             </Button>
                     </form>
                 </Box>

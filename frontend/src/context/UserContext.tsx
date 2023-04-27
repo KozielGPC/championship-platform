@@ -73,7 +73,9 @@ export const UserProvider = ({ children }: UserContextProps)=>{
 
     function signin(token:string){
         try{
-            setCookie(null, "championship-token", token, {});
+            setCookie(null, "championship-token", token, {
+                maxAge: 60 * 60 * 24, // 24 hours
+            });
             const userData:User = jwt_decode(token);
             setId(userData.id);
             setUsername(userData.username);
