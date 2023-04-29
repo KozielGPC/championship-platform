@@ -120,19 +120,14 @@ function CreateTeam(data: User) {
     const response = await createTeam({ name, password, owner_id, game_id });
 
     if (response) {
-      if (response.status == "error") {
-        toast({
-          title: "Authentication failed",
-          description: response.message,
-          status: "error",
-          duration: 3000,
-          position: "top",
-        });
-        return;
-      }
+      toast({
+        title: response.message,
+        status: response.status,
+        duration: 3000,
+        position: "top",
+      });
       setIsLoading(false);
-      if (response.data?.access_token) {
-        setCookie(null, "championship-token", response.data.access_token, {});
+      if (response.status != "error") {
         router.push("/");
       }
     }
@@ -182,11 +177,11 @@ function CreateTeam(data: User) {
               <FormLabel>Game:</FormLabel>
               <Select
                 value={game}
-                onChange={() => handleGameChange}
+                onChange={(e) => handleGameChange(e)}
                 placeholder="Select option"
               >
-                <option value="1">League Of Legends</option>
-                <option value="2">Valorant</option>
+                <option value="0">League Of Legends</option>
+                <option value="1">Valorant</option>
               </Select>
             </FormControl>
             <Button colorScheme="blue" type="submit" w="100%">
