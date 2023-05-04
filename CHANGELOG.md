@@ -4,6 +4,9 @@
 ### Changed
 -   [#65](https://github.com/KozielGPC/championship-platform/issues/65) - Atualizado banco de dados para postgresql
 
+### Fixed
+-   [#84](https://github.com/KozielGPC/championship-platform/issues/84) - Resolvida validação do formulário de campeonato no frontend
+
 ### Added
 -   [#79](https://github.com/KozielGPC/championship-platform/issues/79) - Adicionado validação nos nomes de times e campeonatos
 -   [#39](https://github.com/KozielGPC/championship-platform/issues/39) - Adicionado frontend da Home Screen
