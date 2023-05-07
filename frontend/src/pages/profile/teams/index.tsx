@@ -1,4 +1,4 @@
-import  Layout  from "../../components/layout";
+import  Layout  from "../../../components/layout";
 import { Box } from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";

@@ -1,4 +1,4 @@
-import  Layout  from "../../components/layout";
+import  Layout  from "../../../components/layout";
 import { Box, Flex, useToast } from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
@@ -13,10 +13,10 @@ import {
   Select,
   Heading
 } from "@chakra-ui/react";
-import { createChampionship } from "../../services/championship/create";
+import { createChampionship } from "../../../services/championship/create";
 import {useContext} from "react";
-import {UserContext} from '../../context/UserContext'
-import {dateTime} from '../../utils/dateTime'
+import {UserContext} from '../../../context/UserContext'
+import {dateTime} from '../../../utils/dateTime'
 
 interface ChampionshipFormData {
     name: string;

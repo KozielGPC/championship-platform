@@ -12,7 +12,7 @@ import ShowChampionships from '@/components/showChampionships';
 import { getChampionships } from '@/services/championships/championships';
 
 
-function Home(data:User) {
+function Home() {
   const { id,setId,username,setUsername} = useContext(UserContext);
   const [championships, setChampionships] = useState(Array<Championship>);
   const [isLoading, setIsLoading] = useState(false);
@@ -20,10 +20,6 @@ function Home(data:User) {
 
   useEffect(
     () => {
-      if(data.id && data.username){
-        setId(data.id)
-        setUsername(data.username)
-      }
       setIsLoading(true)
       const fetchData = async () => {
         const response = await getChampionships();

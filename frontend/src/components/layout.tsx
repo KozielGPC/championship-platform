@@ -77,21 +77,21 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     <Link
                         pt='5px'
                         pb='10px'
-                        display='flex' href='/myteams' isExternal>
+                        display='flex' href='/profile/teams'>
                       <Icon boxSize='25px' as={MdOutlineSupervisorAccount} />
                       <Flex pl="5px" >My teams</Flex>
                     </Link>
                     <Link 
                         pt='5px'
                         pb='10px'
-                        display='flex' href='/mychampionships' isExternal>
+                        display='flex' href='/profile/championships' >
                       <Icon boxSize='25px' as={MdOutlineVideogameAsset} />
                       <Flex pl="5px" >My championships</Flex>
                     </Link>
                     <Link
                         pt='5px'
                         pb='10px' 
-                        display='flex' href='/mychampionships/new' isExternal>
+                        display='flex' href='/profile/championships/new'>
                       <Icon boxSize='25px' as={MdAdd} />
                       <Flex pl="5px">Create Championship</Flex>
                     </Link>
