@@ -20,7 +20,7 @@ import { setCookie } from "nookies";
 import { createTeam } from "@/services/team/create";
 import { User } from "@/interfaces";
 import { useContext } from "react";
-import { UserContext } from "../../context/UserContext";
+import { UserContext } from "../../../context/UserContext";
 import jwt_decode from "jwt-decode";
 import Layout from "@/components/layout";
 
@@ -48,7 +48,7 @@ function CreateTeam(data: User) {
     setConfirmPassword(event.target.value);
   };
 
-  const handleGameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGameChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     console.log(event.target.value);
     setGame(event.target.value);
   };

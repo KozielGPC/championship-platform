@@ -1,4 +1,4 @@
-import  Layout  from "../../components/layout";
+import  Layout  from "../../../components/layout";
 import { Box, Flex, useToast } from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
@@ -13,11 +13,11 @@ import {
   Select,
   Heading
 } from "@chakra-ui/react";
-import { createChampionship } from "../../services/championship/create";
+import { createChampionship } from "../../../services/championship/create";
 import {useContext} from "react";
-import {UserContext} from '../../context/UserContext'
-import {dateTime} from '../../utils/dateTime'
-import {FormErrorMessage } from '../../components/formErrorMessage'
+import {UserContext} from '../../../context/UserContext'
+import {dateTime} from '../../../utils/dateTime'
+import {FormErrorMessage } from '../../../components/formErrorMessage'
 
 interface ChampionshipFormData {
     name: string;
@@ -106,7 +106,7 @@ export default function CreateChampionship() {
           )
           if(response.status=="success"){
             setFormData(defaultFormData);
-            router.push("/mychampionships");
+            router.push("/profile/championships");
           }
           setIsLoading(false)
         }
