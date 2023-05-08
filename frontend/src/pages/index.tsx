@@ -9,7 +9,7 @@ import { useContext } from 'react';
 import {UserContext} from '../context/UserContext'
 import Layout from '@/components/layout';
 import ShowChampionships from '@/components/showChampionships';
-import { getChampionships } from '@/services/championships/championships';
+import { getChampionships } from '@/services/championship/retrieve';
 
 
 function Home() {
