@@ -8,6 +8,7 @@
 -   [#84](https://github.com/KozielGPC/championship-platform/issues/84) - Resolvida validação do formulário de campeonato no frontend
 
 ### Added
+-   [#111](https://github.com/KozielGPC/championship-platform/issues/111) - Resolvendo bugs na homescreen
 -   [#79](https://github.com/KozielGPC/championship-platform/issues/79) - Adicionado validação nos nomes de times e campeonatos
 -   [#39](https://github.com/KozielGPC/championship-platform/issues/39) - Adicionado frontend da Home Screen
 -   [#74](https://github.com/KozielGPC/championship-platform/issues/74) - Adicionado arquivos de configuração para deploy no fly.io
