@@ -1,7 +1,5 @@
 import { Championship } from "@/interfaces";
-import axios, { AxiosResponse } from "axios";
-
-
+import axios, { AxiosResponse } from "axios"
 
 export  type Status = "success" | "error";
 export  interface ResponseRequest {
@@ -31,7 +29,29 @@ export const getChampionships = async (): Promise<ResponseRequest> => {
             }
         }
     );
-    
     return response;
-  
 };
+
+export const getChampionshipById = async (id:string): Promise<ResponseRequest> => {
+
+    const response = await axios.get<Array<Championship>>(process.env.NEXT_PUBLIC_URL_SERVER+"/championships/"+id)
+      .then(
+          (response: AxiosResponse<Array<Championship>>) => {
+              const status: Status = "success";
+              return {
+                  status:status,
+                  data: response?.data,
+                  message: "Championship received with sucess"
+              }}
+      )
+      .catch(
+          () => {
+              const status: Status = "error";
+              return {
+                  status: status,
+                  message: "Error receiving championship"
+              }
+          }
+      );
+      return response;
+  };
