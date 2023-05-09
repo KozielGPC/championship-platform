@@ -47,7 +47,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   textAlign="center" 
                   pt="10px" pb="10px" 
                   w="100%">
-                    JuegosHub
+                  <Link href='/'>JuegosHub</Link>
+                    
                 </Box>
                 <Link href='/myprofile'>
                   <Box
@@ -79,14 +80,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         pb='10px'
                         display='flex' href='/profile/teams'>
                       <Icon boxSize='25px' as={MdOutlineSupervisorAccount} />
-                      <Flex pl="5px" >My teams</Flex>
+                      <Flex pl="5px" >My Teams</Flex>
                     </Link>
                     <Link 
                         pt='5px'
                         pb='10px'
                         display='flex' href='/profile/championships' >
                       <Icon boxSize='25px' as={MdOutlineVideogameAsset} />
-                      <Flex pl="5px" >My championships</Flex>
+                      <Flex pl="5px" >My Championships</Flex>
                     </Link>
                     <Link
                         pt='5px'
@@ -94,6 +95,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         display='flex' href='/profile/championships/new'>
                       <Icon boxSize='25px' as={MdAdd} />
                       <Flex pl="5px">Create Championship</Flex>
+                    </Link>
+                    <Link
+                        pt='5px'
+                        pb='10px' 
+                        display='flex' href='/profile/teams/new'>
+                      <Icon boxSize='25px' as={MdAdd} />
+                      <Flex pl="5px">Create Team</Flex>
                     </Link>
                   </Box>
                 </Box>
