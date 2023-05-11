@@ -4,8 +4,8 @@ import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { getChampionships } from "@/services/championship/retrieve";
 import { Championship } from "@/interfaces";
-import { useState } from "react";
-import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
+import { useRouter, } from "next/router";
 import {User} from '@/interfaces'
 import jwt_decode from "jwt-decode"
 
@@ -16,8 +16,17 @@ interface PropsMyChampionships {
 
 export default function MyChampionships({championships}: PropsMyChampionships) {
 
-    const [championshipsList, setChampionshipsList] = useState<Array<Championship>>(championships);
+    const [championshipsList, setChampionshipsList] = useState<Array<Championship>>([]);
     const router = useRouter();
+
+    useEffect(
+      ()=>{
+        if(championships){
+          setChampionshipsList(championships)
+        }
+      },[championships]
+    )
+
     return (
         <Layout>
             <Box>
@@ -26,7 +35,7 @@ export default function MyChampionships({championships}: PropsMyChampionships) {
 
             {/* Listagem de campeonatos */}
             <li>
-                {championshipsList &&championshipsList.map((championship, index) => (
+                {championshipsList && championshipsList.map((championship, index) => (
                     <ol key={index}>
                       <Flex m={5}>
                           <Box width={"200px"}>

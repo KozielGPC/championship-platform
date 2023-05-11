@@ -128,7 +128,7 @@ function CreateTeam(data: User) {
       });
       setIsLoading(false);
       if (response.status != "error") {
-        router.push("/");
+        router.push("/profile/teams");
       }
     }
   };
