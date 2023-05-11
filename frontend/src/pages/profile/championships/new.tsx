@@ -85,7 +85,7 @@ export default function CreateChampionship() {
         )
         if(response.status=="success"){
           setFormData(defaultFormData);
-          router.push("/mychampionships");
+          router.push("/profile/championships");
         }
         setIsLoading(false)
       }
