@@ -1,5 +1,5 @@
 import  Layout  from "../../../components/layout";
-import { Box, Flex, Button, useToast, Text} from "@chakra-ui/react";
+import { Box, Flex, Button, useToast, Text, GridItem, Grid, ScaleFade} from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { getTeams } from "@/services/team/retrieve";
@@ -11,6 +11,8 @@ import {useRouter} from "next/router";
 import {deleteTeam} from "@/services/team/delete";
 import { useContext } from "react";
 import { UserContext } from "../../../context/UserContext";
+import {ConfirmModal} from "@/components/confirmModal";
+
 interface PropsMyTeams {
   teams:  Array<Team>
 }
@@ -20,6 +22,9 @@ export default function MyTeams({teams}:PropsMyTeams) {
     const router = useRouter();
     const {id} = useContext(UserContext)
     const toast = useToast();
+    const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
+    const [idSelectedTeam , setIdSelectedTeam] = useState<number>(-1);
+
     useEffect(
       ()=>{
         if(teams){
@@ -29,10 +34,11 @@ export default function MyTeams({teams}:PropsMyTeams) {
     )
 
     async function handleDelete(idTeam:number){
-      
+
       if(idTeam){
         const response = await deleteTeam(idTeam);
         if(response){
+          
           toast(
             {
               title: response.message,
@@ -41,53 +47,84 @@ export default function MyTeams({teams}:PropsMyTeams) {
               isClosable: true,
             }
           )
+          if(response.status == "error"){
+            return setIsOpenConfirmModal(false)
+          }
           if(response.status == "success"){
             return await getTeams()
             .then(
               (res)=>{
                 if(res.status == "success" && res.data){ 
                   setTeamsList(res.data?.filter((team: Team) => team.owner_id == id))
+                  setIsOpenConfirmModal(false)
                 }
               }
             )
           }
         }
       }
-
+      
     }
+
+    function handleConfirmModal(id:number){
+      setIdSelectedTeam(id);
+      setIsOpenConfirmModal(true);
+    }
+
+
+    useEffect(
+      ()=>{
+        console.log(isOpenConfirmModal)
+      },[isOpenConfirmModal]
+    )
 
     return (
         <Layout>
             <Box>
                 <Flex width="100%" justifyContent={"space-between"} p={5}>
-                  <Text fontSize={'25'} color="white" fontWeight={"900"}>Meus Times</Text>
+                  <Text fontSize={'25'} color="white" fontWeight={"900"}>My Teams</Text>
                   <Button  colorScheme={"blue"} onClick={()=>router.push('/profile/teams/new')}>
-                      Criar nova equipe
+                      Create Team
                   </Button>
                 </Flex>
-                {
-                  teamsList && teamsList.map((team, index) => (
-                    <Box key={index} color="white"  borderBottom="1px solid white">
-                      <Flex p={4} >
-                          <Flex width="500px">
-                            <h2>{team.name}</h2>
-                          </Flex>
-                          <Flex justifyContent={"space-between"} width="200px">
-                            <Button  colorScheme={"grey"} onClick={()=>router.push('/profile/teams/edit/'+team.id)}>
-                              Editar
-                            </Button>
-                            <Button onClick={()=>handleDelete(team.id)}
-                             type='button' colorScheme={"red"}>
-                              Deletar
-                            </Button>
-                          </Flex>
-                          
-                      </Flex> 
-                      
-                    </Box>
-                  ))
-
-                }
+                <Box overflow="auto" height={'500px'} >
+                  <Grid padding={'10'} templateColumns='repeat(4, 1fr)' gap={4} width={'600px'}>
+                  {
+                    teamsList && teamsList.map((team, index) => (
+                      <GridItem key={index} colSpan={1} bg="white" borderRadius="md" p={5}
+                      boxShadow="md" borderWidth="1px" borderColor="gray.200" maxWidth={"250px"}
+                      transition="all 0.2s ease-in-out"
+                      _hover={
+                        {
+                          cursor: "pointer",
+                          boxShadow: "lg",
+                          borderColor: "blue.500",
+                          transform: `scale(1.05, 1.05)`
+                        }
+                      }
+                      >
+                        <Text fontSize={'25'} color="black" fontWeight={"900"}>{team.name}</Text>
+                        <Flex justifyContent={"space-between"} width="200px">
+                          <Button  colorScheme={"yellow"} onClick={()=>router.push('/profile/teams/edit/'+team.id)}>
+                            Edit
+                          </Button>
+                          <Button onClick={()=>handleConfirmModal(team.id)}
+                          type='button' colorScheme={"red"}>
+                            Delete
+                          </Button>
+                        </Flex>
+                      </GridItem>
+                    ))
+                  }
+                  <ConfirmModal
+                    content="Are you sure you want to delete this team?"
+                    handleConfirm={()=>handleDelete(idSelectedTeam)}
+                    isOpen={isOpenConfirmModal}
+                    setIsOpen={setIsOpenConfirmModal}
+                  />
+                  </Grid>
+                </Box>
+                
             </Box>
         </Layout>
     )

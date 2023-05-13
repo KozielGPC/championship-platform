@@ -2,6 +2,7 @@ import { Team } from "@/interfaces";
 import axios, { AxiosResponse } from "axios"
 
 export  type Status = "success" | "error";
+
 export  interface ResponseRequest {
     status: Status;
     message: string;
