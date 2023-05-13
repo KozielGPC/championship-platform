@@ -78,7 +78,7 @@ export default function EditChampionship({championship}:PropsEditChampionship) {
                 overflowY={"auto"}
                 >
                     <Heading mb="6" textAlign="center">
-                        New Championship
+                        Edit Championship
                     </Heading>
                     <form onSubmit={handleFormSubmit}>
                             
