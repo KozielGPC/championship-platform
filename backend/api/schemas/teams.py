@@ -28,6 +28,11 @@ class TeamInput(TeamSchema):
         assert v != "", "Empty strings are not allowed."
         return v
 
+    @validator("name", "password")
+    def check_spaced_fields(cls, v):
+        assert v.strip(), "Empty strings are not allowed."
+        return v
+
     @validator("game_id")
     def check_positive_numbers(cls, v):
         assert v >= 0, "Negative numbers are not allowed."
@@ -44,6 +49,11 @@ class TeamUpdateRequest(BaseModel):
     @validator("*")
     def check_empty_fields(cls, v):
         assert v != "", "Empty strings are not allowed."
+        return v
+
+    @validator("*")
+    def check_spaced_fields(cls, v):
+        assert v.strip(), "Empty strings are not allowed."
         return v
 
     class Config:
