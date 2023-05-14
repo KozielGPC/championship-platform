@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, WebSocket
+from fastapi import FastAPI, APIRouter, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from api.routers import routes
 from dotenv import load_dotenv
@@ -8,6 +8,8 @@ from fastapi.responses import HTMLResponse
 
 from api.websocket.connection_manager import ws_manager
 from api.schemas.websockets import WSMessage, WSMessageAction
+
+from api.websocket.connection_manager import ws_manager as manager
 
 load_dotenv()
 
@@ -77,39 +79,39 @@ async def index():
     return HTMLResponse(html)
 
 
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections: list[WebSocket] = []
+# class ConnectionManager:
+#     def __init__(self):
+#         self.active_connections: list[WebSocket] = []
 
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connections.append(websocket)
+#     async def connect(self, websocket: WebSocket):
+#         await websocket.accept()
+#         self.active_connections.append(websocket)
 
-    def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
+#     def disconnect(self, websocket: WebSocket):
+#         self.active_connections.remove(websocket)
 
-    async def send_personal_message(self, message: str, websocket: WebSocket):
-        await websocket.send_text(message)
+#     async def send_personal_message(self, message: str, websocket: WebSocket):
+#         await websocket.send_text(message)
 
-    async def broadcast(self, message: str):
-        for connection in self.active_connections:
-            await connection.send_text(message)
+#     async def broadcast(self, message: str):
+#         for connection in self.active_connections:
+#             await connection.send_text(message)
 
 
-manager = ConnectionManager()
+# manager = ConnectionManager()
 
 
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
-    await manager.connect(websocket)
+    await manager.connect(websocket, client_id)
     try:
         while True:
             data = await websocket.receive_text()
             await manager.send_personal_message(f"You wrote: {data}", websocket)
-            await manager.broadcast(f"Client #{client_id} says: {data}")
+            await manager.broadcast(f"Client #{client_id} says: {data}", client_id)
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
-        await manager.broadcast(f"Client #{client_id} left the chat")
+        await manager.disconnect(websocket)
+        await manager.broadcast(f"Client #{client_id} left the chat", client_id)
 
 
 if __name__ == "__main__":
