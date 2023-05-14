@@ -26,7 +26,7 @@ session = Session(bind=engine)
 async def getAll(filters: FindManyChampionshipFilters | None=None, skip: int = 0, limit: int = 100):
     query = session.query(Championship)
     
-    if filters is not None:
+    if filters is not None:    
         if filters.game_id is not None:
             query=query.filter(Championship.game_id  == filters.game_id) 
         if filters.max_teams is not None:
@@ -60,6 +60,20 @@ async def getById(id: int):
 )
 async def create(data: ChampionshipInput, token: Annotated[str, Depends(oauth2_scheme)]):
     # Falta fazer as validações para criar o campeonato (acho q nao falta mais)
+    
+    if data.max_teams<data.min_teams:
+        raise HTTPException(status_code=400, detail="The maximum number of teams cannot be less than minimum number of teams")
+    if data.max_teams<=0:
+        raise HTTPException(status_code=400, detail="The maximum number of teams cannot be 0")
+        
+    if data.min_teams<=1:
+        raise HTTPException(status_code=400, detail="The minimum number of teams cannot be less than 2")
+    testeNome = data.name
+    
+    testeNome = ''.join(testeNome.split())
+    if testeNome == "":
+        raise HTTPException(status_code=400, detail="Championship cannot be created without a name")
+    
     camp = session.query(Championship).filter(Championship.name == data.name).first()
     if camp != None:
         raise HTTPException(status_code=400, detail="Championship with this name already exists")
