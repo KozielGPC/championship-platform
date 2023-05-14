@@ -21,3 +21,4 @@
 -   [#40](https://github.com/KozielGPC/championship-platform/issues/40) - Adicionado Funcionalidades de login
 -   [#46](https://github.com/KozielGPC/championship-platform/issues/46) - Adicionado CRUD de usuário
 -   [#54](https://github.com/KozielGPC/championship-platform/issues/54) - Adicionado formulário de criação de campeonato
+-   [#87](https://github.com/KozielGPC/championship-platform/issues/87) - Adicionado Tela de listagem de minhas equipes
