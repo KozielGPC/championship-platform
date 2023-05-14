@@ -79,8 +79,6 @@ async def update(id: int, update_request: TeamUpdateRequest, token: Annotated[st
             raise HTTPException(status_code=400, detail="Team with this name already exists")
 
     if update_request.password:
-        if update_request.password == "":
-            raise HTTPException(status_code=400, detail="Password can not be empty")
         update_request.password = get_password_hash(update_request.password)
 
     update_data = update_request.dict(exclude_unset=True)
