@@ -20,16 +20,18 @@ const ChampionshipPreview: React.FC<ChampionshipPreviewProps> = ({ championship 
   useEffect(
     () => {
         setChampionship(championship);
+        console.log(championship)
     },[championship]
   )
  
   return (
-      <Link href='/mychampionships/{championship.id}'>
+      <Link href={`/championship/${championship.id}`}>
         <Box m="15px" display='inline-block'>
           <Grid
+            minH={'300px'} maxHeight={'300px'} //tamanho fixo para os campeonatos
             templateAreas={`"header"
             "main"`}
-            gridTemplateRows={'50% 50%'}
+            gridTemplateRows={'45% 55%'}
             gridTemplateColumns={'300px'}
             color='blackAlpha.700'
             fontWeight='bold'
@@ -39,36 +41,46 @@ const ChampionshipPreview: React.FC<ChampionshipPreviewProps> = ({ championship 
             borderColor='white'
             borderWidth='2px' 
           >
-            <GridItem 
-              display={'inline-block'} minHeight={'250px'} maxHeight={'250px'} area={'header'}>
-              <Image borderRadius="10px" src='https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcStJOZJ8I6GWv1kqOJVgJL7EsLYfLmiL-Vxbu7BpPrurPsUHXvE' alt='Dan Abramov' />
+            <GridItem
+              display={'inline-block'} area={'header'}>
+                <Box minHeight={'200px'} height={'100%'}>
+                  {championship.game_id == 1 ?
+                    <Image borderRadius="10px" src='https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcStJOZJ8I6GWv1kqOJVgJL7EsLYfLmiL-Vxbu7BpPrurPsUHXvE' alt='Dan Abramov' />
+                    :
+                    <Image borderRadius="10px" src='https://viendidong.com/wp-content/uploads/2022/12/valorant-thumb-vdd-viendidong.jpg' alt='Dan Abramov' />
+                  }
+                </Box>
             </GridItem>
-              <GridItem borderBottomRadius="10px" bg={'#161B22'} area={'main'}>
-                <Grid maxHeight={"200px"}
-                  templateAreas={`"name name name"
-                                  "data data prizes"`}
-                  gridTemplateRows={'100% 100%'}
-                  gridTemplateColumns={'35% 35% 30%'}
-                  color='blackAlpha.700'
-                >
-                  <GridItem textShadow="2px 2px #2D3748" textColor={'white'} pt="15px" p="10px" pb="0"
-                    area={'name'}
+            <GridItem 
+              borderBottomRadius="10px" bg={'#161B22'} area={'main'}>
+                <Box maxHeight={'300px'}>
+                  <Grid
+                    templateAreas={`"name name name"
+                                    "data data prizes"`}
+                    gridTemplateRows={'100% 100%'}
+                    gridTemplateColumns={'35% 35% 30%'}
+                    color='blackAlpha.700'
                   >
-                     {championship.name}
-                  </GridItem>
-                  <GridItem textShadow="2px 2px #2D3748" textColor={'white'} pr="0px" p="10px" pb="0" pt="0"
-                    area={'data'}
-                  >
-                     {championship.start_time}
-                  </GridItem>
-                  <GridItem textShadow="2px 2px #2D3748" textColor={'white'} pl='0px'
-                    area={'prizes'}
-                  >
-                     {(championship.prizes != null)?"Prizes on": "Prizes off"}
-                  </GridItem>
-                </Grid>
-              </GridItem>
-          </Grid>
+                    <GridItem textShadow="2px 2px #2D3748" textColor={'white'} pt="15px" p="10px" pb="0"
+                      area={'name'}
+                    >
+                        {championship.name}
+                        
+                    </GridItem>
+                    <GridItem textShadow="2px 2px #2D3748" textColor={'white'} pr="0px" p="10px" pb="0" pt="0"
+                      area={'data'}
+                    >
+                        {championship.start_time}
+                    </GridItem>
+                    <GridItem textShadow="2px 2px #2D3748" textColor={'white'} pl='0px'
+                      area={'prizes'}
+                    >
+                        {(championship.prizes != null)?"Prizes on": "Prizes off"}
+                    </GridItem>
+                  </Grid>
+                </Box>
+            </GridItem>
+        </Grid>
         </Box>
       </Link>
   );
