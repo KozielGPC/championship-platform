@@ -59,7 +59,7 @@ const ChampionshipPreview: React.FC<ChampionshipPreviewProps> = ({ championship 
                     <GridItem textShadow="2px 2px #2D3748" textColor={'white'} pt="15px" p="10px" pb="0"
                       area={'name'}
                     >
-                        {championship.name} lorem
+                        {championship.name}
                         
                     </GridItem>
                     <GridItem textShadow="2px 2px #2D3748" textColor={'white'} pr="0px" p="10px" pb="0" pt="0"

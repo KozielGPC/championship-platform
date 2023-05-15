@@ -24,11 +24,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Box >
             <SignoutButton/>
           </Box>
-          <Text color="#00EEEE"
+          <Link
+          href="/"
+          color="#00EEEE"
           textAlign="center" 
           pt="10px" pb="10px" >
             JuegosHub
-          </Text>
+          </Link>
         </Flex> 
         <Link href='/profile'>
           <Box
