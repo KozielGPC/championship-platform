@@ -122,6 +122,11 @@ export default function CreateChampionship() {
             isClosable: true,
           }
         )
+        if(response.status=="success"){
+          setFormData(defaultFormData);
+          router.push("/profile/championships");
+        }
+        setIsLoading(false)
       }
       
       
