@@ -23,22 +23,23 @@ session = Session(bind=engine)
     response_model=list[ChampionshipSchema],
     response_description="Sucesso de resposta da aplicação.",
 )
-async def getAll(filters: FindManyChampionshipFilters | None=None, skip: int = 0, limit: int = 100):
+async def getAll(filters: FindManyChampionshipFilters | None = None, skip: int = 0, limit: int = 100):
     query = session.query(Championship)
-    
+
     if filters is not None:
         if filters.game_id is not None:
-            query=query.filter(Championship.game_id  == filters.game_id) 
+            query = query.filter(Championship.game_id == filters.game_id)
         if filters.max_teams is not None:
-            query=query.filter(Championship.max_teams <= filters.max_teams)      
+            query = query.filter(Championship.max_teams <= filters.max_teams)
         if filters.min_teams is not None:
-            query=query.filter(Championship.min_teams >= filters.min_teams) 
+            query = query.filter(Championship.min_teams >= filters.min_teams)
         if filters.format is not None:
-            query=query.filter(Championship.format == filters.format)  
-                            
+            query = query.filter(Championship.format == filters.format)
+
     championships = query.offset(skip).limit(limit).all()
 
     return jsonable_encoder(championships)
+
 
 @router.get(
     "/{id}",
@@ -92,7 +93,7 @@ async def create(data: ChampionshipInput, token: Annotated[str, Depends(oauth2_s
         "visibility": championship_input.visibility,
         "admin_id": championship_input.admin_id,
         "game_id": championship_input.game_id,
-        "prizes": championship_input.prizes
+        "prizes": championship_input.prizes,
     }
     return jsonable_encoder(response)
 
@@ -107,9 +108,7 @@ async def delete(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
     user = await get_current_user(token)
     championship = session.query(Championship).filter(Championship.id == id, user.id == Championship.admin_id).first()
     if championship == None:
-        raise HTTPException(
-            status_code=404, detail="Championship not found or You aren't the admin of the championship"
-        )
+        raise HTTPException(status_code=404, detail="Championship not found or You isn't the admin of the championship")
 
     session.delete(championship)
     session.commit()
