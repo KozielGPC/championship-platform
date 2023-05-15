@@ -24,7 +24,7 @@ const ChampionshipPreview: React.FC<ChampionshipPreviewProps> = ({ championship 
   )
  
   return (
-      <Link href={`/profile/championships/${championship.id}`}>
+      <Link href={`/championship/${championship.id}`}>
         <Box m="15px" display='inline-block'>
           <Grid
             minH={'300px'} maxHeight={'300px'} //tamanho fixo para os campeonatos
