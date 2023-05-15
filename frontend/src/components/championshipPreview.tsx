@@ -20,6 +20,7 @@ const ChampionshipPreview: React.FC<ChampionshipPreviewProps> = ({ championship 
   useEffect(
     () => {
         setChampionship(championship);
+        console.log(championship)
     },[championship]
   )
  
@@ -43,7 +44,11 @@ const ChampionshipPreview: React.FC<ChampionshipPreviewProps> = ({ championship 
             <GridItem
               display={'inline-block'} area={'header'}>
                 <Box minHeight={'200px'} height={'100%'}>
-                  <Image borderRadius="10px" src='https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcStJOZJ8I6GWv1kqOJVgJL7EsLYfLmiL-Vxbu7BpPrurPsUHXvE' alt='Dan Abramov' />
+                  {championship.game_id == 1 ?
+                    <Image borderRadius="10px" src='https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcStJOZJ8I6GWv1kqOJVgJL7EsLYfLmiL-Vxbu7BpPrurPsUHXvE' alt='Dan Abramov' />
+                    :
+                    <Image borderRadius="10px" src='https://viendidong.com/wp-content/uploads/2022/12/valorant-thumb-vdd-viendidong.jpg' alt='Dan Abramov' />
+                  }
                 </Box>
             </GridItem>
             <GridItem 
