@@ -18,3 +18,11 @@ export interface Championship {
     game_id: number,
     admin_id: number
 }
+
+export interface Team {
+    id: number,
+    name: string,
+    password: string,
+    game_id: number,
+    owner_id: number
+}
