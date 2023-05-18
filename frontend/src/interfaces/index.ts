@@ -3,6 +3,14 @@ export interface User {
     username: string;
 }
 
+export interface UserData {
+    id: number,
+    username: string,
+    password: string,
+    email: string
+}
+  
+
 export interface Championship {
     id: number,
     name: string,
