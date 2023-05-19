@@ -5,6 +5,8 @@ from api.models.games import Game
 from api.utils.auth_services import get_password_hash, oauth2_scheme, get_current_user
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
+from sqlalchemy.orm import joinedload
+from api.schemas.championships_has_teams import TeamsWithChampionships
 
 from fastapi.encoders import jsonable_encoder
 
@@ -20,23 +22,24 @@ session = Session(bind=engine)
 
 @router.get(
     "/",
-    response_model=list[TeamSchema],
+    response_model=list[TeamsWithChampionships],
     response_description="Sucesso de resposta da aplicação.",
 )
 async def getAll(skip: int = 0, limit: int = 100):
-    return session.query(Team).offset(skip).limit(limit).all()
+    teams = session.query(Team).options(joinedload(Team.championships)).offset(skip).limit(limit).all()
+    return jsonable_encoder(teams)
 
 
 @router.get(
     "/{id}",
-    response_model=TeamSchema,
+    response_model=TeamsWithChampionships,
     response_description="Sucesso de resposta da aplicação.",
 )
 async def getById(id: int):
-    team = session.query(Team).filter(Team.id == id).first()
+    team = session.query(Team).options(joinedload(Team.championships)).filter(Team.id == id).first()
     if team == None:
         raise HTTPException(status_code=404, detail="Team not found")
-    return team
+    return jsonable_encoder(team)
 
 
 @router.post(

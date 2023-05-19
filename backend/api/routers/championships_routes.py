@@ -1,11 +1,22 @@
 from api.database.config import Session, engine
-from api.schemas.championships import Response, ChampionshipInput, ChampionshipSchema, FindManyChampionshipFilters
+from api.schemas.championships import (
+    Response,
+    ChampionshipInput,
+    ChampionshipSchema,
+    FindManyChampionshipFilters,
+    AddTeamToChampionshipInput,
+    AddTeamToChampionshipReturn,
+)
 from api.models.championships import Championship
+from api.models.championships_has_teams import ChampionshipsHasTeams
 from api.models.games import Game
+from api.models.teams import Team
 from api.utils.auth_services import get_password_hash, oauth2_scheme, get_current_user
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy.orm import joinedload
+from api.schemas.championships_has_teams import ChampionshipWithTeams
 
 
 router = APIRouter(
@@ -20,7 +31,7 @@ session = Session(bind=engine)
 
 @router.get(
     "/",
-    response_model=list[ChampionshipSchema],
+    response_model=list[ChampionshipWithTeams],
     response_description="Sucesso de resposta da aplicação.",
 )
 async def getAll(filters: FindManyChampionshipFilters | None = None, skip: int = 0, limit: int = 100):
@@ -36,18 +47,20 @@ async def getAll(filters: FindManyChampionshipFilters | None = None, skip: int =
         if filters.format is not None:
             query = query.filter(Championship.format == filters.format)
 
-    championships = query.offset(skip).limit(limit).all()
+    championships = query.options(joinedload(Championship.teams)).offset(skip).limit(limit).all()
 
     return jsonable_encoder(championships)
 
 
 @router.get(
     "/{id}",
-    response_model=ChampionshipSchema,
+    response_model=ChampionshipWithTeams,
     response_description="Sucesso de resposta da aplicação.",
 )
 async def getById(id: int):
-    championship = session.query(Championship).filter(Championship.id == id).first()
+    championship = (
+        session.query(Championship).options(joinedload(Championship.teams)).filter(Championship.id == id).first()
+    )
     if championship == None:
         raise HTTPException(status_code=404, detail="Championship not found")
     return jsonable_encoder(championship)
@@ -114,3 +127,80 @@ async def delete(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
     session.commit()
 
     return jsonable_encoder(championship)
+
+
+@router.post(
+    "/add-team",
+    status_code=200,
+    response_model=AddTeamToChampionshipReturn,
+    response_description="Sucesso de resposta da aplicação.",
+)
+async def addTeamToChampionship(input: AddTeamToChampionshipInput, token: Annotated[str, Depends(oauth2_scheme)]):
+    user = await get_current_user(token)
+    championship = session.query(Championship).filter(Championship.id == input.championship_id).first()
+    if championship == None:
+        raise HTTPException(status_code=404, detail="Championship not found")
+    team = session.query(Team).filter(Team.id == input.team_id).first()
+    if team == None:
+        raise HTTPException(status_code=404, detail="Team not found")
+    if team.owner_id != user.id and championship.admin_id != user.id:
+        raise HTTPException(status_code=401, detail="User is not admin of Team or of the Championship")
+    if team.game_id != championship.game_id:
+        raise HTTPException(status_code=400, detail="Team is not of the same Game as the Championship")
+
+    championship_has_team = (
+        session.query(ChampionshipsHasTeams)
+        .filter(
+            ChampionshipsHasTeams.championship_id == input.championship_id,
+            ChampionshipsHasTeams.team_id == input.team_id,
+        )
+        .first()
+    )
+    if championship_has_team != None:
+        raise HTTPException(status_code=400, detail="Team is already registered in this Championship")
+
+    data = ChampionshipsHasTeams(
+        championship_id=input.championship_id,
+        team_id=input.team_id,
+    )
+    session.add(data)
+    session.commit()
+    session.refresh(data)
+
+    return data
+
+
+@router.post(
+    "/remove-team",
+    status_code=200,
+    response_model=AddTeamToChampionshipReturn,
+    response_description="Sucesso de resposta da aplicação.",
+)
+async def addTeamToChampionship(input: AddTeamToChampionshipInput, token: Annotated[str, Depends(oauth2_scheme)]):
+    user = await get_current_user(token)
+    championship = session.query(Championship).filter(Championship.id == input.championship_id).first()
+    if championship == None:
+        raise HTTPException(status_code=404, detail="Championship not found")
+    team = session.query(Team).filter(Team.id == input.team_id).first()
+    if team == None:
+        raise HTTPException(status_code=404, detail="Team not found")
+    if team.owner_id != user.id and championship.admin_id != user.id:
+        raise HTTPException(status_code=401, detail="User is not admin of Team or of the Championship")
+    if team.game_id != championship.game_id:
+        raise HTTPException(status_code=400, detail="Team is not of the same Game as the Championship")
+
+    championship_has_team = (
+        session.query(ChampionshipsHasTeams)
+        .filter(
+            ChampionshipsHasTeams.championship_id == input.championship_id,
+            ChampionshipsHasTeams.team_id == input.team_id,
+        )
+        .first()
+    )
+    if championship_has_team == None:
+        raise HTTPException(status_code=404, detail="Team isn't registered in this Championship")
+
+    session.delete(championship_has_team)
+    session.commit()
+
+    return championship_has_team
