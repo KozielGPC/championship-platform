@@ -9,6 +9,7 @@
 
 ### Added
 -   [#106](https://github.com/KozielGPC/championship-platform/issues/106) - Adicionado rota para cadastrar Time em um Campeonato
+-   [#96](https://github.com/KozielGPC/championship-platform/issues/96) - Adicionado conexão com Socket
 -   [#106](https://github.com/KozielGPC/championship-platform/issues/106) - Adicionado rota de update para Teams e validações extras na criação de Teams
 -   [#79](https://github.com/KozielGPC/championship-platform/issues/79) - Adicionado validação nos nomes de times e campeonatos
 -   [#39](https://github.com/KozielGPC/championship-platform/issues/39) - Adicionado frontend da Home Screen
@@ -23,3 +24,4 @@
 -   [#40](https://github.com/KozielGPC/championship-platform/issues/40) - Adicionado Funcionalidades de login
 -   [#46](https://github.com/KozielGPC/championship-platform/issues/46) - Adicionado CRUD de usuário
 -   [#54](https://github.com/KozielGPC/championship-platform/issues/54) - Adicionado formulário de criação de campeonato
+-   [#87](https://github.com/KozielGPC/championship-platform/issues/87) - Adicionado Tela de listagem de minhas equipes

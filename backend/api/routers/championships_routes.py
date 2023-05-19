@@ -121,9 +121,7 @@ async def delete(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
     user = await get_current_user(token)
     championship = session.query(Championship).filter(Championship.id == id, user.id == Championship.admin_id).first()
     if championship == None:
-        raise HTTPException(
-            status_code=404, detail="Championship not found or You aren't the admin of the championship"
-        )
+        raise HTTPException(status_code=404, detail="Championship not found or You isn't the admin of the championship")
 
     session.delete(championship)
     session.commit()
