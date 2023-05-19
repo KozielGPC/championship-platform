@@ -32,9 +32,14 @@ class ChampionshipSchema(BaseModel):
     visibility: EnumVisibility
     game_id: Optional[int] = Field(default=None, foreign_key="games.id")
     admin_id: Optional[int] = Field(default=None, foreign_key="users.id")
+
     class Config:
         orm_mode = True
         use_enum_values = True
+
+
+
+
 
 class ChampionshipInput(ChampionshipSchema):
     name: str
@@ -123,18 +128,40 @@ class ChampionshipUpdateRequest(BaseModel):
         extra = "forbid"
 
     
+class AddTeamToChampionshipInput(BaseModel):
+    team_id: int
+    championship_id: int
+
+    @validator("*")
+    def check_positive_numbers(cls, v):
+        assert v >= 0, "Negative numbers are not allowed."
+        return v
+
+    class Config:
+        orm_mode = True
+
+
+class AddTeamToChampionshipReturn(BaseModel):
+    team_id: int
+    championship_id: int
+
+    class Config:
+        orm_mode = True
+
+
 class Response(GenericModel, Generic[T]):
     code: str
     status: str
     message: str
     result: Optional[T]
 
+
 class FindManyChampionshipFilters(BaseModel):
     game_id: Optional[int]
     format: Optional[EnumFormat]
     min_teams: Optional[int]
     max_teams: Optional[int]
-    
+
     class Config:
         orm_mode = True
         use_enum_values = True

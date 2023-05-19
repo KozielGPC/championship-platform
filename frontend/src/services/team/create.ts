@@ -29,7 +29,7 @@ export const createTeam = async (
       data,
       {
         headers: {
-          Authorization: `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`,
           "Content-Length": JSON.stringify(data).length,
           "Content-Type": "application/json",
         },

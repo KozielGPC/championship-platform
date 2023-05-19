@@ -6,48 +6,15 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel
 
+
 class EnumFormat(enum.Enum):
     chaveamento = "chaveamento"
     pontos_corridos = "pontos_corridos"
 
+
 class EnumVisibility(enum.Enum):
     publico = "publico"
     privado = "privado"
-
-class ChampionshipInput(BaseModel):
-    name: str
-    start_time: datetime
-    min_teams: int
-    max_teams: int
-    prizes: Optional[str]
-    format: EnumFormat
-    rules: Optional[str]
-    contact: Optional[str]
-    visibility: EnumVisibility
-    admin_id: int
-    game_id: int
-
-class ChampionshipSchema(BaseModel):
-    id: int
-    name: str
-    start_time: datetime
-    min_teams: int
-    max_teams: int
-    prizes: Optional[str]
-    format: EnumFormat
-    rules: Optional[str]
-    contact: Optional[str]
-    visibility: EnumVisibility
-    created_at: datetime
-    admin_id: int
-    game_id: int
-
-class FindManyChampionshipFilters(BaseModel):
-    game_id: Optional[int]
-    max_teams: Optional[int]
-    min_teams: Optional[int]
-    format: Optional[EnumFormat]
-    visibility: Optional[EnumVisibility]
 
 class Championship(Base):
     __tablename__ = "championships"
@@ -65,4 +32,4 @@ class Championship(Base):
     created_at = Column(DateTime)
     admin_id = Column(Integer, ForeignKey("users.id"))
     game_id = Column(Integer, ForeignKey("games.id"))
- 
+    teams = relationship("Team", secondary="championship_has_teams", backref="teams")
