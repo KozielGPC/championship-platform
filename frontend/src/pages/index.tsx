@@ -49,9 +49,9 @@ function Home() {
 
   return (
     <Layout>
-      <Box textColor="white">
-        <ShowChampionships championships={championships}></ShowChampionships>
-      </Box>
+      {
+        championships && <ShowChampionships championships={championships}></ShowChampionships>
+      } 
     </Layout>
   )
 }
