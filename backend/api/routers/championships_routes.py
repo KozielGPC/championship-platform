@@ -6,7 +6,6 @@ from api.schemas.championships import (
     FindManyChampionshipFilters,
     AddTeamToChampionshipInput,
     AddTeamToChampionshipReturn,
-    ChampionshipWithTeams,
 )
 from api.models.championships import Championship
 from api.models.championships_has_teams import ChampionshipsHasTeams
@@ -17,6 +16,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import joinedload
+from api.schemas.championships_has_teams import ChampionshipWithTeams
 
 
 router = APIRouter(

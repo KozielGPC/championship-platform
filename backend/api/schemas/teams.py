@@ -18,6 +18,9 @@ class TeamSchema(BaseModel):
         orm_mode = True
 
 
+
+
+
 class TeamInput(TeamSchema):
     name: str
     password: str
