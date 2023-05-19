@@ -54,11 +54,13 @@ async def getAll(filters: FindManyChampionshipFilters | None = None, skip: int =
 
 @router.get(
     "/{id}",
-    response_model=ChampionshipSchema,
+    response_model=ChampionshipWithTeams,
     response_description="Sucesso de resposta da aplicação.",
 )
 async def getById(id: int):
-    championship = session.query(Championship).filter(Championship.id == id).first()
+    championship = (
+        session.query(Championship).options(joinedload(Championship.teams)).filter(Championship.id == id).first()
+    )
     if championship == None:
         raise HTTPException(status_code=404, detail="Championship not found")
     return jsonable_encoder(championship)
