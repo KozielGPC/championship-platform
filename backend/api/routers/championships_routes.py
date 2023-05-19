@@ -145,6 +145,18 @@ async def addTeamToChampionship(input: AddTeamToChampionshipInput, token: Annota
         raise HTTPException(status_code=401, detail="User is not admin of Team or of the Championship")
     if team.game_id != championship.game_id:
         raise HTTPException(status_code=400, detail="Team is not of the same Game as the Championship")
+
+    championship_has_team = (
+        session.query(ChampionshipsHasTeams)
+        .filter(
+            ChampionshipsHasTeams.championship_id == input.championship_id,
+            ChampionshipsHasTeams.team_id == input.team_id,
+        )
+        .first()
+    )
+    if championship_has_team != None:
+        raise HTTPException(status_code=400, detail="Team is already registered in this Championship")
+
     data = ChampionshipsHasTeams(
         championship_id=input.championship_id,
         team_id=input.team_id,
