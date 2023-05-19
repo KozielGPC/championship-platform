@@ -6,6 +6,7 @@ from api.schemas.championships import (
     FindManyChampionshipFilters,
     AddTeamToChampionshipInput,
     AddTeamToChampionshipReturn,
+    ChampionshipWithTeams,
 )
 from api.models.championships import Championship
 from api.models.championships_has_teams import ChampionshipsHasTeams
@@ -15,6 +16,7 @@ from api.utils.auth_services import get_password_hash, oauth2_scheme, get_curren
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy.orm import joinedload
 
 
 router = APIRouter(
@@ -29,7 +31,7 @@ session = Session(bind=engine)
 
 @router.get(
     "/",
-    response_model=list[ChampionshipSchema],
+    response_model=list[ChampionshipWithTeams],
     response_description="Sucesso de resposta da aplicação.",
 )
 async def getAll(filters: FindManyChampionshipFilters | None = None, skip: int = 0, limit: int = 100):
@@ -45,7 +47,7 @@ async def getAll(filters: FindManyChampionshipFilters | None = None, skip: int =
         if filters.format is not None:
             query = query.filter(Championship.format == filters.format)
 
-    championships = query.offset(skip).limit(limit).all()
+    championships = query.options(joinedload(Championship.teams)).offset(skip).limit(limit).all()
 
     return jsonable_encoder(championships)
 

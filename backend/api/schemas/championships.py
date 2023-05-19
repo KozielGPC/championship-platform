@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field, validator
 from pydantic.generics import GenericModel
 from datetime import datetime
 from enum import Enum
+from api.schemas.teams import TeamSchema
 
 T = TypeVar("T")
 
@@ -35,6 +36,10 @@ class ChampionshipSchema(BaseModel):
     class Config:
         orm_mode = True
         use_enum_values = True
+
+
+class ChampionshipWithTeams(ChampionshipSchema):
+    teams: List[TeamSchema] = []
 
 
 class ChampionshipInput(ChampionshipSchema):
