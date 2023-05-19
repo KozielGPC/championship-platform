@@ -168,3 +168,39 @@ async def addTeamToChampionship(input: AddTeamToChampionshipInput, token: Annota
     session.refresh(data)
 
     return data
+
+
+@router.post(
+    "/remove-team",
+    status_code=200,
+    response_model=AddTeamToChampionshipReturn,
+    response_description="Sucesso de resposta da aplicação.",
+)
+async def addTeamToChampionship(input: AddTeamToChampionshipInput, token: Annotated[str, Depends(oauth2_scheme)]):
+    user = await get_current_user(token)
+    championship = session.query(Championship).filter(Championship.id == input.championship_id).first()
+    if championship == None:
+        raise HTTPException(status_code=404, detail="Championship not found")
+    team = session.query(Team).filter(Team.id == input.team_id).first()
+    if team == None:
+        raise HTTPException(status_code=404, detail="Team not found")
+    if team.owner_id != user.id and championship.admin_id != user.id:
+        raise HTTPException(status_code=401, detail="User is not admin of Team or of the Championship")
+    if team.game_id != championship.game_id:
+        raise HTTPException(status_code=400, detail="Team is not of the same Game as the Championship")
+
+    championship_has_team = (
+        session.query(ChampionshipsHasTeams)
+        .filter(
+            ChampionshipsHasTeams.championship_id == input.championship_id,
+            ChampionshipsHasTeams.team_id == input.team_id,
+        )
+        .first()
+    )
+    if championship_has_team == None:
+        raise HTTPException(status_code=404, detail="Team isn't registered in this Championship")
+
+    session.delete(championship_has_team)
+    session.commit()
+
+    return championship_has_team
