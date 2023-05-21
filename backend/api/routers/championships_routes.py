@@ -7,7 +7,7 @@ from api.schemas.championships import (
     FindManyChampionshipFilters,
     AddTeamToChampionshipInput,
     AddTeamToChampionshipReturn,
-    ChampionshipUpdateRequest
+    ChampionshipUpdateRequest,
 )
 from api.models.championships import Championship
 from api.models.championships_has_teams import ChampionshipsHasTeams
@@ -40,7 +40,7 @@ session = Session(bind=engine)
 )
 async def getAll(filters: FindManyChampionshipFilters | None = None, skip: int = 0, limit: int = 100):
     query = session.query(Championship)
-    
+
     if filters is not None:
         if filters.game_id is not None:
             query = query.filter(Championship.game_id == filters.game_id)
@@ -84,7 +84,7 @@ async def create(data: ChampionshipInput, token: Annotated[str, Depends(oauth2_s
     game = session.query(Game).filter(Game.id == data.game_id).first()
     if game == None:
         raise HTTPException(status_code=404, detail="Game not found")
-   
+
     championship_input = Championship(
         name=data.name,
         start_time=data.start_time,
@@ -140,19 +140,21 @@ async def delete(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
     "/update/{id}",
     status_code=200,
     response_model=ChampionshipSchema,
-    response_description="Sucesso de resposta da aplicação."
+    response_description="Sucesso de resposta da aplicação.",
 )
 async def update(id: int, update_request: ChampionshipUpdateRequest, token: Annotated[str, Depends(oauth2_scheme)]):
     user = await get_current_user(token)
     championship = session.query(Championship).filter(Championship.id == id, user.id == Championship.admin_id).first()
 
     if championship is None:
-        raise HTTPException(status_code=404, detail="Championship not found or You aren't the admin of the championship")
+        raise HTTPException(
+            status_code=404, detail="Championship not found or You aren't the admin of the championship"
+        )
 
     if update_request.name:
-        championship_exists = session.query(Championship).filter(
-            Championship.name == update_request.name, Championship.id != id
-        ).first()
+        championship_exists = (
+            session.query(Championship).filter(Championship.name == update_request.name, Championship.id != id).first()
+        )
         if championship_exists:
             raise HTTPException(status_code=400, detail="Championship with this name already exists")
 
@@ -167,14 +169,14 @@ async def update(id: int, update_request: ChampionshipUpdateRequest, token: Anno
             enum_class = type(getattr(Championship, key).property.columns[0].type)
             update_data[key] = enum_class(value)
 
-
         # Define o novo valor para o campo
         setattr(championship, key, value)
 
     session.commit()
     session.refresh(championship)
 
-    return championship
+    return jsonable_encoder(championship)
+
 
 @router.post(
     "/add-team",
