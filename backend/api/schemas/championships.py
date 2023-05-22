@@ -102,12 +102,12 @@ class ChampionshipUpdateRequest(BaseModel):
     contact: Optional[str] = None
     visibility: Optional[EnumVisibility] = None
 
-    @validator("prizes", "rules", "contact")
+    @validator("prizes", "rules", "contact", "name")
     def check_empty_fields(cls, v):
         assert v != "", "Empty strings are not allowed."
         return v
 
-    @validator("prizes", "rules", "contact")
+    @validator("prizes", "rules", "contact", "name")
     def check_spaced_fields(cls, v):
         assert v.strip(), "Empty strings are not allowed."
         return v
@@ -134,7 +134,8 @@ class ChampionshipUpdateRequest(BaseModel):
 
     @validator("max_teams")
     def max_teams_greater_than_min_teams(cls, v, values):
-        if "min_teams" in values and v < values["min_teams"]:
+        print(values)
+        if values["min_teams"] != None and v < values["min_teams"]:
             raise ValueError("The maximum number of teams must be greater than or equal to the minimum number of teams")
         return v
 

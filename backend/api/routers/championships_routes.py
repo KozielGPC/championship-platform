@@ -158,18 +158,22 @@ async def update(id: int, update_request: ChampionshipUpdateRequest, token: Anno
         if championship_exists:
             raise HTTPException(status_code=400, detail="Championship with this name already exists")
 
-    # Remove os atributos não definidos na requisição
+    if update_request.max_teams and update_request.min_teams == None:
+        if championship.min_teams > update_request.max_teams:
+            raise HTTPException(status_code=400, detail="Max Teams cannot be less than Min Teams")
+
+    if update_request.min_teams and update_request.max_teams == None:
+        if championship.max_teams < update_request.min_teams:
+            raise HTTPException(status_code=400, detail="Min Teams cannot be greater than Max Teams")
+
     update_data = update_request.dict(exclude_unset=True)
 
-    # Verifica se há campos do tipo Enum
     enum_fields = [f.name for f in Championship.__table__.columns if isinstance(f.type, Enum)]
     for key, value in update_data.items():
         if key in enum_fields:
-            # Converte o valor da requisição para o tipo Enum
             enum_class = type(getattr(Championship, key).property.columns[0].type)
             update_data[key] = enum_class(value)
 
-        # Define o novo valor para o campo
         setattr(championship, key, value)
 
     session.commit()
