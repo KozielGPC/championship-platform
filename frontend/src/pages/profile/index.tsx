@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { UserData } from "@/interfaces";
 import { getUserById } from '@/services/users/retrieve';
 import { editUser } from '@/services/users/edit';
+import { useRouter } from 'next/router';
 
 const defaultData: UserData = {
   id: 0,
@@ -22,6 +23,8 @@ function Profile() {
   const [user, setUser] = useState<UserData>(defaultData);
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast()
+  const router = useRouter();
+  const [usernameInput, setUsernameInput] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -33,7 +36,7 @@ function Profile() {
         const response = await getUserById(id.toString());
         if(response){
           setIsLoading(false)
-          if( response.status == "error"){
+          if(response.status == "error"){
             toast(
               {
                 title: "User request failed",
@@ -51,13 +54,18 @@ function Profile() {
           }
         }
       }
-      fetchData()
-      .catch(console.error);
+      if(id != -1){
+        fetchData()
+      }
     }, [id] 
-    )
-    
+  )
+  
+  const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setUsernameInput(event.target.value);
+  };
+
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value);
+      setPassword(event.target.value);
   };
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,7 +78,63 @@ function Profile() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if(!username){
+      toast({
+          title: "Username is required.",
+          description: "Please try again.",
+          status: "error",
+          duration: 2000,
+          isClosable: true,
+      });
+      return;
+    }
+
+    if(!email){
+        toast({
+            title: "Email is required.",
+            description: "Please try again.",
+            status: "error",
+            duration: 2000,
+            isClosable: true,
+        });
+        return;
+    }
+
+    if(password !== confirmPassword){
+        toast({
+            title: "Passwords do not match.",
+            description: "Please try again.",
+            status: "error",
+            duration: 2000,
+            isClosable: true,
+        });
+        return;
+    }
+    
     setIsLoading(true);
+
+    const userData = {
+      'id': id,
+      'username': username,
+      'email': email,
+      'password': password
+    }
+
+
+    const response = await editUser(userData);
+        if(response){
+           toast({
+              title: response.message,
+              status: response.status,
+              duration: 3000,
+              isClosable: true,
+            });
+            setIsLoading(false);
+            if(response.status=="success"){
+              router.push('/profile');
+            }
+        }
   };
 
   return (
@@ -87,7 +151,7 @@ function Profile() {
             <Box p='5px'>
               <InputGroup display="inline-flex" w="70vh">
                 <InputLeftAddon minW="23vh" textColor="black" children='Usuário' />
-                <Input w="container.md" value={`${user.username}`} isDisabled={true} />
+                <Input w="container.md" value={`${user.username}`} onChange={handleUsernameChange}/>
               </InputGroup>
             </Box>
           </FormControl>
@@ -96,7 +160,7 @@ function Profile() {
             <Box p='5px'>
             <InputGroup display="inline-flex" w="70vh">
               <InputLeftAddon minW="23vh" textColor="black" children='E-mail' />
-              <Input w="container.md" type="email" onChange={handleEmailChange} value={`${user.email}`} isDisabled={true} />
+              <Input w="container.md" type="email" onChange={handleEmailChange} value={`${user.email}`}/>
             </InputGroup>
             </Box>
           </FormControl>
@@ -105,19 +169,19 @@ function Profile() {
             <Box p='5px'>
             <InputGroup display="inline-flex" w="70vh">
               <InputLeftAddon minW="23vh" textColor="black" children='Password' />
-              <Input w="container.md" type="password" onChange={handlePasswordChange} value={`${user.email}`} isDisabled={true} />
+              <Input w="container.md" type="password" onChange={handlePasswordChange} placeholder="********"/>
             </InputGroup>
             </Box>
           </FormControl>
             <Box p='5px'>
             <InputGroup id="confirmPassword" display="inline-flex" w="70vh">
               <InputLeftAddon minW="23vh" textColor="black" children='Cofirm Password' />
-              <Input w="container.md" type="password" onChange={handleConfirmPasswordChange} value={`${user.email}`} isDisabled={true} />
+              <Input w="container.md" type="password" onChange={handleConfirmPasswordChange} placeholder="********"/>
             </InputGroup>
             </Box>
 
           <FormControl display={'block'}>
-            <Button isDisabled={true} mt='5px' colorScheme="blue" type="submit" w="70vh">
+            <Button mt='5px' colorScheme="blue" type="submit" w="70vh">
               Edit
             </Button>
           </FormControl>

@@ -1,10 +1,10 @@
 import axios, { AxiosResponse } from "axios";
 
 export interface User {
-    id: number;
-    username: string;
-    email: string;
-    password: string;
+    id: Number;
+    username: String;
+    email: String;
+    password: String;
 }
 export  type Status = "success" | "error";
 export  interface ResponseRequest {
@@ -12,6 +12,7 @@ export  interface ResponseRequest {
     message: string;
     data?: User;
 }
+
 export const editUser = async (data: User): Promise<ResponseRequest> => {
     const response = await axios.put<User>(process.env.NEXT_PUBLIC_URL_SERVER+"/users/edit/"+data.id, data)
         .then(
