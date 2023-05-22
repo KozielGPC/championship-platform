@@ -3,7 +3,6 @@ from sqlalchemy.orm import relationship
 from api.database.config import Base
 
 
-
 class Team(Base):
     __tablename__ = "teams"
 
@@ -12,3 +11,4 @@ class Team(Base):
     password = Column(String)
     game_id = Column(Integer, ForeignKey("games.id"))
     owner_id = Column(Integer, ForeignKey("users.id"))
+    championships = relationship("Championship", secondary="championship_has_teams", backref="championships")
