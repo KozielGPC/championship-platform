@@ -1,12 +1,21 @@
 from api.database.config import Session, engine
-from api.schemas.teams import Response, TeamInput, TeamSchema, TeamUpdateRequest
+from api.schemas.teams import (
+    Response,
+    TeamInput,
+    TeamSchema,
+    TeamUpdateRequest,
+    AddPlayerToTeamReturn,
+    AddPlayerToTeamInput,
+)
 from api.models.teams import Team
 from api.models.games import Game
+from api.models.users import User
 from api.utils.auth_services import get_password_hash, oauth2_scheme, get_current_user
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
 from sqlalchemy.orm import joinedload
 from api.schemas.championships_has_teams import TeamsWithChampionships
+from api.websocket.connection_manager import ConnectionManager
 
 from fastapi.encoders import jsonable_encoder
 
@@ -18,6 +27,8 @@ router = APIRouter(
 )
 
 session = Session(bind=engine)
+
+ws_manager = ConnectionManager()
 
 
 @router.get(
@@ -109,3 +120,49 @@ async def delete(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
     session.commit()
 
     return user
+
+
+@router.post(
+    "/add-player",
+    status_code=200,
+    response_model=bool,
+    response_description="Sucesso de resposta da aplicação.",
+)
+async def addPlayerToTeam(input: AddPlayerToTeamInput, token: Annotated[str, Depends(oauth2_scheme)]):
+    user = await get_current_user(token)
+    team = session.query(Team).filter(Team.id == input.team_id).first()
+    # if team == None:
+    #     raise HTTPException(status_code=404, detail="Team not found")
+    # player = session.query(User).filter(User.id == input.player_id).first()
+    # if player == None:
+    #     raise HTTPException(status_code=404, detail="Player not found")
+
+    # if team.owner_id != user.id:
+    #     raise HTTPException(status_code=401, detail="User is not Team owner")
+
+    # Verificar se usuario ja está na equipe
+    # championship_has_team = (
+    #     session.query(ChampionshipsHasTeams)
+    #     .filter(
+    #         ChampionshipsHasTeams.championship_id == input.championship_id,
+    #         ChampionshipsHasTeams.team_id == input.team_id,
+    #     )
+    #     .first()
+    # )
+    # if championship_has_team != None:
+    #     raise HTTPException(status_code=400, detail="Team is already registered in this Championship")
+
+    # data = ChampionshipsHasTeams(
+    #     championship_id=input.championship_id,
+    #     team_id=input.team_id,
+    # )
+    # session.add(data)
+    # session.commit()
+    # session.refresh(data)
+
+    message = {"message": "Hello!"}
+    user_id = 1
+
+    await ws_manager.send_personal_message(message, user_id)
+
+    return True

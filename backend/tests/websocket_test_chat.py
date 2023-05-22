@@ -12,6 +12,7 @@ html = """
         <h2>Your ID: <span id="ws-id"></span></h2>
         <form action="" onsubmit="sendMessage(event)">
             <label>Token: <input type="text" id="token" autocomplete="off" value="some-key-token"/></label>
+            <label>User ID: <input type="text" id="user_id" autocomplete="off" value="1"/></label>
             <button onclick="connect(event)">Connect</button>
             <hr>
             <label>Message: <input type="text" id="messageText" autocomplete="off"/></label>
@@ -23,9 +24,12 @@ html = """
         var ws = null;
             function connect(event) {
                 var client_id = Date.now()
-                document.querySelector("#ws-id").textContent = client_id;
+                document.querySelector("#ws-id").textContent = user_id;
                 var token = document.getElementById("token")
-                ws = new WebSocket(`ws://localhost:8000/ws/${client_id}`);
+                var user_id = Number(document.getElementById("user_id").value)
+                console.log(user_id)
+                console.log(typeof user_id)
+                ws = new WebSocket(`ws://localhost:8000/ws/${user_id}`);
                 ws.onmessage = function(event) {
                     var messages = document.getElementById('messages')
                     var message = document.createElement('li')

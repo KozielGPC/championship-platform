@@ -65,3 +65,23 @@ class Response(GenericModel, Generic[T]):
     status: str
     message: str
     result: Optional[T]
+
+
+class AddPlayerToTeamReturn(BaseModel):
+    is_invited: bool
+
+    class Config:
+        orm_mode = True
+
+
+class AddPlayerToTeamInput(BaseModel):
+    team_id: int
+    player_id: int
+
+    @validator("*")
+    def check_positive_numbers(cls, v):
+        assert v >= 0, "Negative numbers are not allowed."
+        return v
+
+    class Config:
+        orm_mode = True
