@@ -2,13 +2,20 @@ import { Championship } from "@/interfaces";
 import axios, { AxiosResponse } from "axios"
 
 export  type Status = "success" | "error";
-export  interface ResponseRequest {
+
+export  interface ResponseRequestGetChampionships {
     status: Status;
     message: string;
     data?: Array<Championship>;
 }
 
-export const getChampionships = async (): Promise<ResponseRequest> => {
+export  interface ResponseRequestGetChampionshipById {
+    status: Status;
+    message: string;
+    data?: Championship;
+}
+
+export const getChampionships = async (): Promise<ResponseRequestGetChampionships> => {
 
   const response = await axios.get<Array<Championship>>(process.env.NEXT_PUBLIC_URL_SERVER+"/championships")
     .then(
@@ -32,11 +39,11 @@ export const getChampionships = async (): Promise<ResponseRequest> => {
     return response;
 };
 
-export const getChampionshipById = async (id:string): Promise<ResponseRequest> => {
+export const getChampionshipById = async (id:string): Promise<ResponseRequestGetChampionshipById> => {
 
-    const response = await axios.get<Array<Championship>>(process.env.NEXT_PUBLIC_URL_SERVER+"/championships/"+id)
+    const response = await axios.get<Championship>(process.env.NEXT_PUBLIC_URL_SERVER+"/championships/"+id)
       .then(
-          (response: AxiosResponse<Array<Championship>>) => {
+          (response: AxiosResponse<Championship>) => {
               const status: Status = "success";
               return {
                   status:status,
