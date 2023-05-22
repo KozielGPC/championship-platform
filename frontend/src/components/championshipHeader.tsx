@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import {Box, Heading, Tabs, TabList, Tab, TabPanel, TabPanels, Image, Button} from '@chakra-ui/react';
-import { Championship } from '@/interfaces';
+import {Box, Heading, Tabs, TabList, Tab, TabPanel, TabPanels, Image, Button, Select} from '@chakra-ui/react';
+import { Championship, Team } from '@/interfaces';
 import ChampionshipPreview from './championshipPreview';
 
 
@@ -13,14 +13,21 @@ let cp: Championship;
 const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship }) => {
 
   const [currentChampionship, setCurrentChampionships] = useState(cp);
+  const [selectedTeam, setSelectedTeam] = useState<number | undefined>(undefined);
+  const [teamsChampionship, setTeamsChampionship] = useState(Array<Team>);
 
   useEffect(
     () => {
         if(championship){
           setCurrentChampionships(championship);
+          setTeamsChampionship(championship.teams)
     }
     },[]
   )
+
+  const handleTeamChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedTeam(Number(event.target.value));
+  };
  
   return (
         <Box>
@@ -38,11 +45,24 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship })
             <TabPanels>
                 <TabPanel>{championship?.rules}</TabPanel>
                 <TabPanel>{championship?.prizes}</TabPanel>
-                <TabPanel>Esperando tabela de relacionamento campeonato e equipe</TabPanel>
+                <TabPanel>{'tet'}</TabPanel>
                 <TabPanel>{championship?.contact}</TabPanel>
             </TabPanels>
             </Tabs>
-            <Button colorScheme='blue' position='fixed' right={'4'} bottom={'15'} size={'md'}>Join</Button>
+            <Heading h={'4vh'} size={'sm'} bottom={'100%'}>Selecione um time:</Heading>
+            <Select
+                  name="game_id"
+                  value={selectedTeam || ''}
+                  onChange={handleTeamChange}
+                  >
+                  <option value="">Selecione...</option>
+                  {teamsChampionship.map((team) => (
+                    <option key={team.id} value = {team.id}>
+                      {team.name}
+                    </option>
+                  ))}
+              </Select>
+            <Button colorScheme='blue' position='fixed' left={'57%'} bottom={'35%'} size={'md'}>Join</Button>
         </Box>
   );
 };

@@ -16,7 +16,8 @@ export interface Championship {
     contact: string,
     visibility: string,
     game_id: number,
-    admin_id: number
+    admin_id: number,
+    teams: Team[]
 }
 
 export interface Team {
