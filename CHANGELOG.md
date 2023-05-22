@@ -4,7 +4,16 @@
 ### Changed
 -   [#65](https://github.com/KozielGPC/championship-platform/issues/65) - Atualizado banco de dados para postgresql
 
+### Fixed
+-   [#84](https://github.com/KozielGPC/championship-platform/issues/84) - Resolvida validação do formulário de campeonato no frontend
+
 ### Added
+-   [#108](https://github.com/KozielGPC/championship-platform/issues/108) - Adicionado rota para atualizar um Campeonato
+-   [#107](https://github.com/KozielGPC/championship-platform/issues/107) - Adicionado rota para atualizar um Usuário
+-   [#106](https://github.com/KozielGPC/championship-platform/issues/106) - Adicionado rota para cadastrar Time em um Campeonato
+-   [#96](https://github.com/KozielGPC/championship-platform/issues/96) - Adicionado conexão com Socket
+-   [#106](https://github.com/KozielGPC/championship-platform/issues/106) - Adicionado rota de update para Teams e validações extras na criação de Teams
+-   [#111](https://github.com/KozielGPC/championship-platform/issues/111) - Resolvendo bugs na homescreen
 -   [#79](https://github.com/KozielGPC/championship-platform/issues/79) - Adicionado validação nos nomes de times e campeonatos
 -   [#39](https://github.com/KozielGPC/championship-platform/issues/39) - Adicionado frontend da Home Screen
 -   [#74](https://github.com/KozielGPC/championship-platform/issues/74) - Adicionado arquivos de configuração para deploy no fly.io
@@ -18,3 +27,4 @@
 -   [#40](https://github.com/KozielGPC/championship-platform/issues/40) - Adicionado Funcionalidades de login
 -   [#46](https://github.com/KozielGPC/championship-platform/issues/46) - Adicionado CRUD de usuário
 -   [#54](https://github.com/KozielGPC/championship-platform/issues/54) - Adicionado formulário de criação de campeonato
+-   [#87](https://github.com/KozielGPC/championship-platform/issues/87) - Adicionado Tela de listagem de minhas equipes
