@@ -1,11 +1,26 @@
 from api.database.config import Session, engine
-from api.schemas.championships import Response, ChampionshipInput, ChampionshipSchema, FindManyChampionshipFilters
+
+from api.schemas.championships import (
+    Response,
+    ChampionshipInput,
+    ChampionshipSchema,
+    FindManyChampionshipFilters,
+    AddTeamToChampionshipInput,
+    AddTeamToChampionshipReturn,
+    ChampionshipUpdateRequest,
+)
 from api.models.championships import Championship
+from api.models.championships_has_teams import ChampionshipsHasTeams
 from api.models.games import Game
+from api.models.teams import Team
 from api.utils.auth_services import get_password_hash, oauth2_scheme, get_current_user
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy import Enum
+
+from sqlalchemy.orm import joinedload
+from api.schemas.championships_has_teams import ChampionshipWithTeams
 
 
 router = APIRouter(
@@ -20,7 +35,7 @@ session = Session(bind=engine)
 
 @router.get(
     "/",
-    response_model=list[ChampionshipSchema],
+    response_model=list[ChampionshipWithTeams],
     response_description="Sucesso de resposta da aplicação.",
 )
 async def getAll(filters: FindManyChampionshipFilters | None = None, skip: int = 0, limit: int = 100):
@@ -36,18 +51,20 @@ async def getAll(filters: FindManyChampionshipFilters | None = None, skip: int =
         if filters.format is not None:
             query = query.filter(Championship.format == filters.format)
 
-    championships = query.offset(skip).limit(limit).all()
+    championships = query.options(joinedload(Championship.teams)).offset(skip).limit(limit).all()
 
     return jsonable_encoder(championships)
 
 
 @router.get(
     "/{id}",
-    response_model=ChampionshipSchema,
+    response_model=ChampionshipWithTeams,
     response_description="Sucesso de resposta da aplicação.",
 )
 async def getById(id: int):
-    championship = session.query(Championship).filter(Championship.id == id).first()
+    championship = (
+        session.query(Championship).options(joinedload(Championship.teams)).filter(Championship.id == id).first()
+    )
     if championship == None:
         raise HTTPException(status_code=404, detail="Championship not found")
     return jsonable_encoder(championship)
@@ -60,11 +77,14 @@ async def getById(id: int):
     response_description="Sucesso de resposta da aplicação.",
 )
 async def create(data: ChampionshipInput, token: Annotated[str, Depends(oauth2_scheme)]):
-    # Falta fazer as validações para criar o campeonato (acho q nao falta mais)
     camp = session.query(Championship).filter(Championship.name == data.name).first()
     if camp != None:
         raise HTTPException(status_code=400, detail="Championship with this name already exists")
     user = await get_current_user(token)
+    game = session.query(Game).filter(Game.id == data.game_id).first()
+    if game == None:
+        raise HTTPException(status_code=404, detail="Game not found")
+
     championship_input = Championship(
         name=data.name,
         start_time=data.start_time,
@@ -114,3 +134,126 @@ async def delete(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
     session.commit()
 
     return jsonable_encoder(championship)
+
+
+@router.put(
+    "/update/{id}",
+    status_code=200,
+    response_model=ChampionshipSchema,
+    response_description="Sucesso de resposta da aplicação.",
+)
+async def update(id: int, update_request: ChampionshipUpdateRequest, token: Annotated[str, Depends(oauth2_scheme)]):
+    user = await get_current_user(token)
+    championship = session.query(Championship).filter(Championship.id == id, user.id == Championship.admin_id).first()
+
+    if championship is None:
+        raise HTTPException(
+            status_code=404, detail="Championship not found or You aren't the admin of the championship"
+        )
+
+    if update_request.name:
+        championship_exists = (
+            session.query(Championship).filter(Championship.name == update_request.name, Championship.id != id).first()
+        )
+        if championship_exists:
+            raise HTTPException(status_code=400, detail="Championship with this name already exists")
+
+    if update_request.max_teams and update_request.min_teams == None:
+        if championship.min_teams > update_request.max_teams:
+            raise HTTPException(status_code=400, detail="Max Teams cannot be less than Min Teams")
+
+    if update_request.min_teams and update_request.max_teams == None:
+        if championship.max_teams < update_request.min_teams:
+            raise HTTPException(status_code=400, detail="Min Teams cannot be greater than Max Teams")
+
+    update_data = update_request.dict(exclude_unset=True)
+
+    enum_fields = [f.name for f in Championship.__table__.columns if isinstance(f.type, Enum)]
+    for key, value in update_data.items():
+        if key in enum_fields:
+            enum_class = type(getattr(Championship, key).property.columns[0].type)
+            update_data[key] = enum_class(value)
+
+        setattr(championship, key, value)
+
+    session.commit()
+    session.refresh(championship)
+
+    return jsonable_encoder(championship)
+
+
+@router.post(
+    "/add-team",
+    status_code=200,
+    response_model=AddTeamToChampionshipReturn,
+    response_description="Sucesso de resposta da aplicação.",
+)
+async def addTeamToChampionship(input: AddTeamToChampionshipInput, token: Annotated[str, Depends(oauth2_scheme)]):
+    user = await get_current_user(token)
+    championship = session.query(Championship).filter(Championship.id == input.championship_id).first()
+    if championship == None:
+        raise HTTPException(status_code=404, detail="Championship not found")
+    team = session.query(Team).filter(Team.id == input.team_id).first()
+    if team == None:
+        raise HTTPException(status_code=404, detail="Team not found")
+    if team.owner_id != user.id and championship.admin_id != user.id:
+        raise HTTPException(status_code=401, detail="User is not admin of Team or of the Championship")
+    if team.game_id != championship.game_id:
+        raise HTTPException(status_code=400, detail="Team is not of the same Game as the Championship")
+
+    championship_has_team = (
+        session.query(ChampionshipsHasTeams)
+        .filter(
+            ChampionshipsHasTeams.championship_id == input.championship_id,
+            ChampionshipsHasTeams.team_id == input.team_id,
+        )
+        .first()
+    )
+    if championship_has_team != None:
+        raise HTTPException(status_code=400, detail="Team is already registered in this Championship")
+
+    data = ChampionshipsHasTeams(
+        championship_id=input.championship_id,
+        team_id=input.team_id,
+    )
+    session.add(data)
+    session.commit()
+    session.refresh(data)
+
+    return data
+
+
+@router.post(
+    "/remove-team",
+    status_code=200,
+    response_model=AddTeamToChampionshipReturn,
+    response_description="Sucesso de resposta da aplicação.",
+)
+async def addTeamToChampionship(input: AddTeamToChampionshipInput, token: Annotated[str, Depends(oauth2_scheme)]):
+    user = await get_current_user(token)
+    championship = session.query(Championship).filter(Championship.id == input.championship_id).first()
+    if championship == None:
+        raise HTTPException(status_code=404, detail="Championship not found")
+    team = session.query(Team).filter(Team.id == input.team_id).first()
+    if team == None:
+        raise HTTPException(status_code=404, detail="Team not found")
+    if team.owner_id != user.id and championship.admin_id != user.id:
+        raise HTTPException(status_code=401, detail="User is not admin of Team or of the Championship")
+    if team.game_id != championship.game_id:
+        raise HTTPException(status_code=400, detail="Team is not of the same Game as the Championship")
+
+    championship_has_team = (
+        session.query(ChampionshipsHasTeams)
+        .filter(
+            ChampionshipsHasTeams.championship_id == input.championship_id,
+            ChampionshipsHasTeams.team_id == input.team_id,
+        )
+        .first()
+    )
+    if championship_has_team == None:
+        raise HTTPException(status_code=404, detail="Team isn't registered in this Championship")
+
+    session.delete(championship_has_team)
+    session.commit()
+
+    return championship_has_team
