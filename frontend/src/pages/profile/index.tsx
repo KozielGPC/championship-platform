@@ -2,7 +2,7 @@
 import { parseCookies } from 'nookies'
 import { GetServerSideProps } from 'next'
 import Layout from '../../components/layout'
-import { Avatar, Badge, Box, Button, Flex, FormControl, Input, InputGroup, InputLeftAddon, Stack, useToast, Text } from '@chakra-ui/react';
+import { Avatar, Badge, Box, Button, Flex, FormControl, Input, InputGroup, InputLeftAddon, Stack, useToast, Text, FormLabel } from '@chakra-ui/react';
 import { useContext, useEffect, useState } from 'react';
 import {UserContext} from '../../context/UserContext'
 import Link from 'next/link';
@@ -12,7 +12,6 @@ import { editUser } from '@/services/users/edit';
 import { useRouter } from 'next/router';
 
 const defaultData: UserData = {
-  id: 0,
   username: "",
   password: "",
   email: ""
@@ -21,12 +20,10 @@ const defaultData: UserData = {
 function Profile() {
   const {id, username} = useContext(UserContext);
   const [user, setUser] = useState<UserData>(defaultData);
+  const [formData, setFormData] = useState<UserData>(defaultData);
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast()
   const router = useRouter();
-  const [usernameInput, setUsernameInput] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(
@@ -50,7 +47,7 @@ function Profile() {
           }
           if(response.data){
             setUser(response.data)
-            setEmail(response.data.email)
+            setFormData(response.data)
           }
         }
       }
@@ -60,26 +57,17 @@ function Profile() {
     }, [id] 
   )
   
-  const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setUsernameInput(event.target.value);
-  };
-
-  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setPassword(event.target.value);
-  };
-
-  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setEmail(event.target.value);
-  };
-
-  const handleConfirmPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setConfirmPassword(event.target.value);
-  };
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+        const { name, value } = event.target;
+        setFormData((prevState) => ({ ...prevState, [name]: value }));
+    };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if(!username){
+    if(!user.username){
       toast({
           title: "Username is required.",
           description: "Please try again.",
@@ -90,7 +78,7 @@ function Profile() {
       return;
     }
 
-    if(!email){
+    if(!user.email){
         toast({
             title: "Email is required.",
             description: "Please try again.",
@@ -101,7 +89,8 @@ function Profile() {
         return;
     }
 
-    if(password !== confirmPassword){
+    
+    if(user.password !== confirmPassword){
         toast({
             title: "Passwords do not match.",
             description: "Please try again.",
@@ -114,13 +103,7 @@ function Profile() {
     
     setIsLoading(true);
 
-    const userData = {
-      'id': id,
-      'username': username,
-      'email': email,
-      'password': password
-    }
-
+    const userData = {}
 
     const response = await editUser(userData);
         if(response){
@@ -147,44 +130,39 @@ function Profile() {
         <Avatar size={'lg'} backgroundColor={'green.400'} name={`${user.username}`} />
         <Text mb="20px" fontSize={'large'}>{user.username}</Text>
         <form onSubmit={handleSubmit}>
-          <FormControl id="username" display={'block'}>
-            <Box p='5px'>
-              <InputGroup display="inline-flex" w="70vh">
-                <InputLeftAddon minW="23vh" textColor="black" children='Usuário' />
-                <Input w="container.md" value={`${user.username}`} onChange={handleUsernameChange}/>
-              </InputGroup>
-            </Box>
-          </FormControl>
-            
-          <FormControl id="email" display={'block'}>
-            <Box p='5px'>
-            <InputGroup display="inline-flex" w="70vh">
-              <InputLeftAddon minW="23vh" textColor="black" children='E-mail' />
-              <Input w="container.md" type="email" onChange={handleEmailChange} value={`${user.email}`}/>
-            </InputGroup>
-            </Box>
+          <FormControl>
+            <FormLabel>Username</FormLabel>
+              <Input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleInputChange}
+              placeholder="username_example"
+              />
           </FormControl>
 
-          <FormControl id="password" display={'block'}>
-            <Box p='5px'>
-            <InputGroup display="inline-flex" w="70vh">
-              <InputLeftAddon minW="23vh" textColor="black" children='Password' />
-              <Input w="container.md" type="password" onChange={handlePasswordChange} placeholder="********"/>
-            </InputGroup>
-            </Box>
+          <FormControl mt={4}>
+              <FormLabel>e-mail</FormLabel>
+              <Input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              />
           </FormControl>
-            <Box p='5px'>
-            <InputGroup id="confirmPassword" display="inline-flex" w="70vh">
-              <InputLeftAddon minW="23vh" textColor="black" children='Cofirm Password' />
-              <Input w="container.md" type="password" onChange={handleConfirmPasswordChange} placeholder="********"/>
-            </InputGroup>
-            </Box>
 
-          <FormControl display={'block'}>
-            <Button mt='5px' colorScheme="blue" type="submit" w="70vh">
-              Edit
-            </Button>
+          <FormControl mt={4}>
+              <FormLabel>Password</FormLabel>
+              <Input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              />
           </FormControl>
+          <Button mt='5px' colorScheme="blue" type="submit" w="70vh">
+            Edit
+          </Button>
         </form>
       </Box>
     </Layout>

@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from "axios";
+import { parseCookies } from "nookies";
 
 export interface User {
     id: Number;
@@ -13,8 +14,15 @@ export  interface ResponseRequest {
     data?: User;
 }
 
-export const editUser = async (data: User): Promise<ResponseRequest> => {
-    const response = await axios.put<User>(process.env.NEXT_PUBLIC_URL_SERVER+"/users/edit/"+data.id, data)
+export const editUser = async (data: Partial<User>): Promise<ResponseRequest> => {
+    const { "championship-token" : token } = parseCookies(); 
+    const response = await axios.put<User>(process.env.NEXT_PUBLIC_URL_SERVER+"/users/update/"+data.id, data, {
+        headers:{
+            "Authorization": `Bearer ${token}`,
+            "Content-Length": JSON.stringify(data).length,
+            "Content-Type": 'application/json'
+        }
+    })
         .then(
             (response: AxiosResponse<User>) => {
                 const status: Status = "success";
