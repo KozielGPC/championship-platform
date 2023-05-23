@@ -76,7 +76,7 @@ async def update(id: int, update_request: UserUpdateRequest, token: Annotated[st
 
     if update_request.username:
         user_exists = session.query(User).filter(User.username == update_request.username).first()
-        if user_exists == None:
+        if user_exists != None:
             raise HTTPException(status_code=400, detail="User with this username already exists")
 
     if update_request.password:

@@ -12,6 +12,7 @@ import { editUser } from '@/services/users/edit';
 import { useRouter } from 'next/router';
 
 const defaultData: UserData = {
+  id:-1,
   username: "",
   password: "",
   email: ""
@@ -47,7 +48,13 @@ function Profile() {
           }
           if(response.data){
             setUser(response.data)
-            setFormData(response.data)
+            setFormData({
+              id: response.data.id,
+              username: "",
+              password: "",
+              email: ""
+            });
+            
           }
         }
       }
@@ -57,6 +64,10 @@ function Profile() {
     }, [id] 
   )
   
+  const handleConfirmPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setConfirmPassword(event.target.value);
+  };
+
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
@@ -90,7 +101,7 @@ function Profile() {
     }
 
     
-    if(user.password !== confirmPassword){
+    if(formData.password !== confirmPassword){
         toast({
             title: "Passwords do not match.",
             description: "Please try again.",
@@ -102,10 +113,14 @@ function Profile() {
     }
     
     setIsLoading(true);
+    
+    for (let key in formData) {
+      if (formData.hasOwnProperty(key) && (formData[key as keyof UserData] === "" || formData[key as keyof UserData] === null)) {
+        delete formData[key as keyof UserData];
+      }
+    }
 
-    const userData = {}
-
-    const response = await editUser(userData);
+    const response = await editUser(formData);
         if(response){
            toast({
               title: response.message,
@@ -115,7 +130,7 @@ function Profile() {
             });
             setIsLoading(false);
             if(response.status=="success"){
-              router.push('/profile');
+              router.push('/');
             }
         }
   };
@@ -126,32 +141,35 @@ function Profile() {
         fontWeight={"bold"} fontSize={'3xl'} textColor="white" pt={'40px'} pb={'20px'} pl="20px">
         My Profile:
       </Box>
-      <Box pt="20px" textColor="white" textAlign="center">
+      <Box pt="5px" textColor="white" textAlign="center">
         <Avatar size={'lg'} backgroundColor={'green.400'} name={`${user.username}`} />
-        <Text mb="20px" fontSize={'large'}>{user.username}</Text>
+        <Text mb="5px" fontSize={'large'}>{user.username}</Text>
+      </Box>
+      <Box display="flex" flexDirection={"row"} alignItems={"center"} justifyContent={"center"} pt="10px" textColor="white" textAlign="center" >
         <form onSubmit={handleSubmit}>
-          <FormControl>
+          <FormControl w="40vw">
             <FormLabel>Username</FormLabel>
               <Input
               type="text"
               name="username"
               value={formData.username}
               onChange={handleInputChange}
-              placeholder="username_example"
+              placeholder={user.username}
               />
           </FormControl>
 
-          <FormControl mt={4}>
+          <FormControl mt={2}>
               <FormLabel>e-mail</FormLabel>
               <Input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleInputChange}
+              placeholder={user.email}
               />
           </FormControl>
 
-          <FormControl mt={4}>
+          <FormControl mt={2}>
               <FormLabel>Password</FormLabel>
               <Input
               type="password"
@@ -160,7 +178,16 @@ function Profile() {
               onChange={handleInputChange}
               />
           </FormControl>
-          <Button mt='5px' colorScheme="blue" type="submit" w="70vh">
+          <FormControl mt={2}>
+              <FormLabel>Confirm Password</FormLabel>
+              <Input
+              type="password"
+              name="confirmPassword"
+              value={confirmPassword}
+              onChange={handleConfirmPasswordChange}
+              />
+          </FormControl>
+          <Button mt={2} colorScheme="blue" type="submit" w="40vw">
             Edit
           </Button>
         </form>

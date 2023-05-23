@@ -4,6 +4,7 @@ export interface User {
 }
 
 export interface UserData {
+    id:number
     username: string,
     password: string,
     email: string
