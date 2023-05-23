@@ -5,10 +5,8 @@ from dotenv import load_dotenv
 import uvicorn
 import os
 
-from api.websocket.connection_manager import ws_manager
+from sockets import sio_app, sio_server
 
-from tests.websocket_test_chat import router as websocket_test_routes
-from api.websocket.websocket_endpoint import router as websocket_routes
 
 load_dotenv()
 
@@ -26,14 +24,14 @@ app.add_middleware(
 for route in routes.routes:
     app.include_router(route)
 
-app.include_router(websocket_test_routes)
-app.include_router(websocket_routes)
 
-
-@app.get("/")
+@app.get("/test-socket-message")
 async def index():
+    await sio_server.emit("teste")
     return {"api_status": "ok"}
 
+
+app.mount("/", app=sio_app)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
