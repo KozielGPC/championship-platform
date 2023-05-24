@@ -19,7 +19,7 @@ const defaultData: UserData = {
 };
 
 function Profile() {
-  const {id, username} = useContext(UserContext);
+  const {id, username, setUsername} = useContext(UserContext);
   const [user, setUser] = useState<UserData>(defaultData);
   const [formData, setFormData] = useState<UserData>(defaultData);
   const [isLoading, setIsLoading] = useState(false);
@@ -121,18 +121,21 @@ function Profile() {
     }
 
     const response = await editUser(formData);
-        if(response){
-           toast({
-              title: response.message,
-              status: response.status,
-              duration: 3000,
-              isClosable: true,
-            });
-            setIsLoading(false);
-            if(response.status=="success"){
-              router.push('/');
-            }
+    if(response){
+        toast({
+          title: response.message,
+          status: response.status,
+          duration: 3000,
+          isClosable: true,
+        });
+        if ('username' in formData) {
+          setUsername(formData.username)
         }
+        setIsLoading(false);
+        if(response.status=="success"){
+          router.push('/');
+        }
+    }
   };
 
   return (
