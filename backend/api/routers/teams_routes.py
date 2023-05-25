@@ -15,7 +15,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
 from sqlalchemy.orm import joinedload
 from api.schemas.championships_has_teams import TeamsWithChampionships
-from api.websocket.connection_manager import ConnectionManager
+from api.websocket.connection_manager import sio_server
 
 from fastapi.encoders import jsonable_encoder
 
@@ -27,8 +27,6 @@ router = APIRouter(
 )
 
 session = Session(bind=engine)
-
-ws_manager = ConnectionManager()
 
 
 @router.get(
@@ -163,6 +161,5 @@ async def addPlayerToTeam(input: AddPlayerToTeamInput, token: Annotated[str, Dep
     message = {"message": "Hello!"}
     user_id = 1
 
-    await ws_manager.send_personal_message(message, user_id)
-
+    await sio_server.emit("teste")
     return True

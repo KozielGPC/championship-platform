@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import uvicorn
 import os
 
-from sockets import sio_app, sio_server
+from api.websocket.connection_manager import sio_app, sio_server
 
 
 load_dotenv()
@@ -25,9 +25,8 @@ for route in routes.routes:
     app.include_router(route)
 
 
-@app.get("/test-socket-message")
+@app.get("/")
 async def index():
-    await sio_server.emit("teste")
     return {"api_status": "ok"}
 
 
