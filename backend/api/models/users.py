@@ -1,5 +1,7 @@
 from sqlalchemy import Column, Integer, String
 from api.database.config import Base
+from sqlalchemy.orm import relationship
+
 
 
 class User(Base):
@@ -9,3 +11,4 @@ class User(Base):
     username = Column(String, )
     password = Column(String)
     email = Column(String)
+    teams = relationship("Team", secondary="team_has_users", backref="times")

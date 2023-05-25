@@ -8,6 +8,7 @@
 -   [#84](https://github.com/KozielGPC/championship-platform/issues/84) - Resolvida validação do formulário de campeonato no frontend
 
 ### Added
+-   [#89](https://github.com/KozielGPC/championship-platform/issues/89) - Adicionado rota para cadastrar um Usuário em um Time
 -   [#108](https://github.com/KozielGPC/championship-platform/issues/108) - Adicionado rota para atualizar um Campeonato
 -   [#107](https://github.com/KozielGPC/championship-platform/issues/107) - Adicionado rota para atualizar um Usuário
 -   [#106](https://github.com/KozielGPC/championship-platform/issues/106) - Adicionado rota para cadastrar Time em um Campeonato

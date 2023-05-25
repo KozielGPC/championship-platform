@@ -4,7 +4,8 @@ from api.models.users import User
 from api.utils.auth_services import get_password_hash, oauth2_scheme, get_current_user
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
-
+from api.models.team_has_users import TeamsHasUsers
+from api.schemas.teams_has_users import TeamsWithUsers, UserWithTeams
 from fastapi.encoders import jsonable_encoder
 
 router = APIRouter(
@@ -19,7 +20,7 @@ session = Session(bind=engine)
 
 @router.get(
     "/",
-    response_model=list[UserSchema],
+    response_model=list[UserWithTeams],
     response_description="Sucesso de resposta da aplicação.",
 )
 async def getAll(token: Annotated[str, Depends(oauth2_scheme)], skip: int = 0, limit: int = 100):
@@ -28,7 +29,7 @@ async def getAll(token: Annotated[str, Depends(oauth2_scheme)], skip: int = 0, l
 
 @router.get(
     "/{id}",
-    response_model=UserSchema,
+    response_model=UserWithTeams,
     response_description="Sucesso de resposta da aplicação.",
 )
 async def getById(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
