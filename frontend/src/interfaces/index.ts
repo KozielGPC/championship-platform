@@ -28,3 +28,12 @@ export interface Team {
     owner_id: number
     championships: Championship[]
 }
+
+export interface Rodada {
+    championship_id: Number;
+    team_1_id: Number;
+    team_2_id?: Number;
+    rodada: Number;
+    chave: Number;
+    team_winner_id?: Number;
+  }

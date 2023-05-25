@@ -9,6 +9,12 @@ export  interface ResponseRequest {
     data?: Array<Team>;
 }
 
+export  interface ResponseRequestNoArray {
+    status: Status;
+    message: string;
+    data?: Team;
+}
+
 export const getTeams= async (): Promise<ResponseRequest> => {
 
   const response = await axios.get<Array<Team>>(process.env.NEXT_PUBLIC_URL_SERVER+"/teams")
@@ -38,6 +44,30 @@ export const getTeamById = async (id:string): Promise<ResponseRequest> => {
     const response = await axios.get<Array<Team>>(process.env.NEXT_PUBLIC_URL_SERVER+"/teams/"+id)
       .then(
           (response: AxiosResponse<Array<Team>>) => {
+              const status: Status = "success";
+              return {
+                  status:status,
+                  data: response?.data,
+                  message: "Team received with sucess"
+              }}
+      )
+      .catch(
+          () => {
+              const status: Status = "error";
+              return {
+                  status: status,
+                  message: "Error receiving team"
+              }
+          }
+      );
+      return response;
+  };
+
+  export const getTeamByIdNoArray = async (id:string): Promise<ResponseRequestNoArray> => {
+
+    const response = await axios.get<Team>(process.env.NEXT_PUBLIC_URL_SERVER+"/teams/"+id)
+      .then(
+          (response: AxiosResponse<Team>) => {
               const status: Status = "success";
               return {
                   status:status,

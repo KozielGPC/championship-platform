@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import {Box, Heading, Tabs, TabList, Tab, TabPanel, TabPanels, Image, Button, Select, useToast} from '@chakra-ui/react';
-import { Championship, Team } from '@/interfaces';
+import {Box, Heading, Tabs, TabList, Tab, TabPanel, TabPanels, Image, Button, Select, useToast, Flex, Grid} from '@chakra-ui/react';
+import { Championship, Rodada, Team } from '@/interfaces';
 import ChampionshipPreview from './championshipPreview';
 import axios from 'axios';
 import { addTeam } from '@/services/championship/add';
 import { useRouter } from 'next/router';
 import { ConfirmModal } from './confirmModal';
+import RodadaComponent from './rodadaComponent';
 
 interface ChampionshipTeam {
   team_id: number;
@@ -18,6 +19,8 @@ interface ChampionshipHeaderProps {
   championshipTeams?: Array<Team>;
 }
 
+
+
 let ct: ChampionshipTeam;
 
 
@@ -29,20 +32,17 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
   const [teamsChampionship, setTeamsChampionship] = useState(Array<Team>);
   const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  const [chaveamento, setChaveamento] = useState<Array<Rodada>>();
 
 
 
   useEffect(
     () => {
         if(championshipTeams){
-          setTeamsChampionship(championshipTeams);
-
-          
+          setTeamsChampionship(championshipTeams);         
       }
     },[]
   )
-
   const handleTeamChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedTeam(Number(event.target.value));
   };
@@ -62,7 +62,6 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
     setIsOpenConfirmModal(true);
     
   }
-
 
   const handleButtonClick = async () => {
         setIsLoading(true)     
@@ -86,14 +85,57 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
           setIsLoading(false)
           setIsOpenConfirmModal(false)
         }
-  
   };
- 
+
+  function gerarChaveamento() {
+    const rodada=1;
+    if(championshipTeams && championship){
+      const compararAleatoriamente = () => Math.random() - 0.5;
+      const timesAleatorizados: Team[] = [...championshipTeams].sort(compararAleatoriamente);
+      if(timesAleatorizados.length >= championship.min_teams){
+        gerar_partidas(timesAleatorizados, rodada)
+      }
+      
+    }
+  }
+
+  function gerar_partidas(teams:any[], num_rodada:Number){
+    
+    if(!championship){
+      return
+    } else {
+      let chave = 1;
+      const array_rodadas: Rodada[] = []
+      for (let i = 0; i < teams.length; i += 2) {
+        const team: Team[] = teams.slice(i, i + 2);
+        if(team[1]){
+          const rodada :Rodada = {
+            championship_id: championship?.id,
+            team_1_id: team[0].id,
+            team_2_id: team[1].id,
+            rodada: num_rodada,
+            chave: chave,
+          }
+          array_rodadas.push(rodada)
+        } else {
+          var rodada :Rodada = {
+            championship_id: championship?.id,
+            team_1_id: team[0].id,
+            rodada: num_rodada,
+            chave: chave,
+          }
+          array_rodadas.push(rodada)
+        }
+        chave++;
+      }
+      setChaveamento(array_rodadas)
+    }
+    
+  }
+
   return (
         <Box textColor={'black'}>
           <Image
-            
-            
             width={"100%"}
             maxHeight={'200px'}
             objectFit={'cover'}
@@ -118,7 +160,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                     <Tab>Prizes</Tab>
                     <Tab>Teams</Tab>
                     <Tab>Contact</Tab>
-                    <Tab isDisabled={true}>Brackets</Tab>
+                    <Tab>Brackets</Tab>
                 </TabList>
             <TabPanels>
                 <TabPanel>{championship?.rules}</TabPanel>
@@ -127,7 +169,26 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
               <p key={index}>{team.name}</p>
             ))}</TabPanel>
                 <TabPanel>{championship?.contact}</TabPanel>
-                <TabPanel></TabPanel>
+                <TabPanel>
+                  <Box w="100%" h={"10vh"}>
+                    <Button onClick={gerarChaveamento} float="right" colorScheme='blue'>
+                      Gerar chaveamento
+                    </Button>
+                    <Box float="left">
+                      Times no campeonato: {championshipTeams?.length}
+                    </Box>
+                  </Box>
+                  <Box w="100%">
+                    <Grid templateColumns={championshipTeams?`repeat(${Math.ceil(championshipTeams.length/2)}, 1fr)`:'repeat(2, 1fr)'} >
+                    {chaveamento ? chaveamento.map((rodada) => (
+                          <RodadaComponent rodada={rodada}></RodadaComponent>
+                        ))
+                        :
+                        <></>
+                      }
+                    </Grid>
+                  </Box>
+                </TabPanel>
             </TabPanels>
             </Tabs>
             
