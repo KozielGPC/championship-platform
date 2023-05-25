@@ -2,15 +2,19 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Enum, DateTime, Text
 from sqlalchemy.orm import relationship
 from api.database.config import Base
 import enum
+from datetime import datetime
+from typing import Optional
+from pydantic import BaseModel
+
 
 class EnumFormat(enum.Enum):
     chaveamento = "chaveamento"
     pontos_corridos = "pontos_corridos"
 
+
 class EnumVisibility(enum.Enum):
     publico = "publico"
     privado = "privado"
- 
 
 class Championship(Base):
     __tablename__ = "championships"
@@ -28,4 +32,4 @@ class Championship(Base):
     created_at = Column(DateTime)
     admin_id = Column(Integer, ForeignKey("users.id"))
     game_id = Column(Integer, ForeignKey("games.id"))
- 
+    teams = relationship("Team", secondary="championship_has_teams", backref="teams")
