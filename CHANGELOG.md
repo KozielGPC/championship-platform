@@ -8,6 +8,7 @@
 -   [#84](https://github.com/KozielGPC/championship-platform/issues/84) - Resolvida validação do formulário de campeonato no frontend
 
 ### Added
+-   [#59](https://github.com/KozielGPC/championship-platform/issues/59) - Adicionado Tela de Visualização de Campeonato
 -   [#106](https://github.com/KozielGPC/championship-platform/issues/106) - Adicionado rota para cadastrar Time em um Campeonato
 -   [#96](https://github.com/KozielGPC/championship-platform/issues/96) - Adicionado conexão com Socket
 -   [#106](https://github.com/KozielGPC/championship-platform/issues/106) - Adicionado rota de update para Teams e validações extras na criação de Teams
