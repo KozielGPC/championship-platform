@@ -21,7 +21,7 @@ interface ChampionshipHeaderProps {
 let ct: ChampionshipTeam;
 
 
-const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, teams, championshipTeams }) => {
+const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, teams, championshipTeams}) => {
 
   const router = useRouter();
   const [selectedTeam, setSelectedTeam] = useState<number>(0);
@@ -37,6 +37,8 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
     () => {
         if(championshipTeams){
           setTeamsChampionship(championshipTeams);
+
+          
       }
     },[]
   )
@@ -46,7 +48,19 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
   };
 
   function handleConfirmModal(){
+    if(selectedTeam == 0){
+      toast(
+        {
+          title: "Selecione um time",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        }
+      )
+      return
+    }
     setIsOpenConfirmModal(true);
+    
   }
 
 
@@ -78,8 +92,8 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
   return (
         <Box textColor={'black'}>
           <Image
-            align={'5'}
-            borderTopRadius="10px"
+            
+            
             width={"100%"}
             maxHeight={'200px'}
             objectFit={'cover'}
@@ -87,10 +101,13 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
             alt={'lol-image'}
             src={
               championship?.game_id == 1 
-              ?'https://i.ibb.co/SQcvz0Q/header.png'
+              ?'https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt8979808f7798ecf5/6216ee875fe07272a8a2447a/2021_Key_art.jpg'
               : 'https://iili.io/HrHUeYG.png'
             }
-            borderRadius="10px" border='1px solid white'
+            borderLeft='1px solid white'
+            borderBottom='1px solid white'
+            borderRight='1px solid white'
+             
             />
             <Heading textAlign={'center'} color={'white'} pt={'20px'} h={'10vh'}>
                {championship?.name}
@@ -113,31 +130,52 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                 <TabPanel></TabPanel>
             </TabPanels>
             </Tabs>
-            <Heading color={'white'} h={'4vh'} size={'sm'} textAlign={'center'} marginTop={'200px'} bottom={'10'}>Select a team:</Heading>
-            <Select
+            
+            { (teams) != null ? 
+            (teams.length != 0 ? (
+              <Box mt="150px" w="100%" flexDirection={"column"} display="flex" alignItems={"center"} justifyContent={"center"} textAlign={"center"}>
+                <Heading color={'white'} h={'4vh'} size={'sm'} textAlign={'center'} bottom={'10'}>Select a team:</Heading>
+                <Select
                   color={'black'}
                   colorScheme={'blackAlpha'}
                   size={'sm'}
-                  left={'1'}
-                  width={"99%"}
+                  mb="10px"
+                  width={"30vw"}
                   iconSize={'100px'}
                   name="game_id"
                   value={selectedTeam || ''}
                   onChange={handleTeamChange}
                   >
+                  <option value='0'>Selecione...</option>            
                   {teams?.map((team) => (
                     <option key={team.id} value = {team.id}>
                       {team.name}
                     </option>
                   ))}
-              </Select>
-            <Button onClick={handleConfirmModal} colorScheme='blue' left={'47%'} size={'md'} top={'3'} marginBottom={'25'}>Join</Button>
-            <ConfirmModal
-                    content="Are you sure you want to join in the championship with this team?"
-                    handleConfirm={handleButtonClick}
-                    isOpen={isOpenConfirmModal}
-                    setIsOpen={setIsOpenConfirmModal}
-                  />
+                </Select>
+                <Button mb="50px" w="10vw" onClick={handleConfirmModal} colorScheme='blue' size={'md'}>Join</Button>
+                <ConfirmModal
+                      content="Are you sure you want to join in the championship with this team?"
+                      handleConfirm={handleButtonClick}
+                      isOpen={isOpenConfirmModal}
+                      setIsOpen={setIsOpenConfirmModal}
+                />
+              </Box>) 
+              : 
+              (
+                <Box mb="50px" mt="150px" w="100%" flexDirection={"column"} display="flex" alignItems={"center"} justifyContent={"center"} textAlign={"center"}>
+                  <Heading color={'white'} h={'4vh'} size={'sm'} textAlign={'center'}> Looks like you don't have a team yet</Heading>
+                  <Button colorScheme={"blue"} onClick={()=>router.push('/profile/teams/new')}>
+                      Create Team
+                  </Button>
+                </Box>
+              )) 
+              : 
+              (
+              <></>
+              ) 
+            }
+            
         </Box>
   );
 };
