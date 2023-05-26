@@ -175,14 +175,3 @@ class Response(GenericModel, Generic[T]):
     status: str
     message: str
     result: Optional[T]
-
-
-class FindManyChampionshipFilters(BaseModel):
-    game_id: Optional[int]
-    format: Optional[EnumFormat]
-    min_teams: Optional[int]
-    max_teams: Optional[int]
-
-    class Config:
-        orm_mode = True
-        use_enum_values = True
