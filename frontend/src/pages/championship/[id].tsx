@@ -115,7 +115,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         props: {
            championship: response.data,
            teams: userTeams,
-           teamsChampionships: teamsChampionships
+           teamsChampionships: teamsChampionships,
         }
       }
     )

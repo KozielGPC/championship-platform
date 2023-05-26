@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {Box, Heading, Tabs, TabList, Tab, TabPanel, TabPanels, Image, Button, Select, useToast} from '@chakra-ui/react';
 import { Championship, Team } from '@/interfaces';
 import ChampionshipPreview from './championshipPreview';
@@ -6,6 +6,8 @@ import axios from 'axios';
 import { addTeam } from '@/services/championship/add';
 import { useRouter } from 'next/router';
 import { ConfirmModal } from './confirmModal';
+import { getTeams } from '@/services/team/retrieve';
+
 
 interface ChampionshipTeam {
   team_id: number;
@@ -22,7 +24,6 @@ let ct: ChampionshipTeam;
 
 
 const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, teams, championshipTeams}) => {
-
   const router = useRouter();
   const [selectedTeam, setSelectedTeam] = useState<number>(0);
   const toast = useToast();
@@ -33,14 +34,13 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
 
 
 
+
   useEffect(
     () => {
         if(championshipTeams){
           setTeamsChampionship(championshipTeams);
-
-          
       }
-    },[]
+    },[championship]
   )
 
   const handleTeamChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -70,7 +70,6 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
           team_id: selectedTeam,
           championship_id: championship?.id}
         const response = await addTeam(championshipTeam);
-      
         if(response){
           toast(
             {
@@ -81,7 +80,17 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
             }
           )
           if(response.status=="success"){
-            router.push("/");
+            const response2 = await getTeams();
+            const teamsChampionships = response2.data?.filter((team: Team) => {
+            const filtredChampionships = team.championships.filter((championship_filter: Championship) => championship_filter.id == (championship ? championship.id : 0))
+              if(filtredChampionships.length !== 0){
+                 return filtredChampionships;
+              }
+            })  
+            if(teamsChampionships){
+            setTeamsChampionship(teamsChampionships)
+          }
+            
           }
           setIsLoading(false)
           setIsOpenConfirmModal(false)
@@ -123,7 +132,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
             <TabPanels>
                 <TabPanel>{championship?.rules}</TabPanel>
                 <TabPanel>{championship?.prizes}</TabPanel>
-                <TabPanel>{championshipTeams?.map((team, index) => (
+                <TabPanel>{teamsChampionship?.map((team, index) => (
               <p key={index}>{team.name}</p>
             ))}</TabPanel>
                 <TabPanel>{championship?.contact}</TabPanel>
