@@ -12,3 +12,4 @@ class Team(Base):
     game_id = Column(Integer, ForeignKey("games.id"))
     owner_id = Column(Integer, ForeignKey("users.id"))
     championships = relationship("Championship", secondary="championship_has_teams", backref="championships")
+    users = relationship("User", secondary="team_has_users", backref="users")
