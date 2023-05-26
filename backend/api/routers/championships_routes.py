@@ -45,7 +45,7 @@ async def getAll(
     format: str = None,
     name: str = None,
     skip: int = 0,
-    limit: int = 100
+    limit: int = 100,
 ):
     query = session.query(Championship)
 
@@ -58,9 +58,9 @@ async def getAll(
     if format is not None and isinstance(format, str):
         query = query.filter(Championship.format == format)
     if admin_id is not None and isinstance(admin_id, int):
-        query = query.filter(Championship.admin_id == admin_id) 
+        query = query.filter(Championship.admin_id == admin_id)
     if name is not None:
-        query = query.filter(Championship.name == name)   
+        query = query.filter(Championship.name == name)
 
     championships = query.options(joinedload(Championship.teams)).offset(skip).limit(limit).all()
 
