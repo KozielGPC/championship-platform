@@ -5,7 +5,7 @@ from api.utils.auth_services import get_password_hash, oauth2_scheme, get_curren
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
 from api.models.team_has_users import TeamsHasUsers
-from api.schemas.teams_has_users import TeamsWithUsers, UserWithTeams
+from api.schemas.teams_has_users import UserWithTeams
 from fastapi.encoders import jsonable_encoder
 
 router = APIRouter(

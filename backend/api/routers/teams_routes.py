@@ -1,12 +1,12 @@
 from api.database.config import Session, engine
 
 from api.schemas.teams import (
-    Response, 
-    TeamInput, 
-    TeamSchema, 
+    Response,
+    TeamInput,
+    TeamSchema,
     AddUserToTeamInput,
     AddUserToTeamReturn,
-    TeamUpdateRequest
+    TeamUpdateRequest,
 )
 from api.models.teams import Team
 from api.models.users import User
@@ -16,8 +16,8 @@ from api.utils.auth_services import get_password_hash, oauth2_scheme, get_curren
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
 from sqlalchemy.orm import joinedload
-from api.schemas.championships_has_teams import TeamsWithChampionships, ChampionshipWithTeams
-from api.schemas.teams_has_users import TeamsWithUsers, UserWithTeams
+from api.schemas.championships_has_teams import TeamsWithRelations, ChampionshipWithTeams
+from api.schemas.teams_has_users import UserWithTeams
 from fastapi.encoders import jsonable_encoder
 
 router = APIRouter(
@@ -32,21 +32,32 @@ session = Session(bind=engine)
 
 @router.get(
     "/",
-    response_model=list[TeamsWithChampionships], #NÃO SEI SE DEVO COLOCAR OS USERS DO TIME AQUI TBM
+    response_model=list[TeamsWithRelations],
     response_description="Sucesso de resposta da aplicação.",
 )
 async def getAll(skip: int = 0, limit: int = 100):
-    teams = session.query(Team).options(joinedload(Team.championships)).offset(skip).limit(limit).all()
+    teams = (
+        session.query(Team)
+        .options(joinedload(Team.championships), joinedload(Team.users))
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
     return jsonable_encoder(teams)
 
 
 @router.get(
     "/{id}",
-    response_model=TeamsWithChampionships,
+    response_model=TeamsWithRelations,
     response_description="Sucesso de resposta da aplicação.",
 )
 async def getById(id: int):
-    team = session.query(Team).options(joinedload(Team.championships)).filter(Team.id == id).first()
+    team = (
+        session.query(Team)
+        .options(joinedload(Team.championships), joinedload(Team.users))
+        .filter(Team.id == id)
+        .first()
+    )
     if team == None:
         raise HTTPException(status_code=404, detail="Team not found")
     return jsonable_encoder(team)
@@ -120,13 +131,6 @@ async def delete(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
 
     return user
 
-################################################
-#PRECISO ENTENDER COMO VAI SER A DINAMICA DO SOCKET PRA ADICIONAR O USUÁRIO NO TIME
-#SE O ADM PODE SÓ INSERIR UM USUÁRIO PELO ID DELE FDS OU ENTAO SÓ VAI ENTRAR ATRAVES 
-#DO CONVITE VIA SOCKET
-
-#DAQUI PRA BAIXO TA COPIADO DO CAMPEONATO ADICIONANDO TIME, LÁ É PRECISO Q O USER SEJA ADMIN DO CAMP PRA ADICIONAR UM TIME
-#PROVISORIAMENTE VOU MANTER AQUI COMO O UNICO METODO DE ENTRADA SER O ADM COLOCAR ALGUEM PELO ID NA MAO 
 
 @router.post(
     "/add-user",
@@ -144,7 +148,6 @@ async def addUserToTeam(input: AddUserToTeamInput, token: Annotated[str, Depends
         raise HTTPException(status_code=404, detail="Team not found")
     if team.owner_id != user.id:
         raise HTTPException(status_code=401, detail="User is not admin of Team")
-
     team_has_user = (
         session.query(TeamsHasUsers)
         .filter(
@@ -166,7 +169,6 @@ async def addUserToTeam(input: AddUserToTeamInput, token: Annotated[str, Depends
 
     return data
 
-## PRA DELETAR ALGUEM DO TIME É PRECISO SER ADM DO CAMP OU ENTAO VOCÊ MESMO SER O USER QUE VAI SER DELETADO
 
 @router.post(
     "/remove-user",
@@ -182,7 +184,7 @@ async def addUserToTeam(input: AddUserToTeamInput, token: Annotated[str, Depends
     team = session.query(Team).filter(Team.id == input.team_id).first()
     if team == None:
         raise HTTPException(status_code=404, detail="Team not found")
-    if team.owner_id != user.id and player.id != user.id :
+    if team.owner_id != user.id and player.id != user.id:
         raise HTTPException(status_code=401, detail="User is not the team admin or is not the user to be deleted")
 
     team_has_user = (
