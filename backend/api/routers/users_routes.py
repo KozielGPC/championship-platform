@@ -7,6 +7,8 @@ from typing import Annotated
 from api.models.team_has_users import TeamsHasUsers
 from api.schemas.teams_has_users import UserWithTeams
 from fastapi.encoders import jsonable_encoder
+from api.schemas.notifications import NotificationSchema
+from api.models.notifications import Notification
 
 router = APIRouter(
     prefix="/users",
@@ -108,3 +110,16 @@ async def delete(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
     session.commit()
 
     return user
+
+
+@router.get(
+    "/me/notifications",
+    response_model=list[NotificationSchema],
+    response_description="Sucesso de resposta da aplicação.",
+)
+async def getAllNotificationsFromUser(token: Annotated[str, Depends(oauth2_scheme)], skip: int = 0, limit: int = 100):
+    user = await get_current_user(token)
+    query = session.query(Notification)
+    notifications = query.filter(Notification.reference_user_id == user.id).offset(skip).limit(limit).all()
+
+    return jsonable_encoder(notifications)

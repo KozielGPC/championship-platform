@@ -23,7 +23,7 @@ def upgrade() -> None:
         sa.Column("name", sa.String(50), unique=True, nullable=False),
         sa.Column("reference_user_id", sa.Integer, sa.ForeignKey("users.id"), nullable=False),
         sa.Column("text", sa.Text(), nullable=True),
-        sa.Column("visualized", sa.Boolean(), default=False),
+        sa.Column("visualized", sa.Boolean(), server_default=sa.false(), nullable=False),
     )
 
     pass
