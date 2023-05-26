@@ -77,29 +77,6 @@ function Profile() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    if(!user.username){
-      toast({
-          title: "Username is required.",
-          description: "Please try again.",
-          status: "error",
-          duration: 2000,
-          isClosable: true,
-      });
-      return;
-    }
-
-    if(!user.email){
-        toast({
-            title: "Email is required.",
-            description: "Please try again.",
-            status: "error",
-            duration: 2000,
-            isClosable: true,
-        });
-        return;
-    }
-
     
     if(formData.password !== confirmPassword){
         toast({
