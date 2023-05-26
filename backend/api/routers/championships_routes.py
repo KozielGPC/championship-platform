@@ -4,7 +4,6 @@ from api.schemas.championships import (
     Response,
     ChampionshipInput,
     ChampionshipSchema,
-    FindManyChampionshipFilters,
     AddTeamToChampionshipInput,
     AddTeamToChampionshipReturn,
     ChampionshipUpdateRequest,
@@ -38,18 +37,30 @@ session = Session(bind=engine)
     response_model=list[ChampionshipWithTeams],
     response_description="Sucesso de resposta da aplicação.",
 )
-async def getAll(filters: FindManyChampionshipFilters | None = None, skip: int = 0, limit: int = 100):
+async def getAll(
+    game_id: int = None,
+    admin_id: int = None,
+    max_teams: int = None,
+    min_teams: int = None,
+    format: str = None,
+    name: str = None,
+    skip: int = 0,
+    limit: int = 100
+):
     query = session.query(Championship)
 
-    if filters is not None:
-        if filters.game_id is not None:
-            query = query.filter(Championship.game_id == filters.game_id)
-        if filters.max_teams is not None:
-            query = query.filter(Championship.max_teams <= filters.max_teams)
-        if filters.min_teams is not None:
-            query = query.filter(Championship.min_teams >= filters.min_teams)
-        if filters.format is not None:
-            query = query.filter(Championship.format == filters.format)
+    if game_id is not None:
+        query = query.filter(Championship.game_id == game_id)
+    if max_teams is not None and isinstance(max_teams, int):
+        query = query.filter(Championship.max_teams <= max_teams)
+    if min_teams is not None and isinstance(min_teams, int):
+        query = query.filter(Championship.min_teams >= min_teams)
+    if format is not None and isinstance(format, str):
+        query = query.filter(Championship.format == format)
+    if admin_id is not None and isinstance(admin_id, int):
+        query = query.filter(Championship.admin_id == admin_id) 
+    if name is not None:
+        query = query.filter(Championship.name == name)   
 
     championships = query.options(joinedload(Championship.teams)).offset(skip).limit(limit).all()
 

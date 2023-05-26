@@ -8,6 +8,7 @@
 -   [#84](https://github.com/KozielGPC/championship-platform/issues/84) - Resolvida validação do formulário de campeonato no frontend
 
 ### Added
+-   [#105](https://github.com/KozielGPC/championship-platform/issues/105) - Adicionado filtro de admin no get de Campeonatos e recebendo filtros por URL
 -   [#89](https://github.com/KozielGPC/championship-platform/issues/89) - Adicionado rota para cadastrar um Usuário em um Time
 -   [#108](https://github.com/KozielGPC/championship-platform/issues/108) - Adicionado rota para atualizar um Campeonato
 -   [#107](https://github.com/KozielGPC/championship-platform/issues/107) - Adicionado rota para atualizar um Usuário
