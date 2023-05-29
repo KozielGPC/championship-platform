@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import {Box, Heading, Tabs, TabList, Tab, TabPanel, TabPanels, Image, Button, Select, useToast, Flex, Grid} from '@chakra-ui/react';
 import { Championship, Rodada, Team } from '@/interfaces';
-import ChampionshipPreview from './championshipPreview';
-import axios from 'axios';
+import { useContext } from 'react';
 import { addTeam } from '@/services/championship/add';
 import { useRouter } from 'next/router';
 import { ConfirmModal } from './confirmModal';
 import RodadaComponent from './rodadaComponent';
+import UserContext from '@/context/UserContext';
 
 interface ChampionshipTeam {
   team_id: number;
@@ -26,6 +26,7 @@ let ct: ChampionshipTeam;
 
 const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, teams, championshipTeams}) => {
 
+  const {id} = useContext(UserContext);
   const router = useRouter();
   const [selectedTeam, setSelectedTeam] = useState<number>(0);
   const toast = useToast();
@@ -33,6 +34,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
   const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [chaveamento, setChaveamento] = useState<Array<Rodada>>();
+  const [tabIndex, setTabIndex] = useState<Number>(1);
 
 
 
@@ -43,6 +45,13 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
       }
     },[]
   )
+
+  useEffect(
+    () => {
+      console.log(tabIndex)
+    },[tabIndex]
+  )
+
   const handleTeamChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedTeam(Number(event.target.value));
   };
@@ -95,7 +104,6 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
       if(timesAleatorizados.length >= championship.min_teams){
         gerar_partidas(timesAleatorizados, rodada)
       }
-      
     }
   }
 
@@ -154,7 +162,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
             <Heading textAlign={'center'} color={'white'} pt={'20px'} h={'10vh'}>
                {championship?.name}
             </Heading>
-            <Tabs color={'white'} marginTop={'5'} colorScheme={'whiteAlpha'} size={'md'} textAlign={'center'} align={'center'} borderColor={'white'} >
+            <Tabs onChange={(index) => setTabIndex(index)} color={'white'} marginTop={'5'} colorScheme={'whiteAlpha'} size={'md'} textAlign={'center'} align={'center'} borderColor={'white'} >
                 <TabList>
                     <Tab>Rules</Tab>
                     <Tab>Prizes</Tab>
@@ -165,15 +173,20 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
             <TabPanels>
                 <TabPanel>{championship?.rules}</TabPanel>
                 <TabPanel>{championship?.prizes}</TabPanel>
-                <TabPanel>{championshipTeams?.map((team, index) => (
-              <p key={index}>{team.name}</p>
-            ))}</TabPanel>
+                <TabPanel>
+                  {championshipTeams?.map((team, index) => (
+                    <p key={index}>{team.name}</p>
+                  ))}
+                </TabPanel>
                 <TabPanel>{championship?.contact}</TabPanel>
                 <TabPanel>
                   <Box w="100%" h={"10vh"}>
+                    {championship?.admin_id == id ? 
                     <Button onClick={gerarChaveamento} float="right" colorScheme='blue'>
                       Gerar chaveamento
-                    </Button>
+                    </Button> 
+                    :
+                    <></>}
                     <Box float="left">
                       Times no campeonato: {championshipTeams?.length}
                     </Box>
@@ -191,52 +204,55 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                 </TabPanel>
             </TabPanels>
             </Tabs>
-            
-            { (teams) != null ? 
-            (teams.length != 0 ? (
-              <Box mt="150px" w="100%" flexDirection={"column"} display="flex" alignItems={"center"} justifyContent={"center"} textAlign={"center"}>
-                <Heading color={'white'} h={'4vh'} size={'sm'} textAlign={'center'} bottom={'10'}>Select a team:</Heading>
-                <Select
-                  color={'black'}
-                  colorScheme={'blackAlpha'}
-                  size={'sm'}
-                  mb="10px"
-                  width={"30vw"}
-                  iconSize={'100px'}
-                  name="game_id"
-                  value={selectedTeam || ''}
-                  onChange={handleTeamChange}
-                  >
-                  <option value='0'>Selecione...</option>            
-                  {teams?.map((team) => (
-                    <option key={team.id} value = {team.id}>
-                      {team.name}
-                    </option>
-                  ))}
-                </Select>
-                <Button mb="50px" w="10vw" onClick={handleConfirmModal} colorScheme='blue' size={'md'}>Join</Button>
-                <ConfirmModal
-                      content="Are you sure you want to join in the championship with this team?"
-                      handleConfirm={handleButtonClick}
-                      isOpen={isOpenConfirmModal}
-                      setIsOpen={setIsOpenConfirmModal}
-                />
-              </Box>) 
-              : 
-              (
-                <Box mb="50px" mt="150px" w="100%" flexDirection={"column"} display="flex" alignItems={"center"} justifyContent={"center"} textAlign={"center"}>
-                  <Heading color={'white'} h={'4vh'} size={'sm'} textAlign={'center'}> Looks like you don't have a team yet</Heading>
-                  <Button colorScheme={"blue"} onClick={()=>router.push('/profile/teams/new')}>
-                      Create Team
-                  </Button>
-                </Box>
-              )) 
-              : 
-              (
-              <></>
-              ) 
+            { (tabIndex != 4) ?
+            (
+              (teams) != null ? 
+              (teams.length != 0 ? (
+                <Box mt="150px" w="100%" flexDirection={"column"} display="flex" alignItems={"center"} justifyContent={"center"} textAlign={"center"}>
+                  <Heading color={'white'} h={'4vh'} size={'sm'} textAlign={'center'} bottom={'10'}>Select a team:</Heading>
+                  <Select
+                    color={'black'}
+                    colorScheme={'blackAlpha'}
+                    size={'sm'}
+                    mb="10px"
+                    width={"30vw"}
+                    iconSize={'100px'}
+                    name="game_id"
+                    value={selectedTeam || ''}
+                    onChange={handleTeamChange}
+                    >
+                    <option value='0'>Selecione...</option>            
+                    {teams?.map((team) => (
+                      <option key={team.id} value = {team.id}>
+                        {team.name}
+                      </option>
+                    ))}
+                  </Select>
+                  <Button mb="50px" w="10vw" onClick={handleConfirmModal} colorScheme='blue' size={'md'}>Join</Button>
+                  <ConfirmModal
+                        content="Are you sure you want to join in the championship with this team?"
+                        handleConfirm={handleButtonClick}
+                        isOpen={isOpenConfirmModal}
+                        setIsOpen={setIsOpenConfirmModal}
+                  />
+                </Box>) 
+                : 
+                (
+                  <Box mb="50px" mt="150px" w="100%" flexDirection={"column"} display="flex" alignItems={"center"} justifyContent={"center"} textAlign={"center"}>
+                    <Heading color={'white'} h={'4vh'} size={'sm'} textAlign={'center'}> Looks like you don't have a team yet</Heading>
+                    <Button colorScheme={"blue"} onClick={()=>router.push('/profile/teams/new')}>
+                        Create Team
+                    </Button>
+                  </Box>
+                )) 
+                : 
+                (
+                <></>
+                ) 
+              )
+              :
+              (<></>)
             }
-            
         </Box>
   );
 };
