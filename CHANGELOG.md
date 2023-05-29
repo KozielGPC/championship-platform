@@ -9,6 +9,11 @@
 
 ### Added
 -   [#59](https://github.com/KozielGPC/championship-platform/issues/59) - Adicionado Tela de Visualização de Campeonato
+-   [#93](https://github.com/KozielGPC/championship-platform/issues/93) - Adicionado tabela e rota para retornar notificações de um usuário
+-   [#105](https://github.com/KozielGPC/championship-platform/issues/105) - Adicionado filtro de admin no get de Campeonatos e recebendo filtros por URL
+-   [#89](https://github.com/KozielGPC/championship-platform/issues/89) - Adicionado rota para cadastrar um Usuário em um Time
+-   [#108](https://github.com/KozielGPC/championship-platform/issues/108) - Adicionado rota para atualizar um Campeonato
+-   [#107](https://github.com/KozielGPC/championship-platform/issues/107) - Adicionado rota para atualizar um Usuário
 -   [#106](https://github.com/KozielGPC/championship-platform/issues/106) - Adicionado rota para cadastrar Time em um Campeonato
 -   [#96](https://github.com/KozielGPC/championship-platform/issues/96) - Adicionado conexão com Socket
 -   [#106](https://github.com/KozielGPC/championship-platform/issues/106) - Adicionado rota de update para Teams e validações extras na criação de Teams
@@ -27,3 +32,4 @@
 -   [#46](https://github.com/KozielGPC/championship-platform/issues/46) - Adicionado CRUD de usuário
 -   [#54](https://github.com/KozielGPC/championship-platform/issues/54) - Adicionado formulário de criação de campeonato
 -   [#87](https://github.com/KozielGPC/championship-platform/issues/87) - Adicionado Tela de listagem de minhas equipes
+-   [#44](https://github.com/KozielGPC/championship-platform/issues/44) - Adicionado Tela de edição de um campeonato

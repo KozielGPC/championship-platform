@@ -23,7 +23,7 @@ services:
     networks:
       - postgres
     depends_on:
-      - postgresql
+      - postgres
 
 networks:
   postgres:
