@@ -25,4 +25,6 @@ export interface Team {
     password: string,
     game_id: number,
     owner_id: number
+    championships: Championship[],
+    users: User[],
 }
