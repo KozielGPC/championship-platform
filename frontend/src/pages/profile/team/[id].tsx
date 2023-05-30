@@ -1,5 +1,5 @@
 import  Layout  from "../../../components/layout";
-import { Box, Image, Flex, Button, useToast, Text, Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, TableContainer, Icon} from "@chakra-ui/react";
+import { Box, Image, Flex, Button, useToast, Text, Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, TableContainer, Icon, FormControl, FormLabel, Select} from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { getTeamById, getTeams } from "@/services/team/retrieve";
@@ -14,18 +14,23 @@ import { UserContext } from "../../../context/UserContext";
 import {ConfirmModal} from "@/components/confirmModal"
 import { MdDeleteForever} from 'react-icons/md'
 import { Payload, removeUser } from "@/services/team/remove";
+import { getUsers } from "@/services/users/retrieve";
 
-interface TeamProp {
-  teamProp:Team
+interface Props {
+  teamProp:Team,
+  usersProp:Array<User>
 }
 
-export default function showTeam ({teamProp}: TeamProp) {
+export default function showTeam ({teamProp, usersProp}: Props) {
     const [team, setTeam] = useState<Team>();
+    const [users, setUsers] = useState<Array<User>>();
+    const [inviteUser, setInviteUser] = useState(0);
     const router = useRouter();
     const {id} = useContext(UserContext)
     const toast = useToast();
     const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
     const [idSelectedTeam , setIdSelectedTeam] = useState<number>(-1);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(
     () => {
@@ -34,6 +39,45 @@ export default function showTeam ({teamProp}: TeamProp) {
         }
       },[teamProp]
     )
+
+    useEffect(
+      () => {
+          if(usersProp){
+            setUsers(usersProp)
+            
+          }
+        },[usersProp]
+      )
+
+    function handleConfirmModal(){
+      if (inviteUser == 0) {
+        toast({
+          title: "Select a user.",
+          description: "Please try again.",
+          status: "error",
+          duration: 2000,
+          isClosable: true,
+        });
+        return;
+      }
+      setIsOpenConfirmModal(true);
+    }
+    
+    const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+      if(!event.target.value){
+        setInviteUser(0);
+      }
+      setInviteUser(parseInt(event.target.value));
+    }
+
+    const handleSubmit  = async () => {
+
+      setIsLoading(true);
+      setIsOpenConfirmModal(false);
+      setIsLoading(false);
+      return
+
+    }
 
     const handleClick = async (user_id: Number)  => {
       const payload: Payload = {
@@ -129,7 +173,28 @@ export default function showTeam ({teamProp}: TeamProp) {
               </Box>
               { 
               id == team?.owner_id ? 
-              <Button> Convidar um usuário para equipe </Button> 
+              <Box>
+                <FormControl>
+                  <FormLabel htmlFor="selectOption">Selecione um usuário para convidar:</FormLabel>
+                  <Select onChange={handleSelectChange} id="selectOption" placeholder="Selecione uma opção">
+                    { 
+                    users ?
+                      (team.users).map((user, index) => (
+                        <option value={`${user.id}`}>{user.username}</option>
+                      )) 
+                      : 
+                      (<></>)
+                    }
+                  </Select>
+                </FormControl>
+                <Button onClick={handleConfirmModal}> Convidar um usuário para equipe </Button>
+                <ConfirmModal
+                      content="Are you sure you want to invite this player to this team?"
+                      handleConfirm={handleSubmit}
+                      isOpen={isOpenConfirmModal}
+                      setIsOpen={setIsOpenConfirmModal}
+                />
+              </Box>
               : 
               <></>
               }
@@ -160,6 +225,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       }
     }
 
+
+
     //const response = await getTeamById(id.toString());
     const response = {
       data: {
@@ -185,7 +252,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             "teams": []
         }]
       },
-      status: 'sucess'
+      status: 'sucess',
+      message: 'sucess'
     }
 
     if(response.status == "error"){
@@ -197,10 +265,41 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         }
     }
 
+    //const response2 =  await getUsers();
+    const response2 = {
+      data: {
+        "users": [{
+          "id": 1,
+          "username": "rafa",
+          "password": "string",
+          "email": "string",
+          "teams": []
+        },
+        {
+          "id": 2,
+          "username": "jomas",
+          "password": "string",
+          "email": "string",
+          "teams": []
+        }
+      ]},
+      status: 'sucess',
+      message: 'sucess'
+    }
+    if(response2.status == "error"){
+      return {
+          redirect: {
+            destination: '/',
+            permanent: false,
+          }
+        }
+    }
+
     return(
       {
         props: {
-          teamProp: response.data
+          teamProp: response.data,
+          usersProp: response2.data.users
         }
       }
     )
