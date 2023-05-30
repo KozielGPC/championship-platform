@@ -1,15 +1,13 @@
 export interface User {
     id: Number;
     username: string;
-}
-
-export interface UserData {
-    id:number
-    username: string,
-    password: string,
     email: string
 }
-  
+
+export interface Token {
+    id: Number;
+    username: string;
+}
 
 export interface Championship {
     id: number,

@@ -6,12 +6,21 @@ import { Avatar, Badge, Box, Button, Flex, FormControl, Input, InputGroup, Input
 import { useContext, useEffect, useState } from 'react';
 import {UserContext} from '../../context/UserContext'
 import Link from 'next/link';
-import { UserData } from "@/interfaces";
+import { User } from "@/interfaces";
 import { getUserById } from '@/services/users/retrieve';
 import { editUser } from '@/services/users/edit';
 import { useRouter } from 'next/router';
+import jwtDecode from 'jwt-decode';
+import copyObject from '@/utils/copyObject';
 
-const defaultData: UserData = {
+interface UserFormData {
+  id: Number;
+  username: string;
+  password: string;
+  email: string;
+}
+
+const defaultData: UserFormData = {
   id:-1,
   username: "",
   password: "",
@@ -19,51 +28,25 @@ const defaultData: UserData = {
 };
 
 function Profile() {
-  const {id, username, setUsername} = useContext(UserContext);
-  const [user, setUser] = useState<UserData>(defaultData);
-  const [formData, setFormData] = useState<UserData>(defaultData);
+  const {id, username, email} = useContext(UserContext);
+  const [formData, setFormData] = useState<UserFormData>(defaultData);
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast()
   const router = useRouter();
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  useEffect(
-    () => {
-      setIsLoading(true)
-      const fetchData = async () => {
-        const response = await getUserById(id.toString());
-        if(response){
-          setIsLoading(false)
-          if(response.status == "error"){
-            toast(
-              {
-                title: "User request failed",
-                description: response.message,
-                status: "error",
-                duration: 3000,
-                position: "top"
-              }
-            )
-            return
-          }
-          if(response.data){
-            setUser(response.data)
-            setFormData({
-              id: response.data.id,
-              username: "",
-              password: "",
-              email: ""
-            });
-            
-          }
-        }
-      }
-      if(id != -1){
-        fetchData()
-      }
-    }, [id] 
-  )
-  
+  useEffect(() => {
+    console.log(id, username, email)
+    if(id){
+      setFormData({
+        id: id,
+        username: username,
+        email: email,
+        password: ""
+      })
+    }
+  },[id, username, email])
+
   const handleConfirmPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setConfirmPassword(event.target.value);
   };
@@ -91,28 +74,20 @@ function Profile() {
     
     setIsLoading(true);
     
-    for (let key in formData) {
-      if (formData.hasOwnProperty(key) && (formData[key as keyof UserData] === "" || formData[key as keyof UserData] === null)) {
-        delete formData[key as keyof UserData];
-      }
-    }
+    const copyFormData = copyObject(formData);
 
-    const response = await editUser(formData);
+    const response = await editUser(copyFormData);
     if(response){
+        setIsLoading(false);
         toast({
           title: response.message,
           status: response.status,
           duration: 3000,
           isClosable: true,
         });
-        if ('username' in formData) {
-          setUsername(formData.username)
+        if(response.status == "success"){
+          router.push("/");
         }
-        setIsLoading(false);
-        if(response.status=="success"){
-          router.push('/');
-        }
-    }
   };
 
   return (
@@ -122,9 +97,10 @@ function Profile() {
         My Profile:
       </Box>
       <Box pt="5px" textColor="white" textAlign="center">
-        <Avatar size={'lg'} backgroundColor={'green.400'} name={`${user.username}`} />
-        <Text mb="5px" fontSize={'large'}>{user.username}</Text>
+        <Avatar size={'lg'} backgroundColor={'green.400'} name={`${username}`} />
+        <Text mb="5px" fontSize={'large'}>{username}</Text>
       </Box>
+      
       <Box display="flex" flexDirection={"row"} alignItems={"center"} justifyContent={"center"} pt="10px" textColor="white" textAlign="center" >
         <form onSubmit={handleSubmit}>
           <FormControl w="40vw">
@@ -134,7 +110,7 @@ function Profile() {
               name="username"
               value={formData.username}
               onChange={handleInputChange}
-              placeholder={user.username}
+              placeholder={"Username"}
               />
           </FormControl>
 
@@ -145,7 +121,7 @@ function Profile() {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              placeholder={user.email}
+              placeholder={"E-mail"}
               />
           </FormControl>
 
@@ -156,6 +132,7 @@ function Profile() {
               name="password"
               value={formData.password}
               onChange={handleInputChange}
+              placeholder={"Password"}
               />
           </FormControl>
           <FormControl mt={2}>
@@ -174,6 +151,7 @@ function Profile() {
       </Box>
     </Layout>
   )
+}
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
