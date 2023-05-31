@@ -5,6 +5,7 @@
 -   [#65](https://github.com/KozielGPC/championship-platform/issues/65) - Atualizado banco de dados para postgresql
 
 ### Fixed
+-   [#126](https://github.com/KozielGPC/championship-platform/issues/127) - Resolvida validação de inserção de um time em um campeonato cheio
 -   [#84](https://github.com/KozielGPC/championship-platform/issues/84) - Resolvida validação do formulário de campeonato no frontend
 
 ### Added
