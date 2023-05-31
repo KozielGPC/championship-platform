@@ -2,18 +2,15 @@
 import { parseCookies } from 'nookies'
 import { GetServerSideProps } from 'next'
 import { useEffect, useState } from 'react'
-import jwt_decode from "jwt-decode"
-import { Championship, User } from "../interfaces";
-import { Box, Button, NumberInput, NumberInputField, useToast } from '@chakra-ui/react';
+import { Championship} from "../interfaces";
+import { Box, Button,Text,Select, NumberInput, Input, NumberInputField, useToast } from '@chakra-ui/react';
 import { useContext } from 'react';
 import {UserContext} from '../context/UserContext'
 import Layout from '@/components/layout';
 import ShowChampionships from '@/components/showChampionships';
 import { ChampionshipFiltersProps, getChampionships, getChampionshipsFiltered } from '@/services/championship/retrieve';
-import axios from 'axios';
 
-
-const championshipsFilter: ChampionshipFiltersProps = {name: '', min_teams: undefined, max_teams: undefined};
+const championshipsFilter: ChampionshipFiltersProps = {name: '', min_teams: undefined, max_teams: undefined, game_id: undefined};
 
 function Home() {
   const { id,setId,username,setUsername} = useContext(UserContext);
@@ -21,8 +18,11 @@ function Home() {
   const [championshipsFiltered, setChampionshipsFiltered] = useState(Array<Championship>);
   const [buttonContent, setButtonContent] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedGame, setSelectedGame] = useState<number | undefined>(undefined);
   const [minTeams, setMinTeams] = useState<number | undefined>(undefined);
   const [maxTeams, setMaxTeams] = useState<number | undefined>(undefined);
+  const [minteamError, setMinTeamError] = useState<boolean>(false);
+  const [maxteamError, setMaxTeamError] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast()
 
@@ -59,13 +59,16 @@ function Home() {
         setButtonContent(!buttonContent);
   }
 
-  const handleMinimumChange = (value: number | string) => {
+  const handleMinimunChange = (value: number | string) => {
+    
     if (typeof value === "string") {
       const parsedValue = parseInt(value, 10);
-      if (isNaN(parsedValue)) {
+      if (isNaN(parsedValue) || parsedValue < 0) {
         setMinTeams(undefined);
+        setMinTeamError(true);
       } else {
         setMinTeams(parsedValue);
+        setMinTeamError(false);
       }
     } else {
       setMinTeams(value);
@@ -74,22 +77,41 @@ function Home() {
 
   const handleMaximumChange = (value: number | string) => {
     if (typeof value === "string") {
-      value = parseInt(value, 10);
+      const parsedValue = parseInt(value, 10);
+      if (isNaN(parsedValue)) {
+        setMaxTeams(undefined);
+      } else {
+        setMaxTeams(parsedValue);
+      }
+    } else {
+      setMaxTeams(value);
     }
-    setMaxTeams(value);
 };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
-        console.log(value)
         setSearchTerm(value);
   }
 
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    if(event.target.value == 'undefined'){
+      setSelectedGame(undefined);
+    }else{
+      setSelectedGame(Number(event.target.value));
+    }
+  };
+
   const handleSearchClick = async() => {
-        console.log(minTeams)
-        if(searchTerm !== '' || minTeams !== undefined || maxTeams !== undefined){
+        console.log(minteamError)
+        if(searchTerm !== '' || minTeams !== undefined || maxTeams !== undefined || selectedGame !== undefined && minteamError==false){
           if((minTeams) && isNaN(minTeams)){
             championshipsFilter.min_teams = undefined;
+          }
+          if((maxTeams) && isNaN(maxTeams)){
+            championshipsFilter.max_teams = undefined;
+          }
+          if((selectedGame) && isNaN(selectedGame)){
+            championshipsFilter.game_id = undefined;
           }
           if(searchTerm !== ''){
              championshipsFilter.name = searchTerm;
@@ -103,6 +125,12 @@ function Home() {
           if(maxTeams != undefined){
             championshipsFilter.max_teams = maxTeams;
           }
+          if(selectedGame != undefined){
+            championshipsFilter.game_id = selectedGame
+          }
+          if(minteamError == true){
+            championshipsFilter.min_teams = undefined;
+          }
           const response = await getChampionshipsFiltered(championshipsFilter);
           if(response){
             if(response.status=="success"){
@@ -110,17 +138,17 @@ function Home() {
                   setChampionshipsFiltered(response.data);  
                   toast(
                     {
-                      title: "Campeonato(s) encontrado(s) com sucesso",
+                      title: "Championship(s) found successfully",
                       status: response.status,
                       duration: 3000,
                       isClosable: true,
                     }
                   ) 
                 
-              }else if(response.data && response.data.length == 0){             
+              }else if(response.data && response.data.length == 0){            
                 toast(
                 {
-                  title: "Campeonato(s) não encontrado(s) com os filtros selecionados",
+                  title: "Championship(s) not found with the selected filters",
                   status: "error",
                   duration: 3000,
                   isClosable: true,
@@ -141,11 +169,22 @@ function Home() {
               )
             }
           }
+
+        }else if(minTeams == undefined && minteamError == true){
+            toast(
+              {
+                title: "Minimun of teams value must be greather than zero",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+              }
+            )  
+            setMinTeamError(false);  
         }else{
           setChampionshipsFiltered([]);
           toast(
             {
-              title: "Selecione algum filtro",
+              title: "Select a filter",
               status: "error",
               duration: 3000,
               isClosable: true,
@@ -157,41 +196,62 @@ function Home() {
 
   return (
     <Layout>
-      <Box ml={'1'}>
-        <Button onClick={handleButtonClick}
-        colorScheme={'blue'}
-        >Show filters 
+      <Box ml="15px" mt="2px">
+        <Button size='md' onClick={handleButtonClick} colorScheme={buttonContent ? 'red' : 'blue'}>
+        {buttonContent ? 'Hide filters' : 'Show filters'}
         </Button>
       </Box>
       <Box>
         {(buttonContent) ? 
-          <Box 
-          bg={'whiteAlpha.500'}
-          h={'30%'}
-          w={'25%'}
-          mt={'2'}
-          ml={'1'}
-          >
-              <Box display={'inline-block'}>
-                Nome do campeonato:
-                <input
-                  type="text"
-                  placeholder="Digite o nome do campeonato"
-                  style={{ width: '90%' }} 
-                  value={searchTerm}
-                  onChange={handleInputChange}
-                />
-                Minimo de times:
-                <NumberInput onChange={handleMinimumChange}>
-                  <NumberInputField h={'10%'}/>
-                </NumberInput>
-                Maximo de times:
-                <NumberInput onChange={handleMaximumChange}>
-                  <NumberInputField h={'10%'}/>
-                </NumberInput>
-                <Button colorScheme='blackAlpha' variant='outline' size={'sm'} w={'25%'} onClick={handleSearchClick}>Search</Button>
-              </Box>
+          <Box
+          bg="whiteAlpha.300"
+          textColor={"white"}
+          borderRadius="md"
+          borderWidth="0.5px"
+          borderColor="black"
+          h="30%"
+          w="35%"
+          mt="2"
+          ml="15px"
+        >
+          <Box display="flex" flexDirection="column" alignItems="flex-start" ml="5px" gap={'0.5'} textColor={"black"}>
+            <Text>Championship name:</Text>
+            <Input
+              type="text"
+              placeholder="Write the name of the championship"
+              w="96%"
+              h="5%"
+              borderRadius={'none'}
+              value={searchTerm}
+              bg={"white"}
+              onChange={handleInputChange}
+            />
+            Minimun of teams:
+            <NumberInput onChange={handleMinimunChange} w="96%"  bg={"white"}>
+              <NumberInputField h="5%" />
+            </NumberInput>
+            Maximum of teams:
+            <NumberInput onChange={handleMaximumChange} w="96%"  bg={"white"}>
+              <NumberInputField h="5%" />
+            </NumberInput>
+            Select a game:
+            <Select h="5%"
+              w="96%"
+              value={selectedGame}
+              onChange={handleSelectChange}
+              bg={"white"}
+              borderRadius={'none'}
+            >
+              <option value='undefined'>Select...</option>
+              <option value="0">League of Legends</option>
+              <option value="1">Valorant</option>
+            </Select>
+        
+            <Button colorScheme="black" variant="outline" size="sm" w="25%" onClick={handleSearchClick} mt={'5px'} mb={'5px'}>
+              Search
+            </Button>
           </Box>
+        </Box>
           :
           <></>}
       </Box>
