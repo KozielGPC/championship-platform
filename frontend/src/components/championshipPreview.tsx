@@ -38,7 +38,7 @@ const ChampionshipPreview: React.FC<ChampionshipPreviewProps> = ({ championship 
             overflow={'hidden'}
             alt={'lol-image'}
             src={
-              championship.game_id == 1 
+              championship.game_id == 0 
               ?'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcStJOZJ8I6GWv1kqOJVgJL7EsLYfLmiL-Vxbu7BpPrurPsUHXvE'
               : 'https://viendidong.com/wp-content/uploads/2022/12/valorant-thumb-vdd-viendidong.jpg'
             }

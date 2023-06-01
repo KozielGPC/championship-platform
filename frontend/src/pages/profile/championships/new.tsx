@@ -61,7 +61,7 @@ const defaultFormData: ChampionshipFormData = {
   rules: "",
   contact: "",
   visibility: "publico",
-  game_id: 1,
+  game_id: 0,
   admin_id: 0,
 };
 
@@ -122,6 +122,7 @@ export default function CreateChampionship() {
             isClosable: true,
           }
         )
+        setIsLoading(false)
       }
       
       
@@ -361,8 +362,8 @@ export default function CreateChampionship() {
                                 value={formData.game_id}
                                 onChange={handleSelectChange}
                                 >
-                                    <option value="1">League Of Legends</option>
-                                    <option value="2">Valorant</option>
+                                    <option value="0">League Of Legends</option>
+                                    <option value="1">Valorant</option>
                                 </Select>
                                 
                             </FormControl>

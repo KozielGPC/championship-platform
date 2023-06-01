@@ -4,7 +4,6 @@ from api.schemas.championships import (
     Response,
     ChampionshipInput,
     ChampionshipSchema,
-    FindManyChampionshipFilters,
     AddTeamToChampionshipInput,
     AddTeamToChampionshipReturn,
     ChampionshipUpdateRequest,
@@ -17,7 +16,7 @@ from api.utils.auth_services import get_password_hash, oauth2_scheme, get_curren
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import Enum
+from sqlalchemy import Enum, func
 
 from sqlalchemy.orm import joinedload
 from api.schemas.championships_has_teams import ChampionshipWithTeams
@@ -38,18 +37,30 @@ session = Session(bind=engine)
     response_model=list[ChampionshipWithTeams],
     response_description="Sucesso de resposta da aplicação.",
 )
-async def getAll(filters: FindManyChampionshipFilters | None = None, skip: int = 0, limit: int = 100):
+async def getAll(
+    game_id: int = None,
+    admin_id: int = None,
+    max_teams: int = None,
+    min_teams: int = None,
+    format: str = None,
+    name: str = None,
+    skip: int = 0,
+    limit: int = 100,
+):
     query = session.query(Championship)
 
-    if filters is not None:
-        if filters.game_id is not None:
-            query = query.filter(Championship.game_id == filters.game_id)
-        if filters.max_teams is not None:
-            query = query.filter(Championship.max_teams <= filters.max_teams)
-        if filters.min_teams is not None:
-            query = query.filter(Championship.min_teams >= filters.min_teams)
-        if filters.format is not None:
-            query = query.filter(Championship.format == filters.format)
+    if game_id is not None:
+        query = query.filter(Championship.game_id == game_id)
+    if max_teams is not None and isinstance(max_teams, int):
+        query = query.filter(Championship.max_teams <= max_teams)
+    if min_teams is not None and isinstance(min_teams, int):
+        query = query.filter(Championship.min_teams >= min_teams)
+    if format is not None and isinstance(format, str):
+        query = query.filter(Championship.format == format)
+    if admin_id is not None and isinstance(admin_id, int):
+        query = query.filter(Championship.admin_id == admin_id)
+    if name is not None:
+        query = query.filter(Championship.name == name)
 
     championships = query.options(joinedload(Championship.teams)).offset(skip).limit(limit).all()
 
@@ -188,18 +199,34 @@ async def update(id: int, update_request: ChampionshipUpdateRequest, token: Anno
     response_model=AddTeamToChampionshipReturn,
     response_description="Sucesso de resposta da aplicação.",
 )
-async def addTeamToChampionship(input: AddTeamToChampionshipInput, token: Annotated[str, Depends(oauth2_scheme)]):
+async def addTeamToChampionship(
+    input: AddTeamToChampionshipInput,
+    token: Annotated[str, Depends(oauth2_scheme)]
+):
     user = await get_current_user(token)
     championship = session.query(Championship).filter(Championship.id == input.championship_id).first()
-    if championship == None:
+    if championship is None:
         raise HTTPException(status_code=404, detail="Championship not found")
+    
     team = session.query(Team).filter(Team.id == input.team_id).first()
-    if team == None:
+    if team is None:
         raise HTTPException(status_code=404, detail="Team not found")
+
     if team.owner_id != user.id and championship.admin_id != user.id:
-        raise HTTPException(status_code=401, detail="User is not admin of Team or of the Championship")
+        raise HTTPException(status_code=401, detail="User is not the admin of the Team or the Championship")
+    
     if team.game_id != championship.game_id:
-        raise HTTPException(status_code=400, detail="Team is not of the same Game as the Championship")
+        raise HTTPException(status_code=400, detail="Team is not from the same Game as the Championship")
+    
+    quant = (
+        session.query(ChampionshipsHasTeams)
+        .filter(
+            ChampionshipsHasTeams.championship_id == input.championship_id
+        )
+        .count()
+    )
+    if quant >= championship.max_teams:
+        raise HTTPException(status_code=400, detail="Championship is already full")
 
     championship_has_team = (
         session.query(ChampionshipsHasTeams)
@@ -209,7 +236,7 @@ async def addTeamToChampionship(input: AddTeamToChampionshipInput, token: Annota
         )
         .first()
     )
-    if championship_has_team != None:
+    if championship_has_team is not None:
         raise HTTPException(status_code=400, detail="Team is already registered in this Championship")
 
     data = ChampionshipsHasTeams(
@@ -221,6 +248,7 @@ async def addTeamToChampionship(input: AddTeamToChampionshipInput, token: Annota
     session.refresh(data)
 
     return data
+
 
 
 @router.post(

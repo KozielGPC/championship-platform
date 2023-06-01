@@ -4,8 +4,11 @@ from api.models.users import User
 from api.utils.auth_services import get_password_hash, oauth2_scheme, get_current_user
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
-
+from api.models.team_has_users import TeamsHasUsers
+from api.schemas.teams_has_users import UserWithTeams
 from fastapi.encoders import jsonable_encoder
+from api.schemas.notifications import NotificationSchema
+from api.models.notifications import Notification
 
 router = APIRouter(
     prefix="/users",
@@ -19,7 +22,7 @@ session = Session(bind=engine)
 
 @router.get(
     "/",
-    response_model=list[UserSchema],
+    response_model=list[UserWithTeams],
     response_description="Sucesso de resposta da aplicação.",
 )
 async def getAll(token: Annotated[str, Depends(oauth2_scheme)], skip: int = 0, limit: int = 100):
@@ -28,7 +31,7 @@ async def getAll(token: Annotated[str, Depends(oauth2_scheme)], skip: int = 0, l
 
 @router.get(
     "/{id}",
-    response_model=UserSchema,
+    response_model=UserWithTeams,
     response_description="Sucesso de resposta da aplicação.",
 )
 async def getById(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
@@ -107,3 +110,16 @@ async def delete(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
     session.commit()
 
     return user
+
+
+@router.get(
+    "/me/notifications",
+    response_model=list[NotificationSchema],
+    response_description="Sucesso de resposta da aplicação.",
+)
+async def getAllNotificationsFromUser(token: Annotated[str, Depends(oauth2_scheme)], skip: int = 0, limit: int = 100):
+    user = await get_current_user(token)
+    query = session.query(Notification)
+    notifications = query.filter(Notification.reference_user_id == user.id).offset(skip).limit(limit).all()
+
+    return jsonable_encoder(notifications)
