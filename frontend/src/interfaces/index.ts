@@ -35,3 +35,8 @@ export interface Team {
     championships: Championship[],
     users: User[],
 }
+
+export interface InviteUserToTeam {
+    team_id?: number,
+    user_id?: number
+}

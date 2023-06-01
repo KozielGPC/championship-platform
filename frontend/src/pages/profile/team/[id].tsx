@@ -4,7 +4,7 @@ import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { getTeamById, getTeamById2, getTeams } from "@/services/team/retrieve";
 import jwt_decode from "jwt-decode";
-import { User } from "@/interfaces";
+import { InviteUserToTeam, User } from "@/interfaces";
 import { Team } from "@/interfaces";
 import { useEffect, useState} from "react";
 import {useRouter} from "next/router"; 
@@ -15,12 +15,15 @@ import {ConfirmModal} from "@/components/confirmModal"
 import { MdDeleteForever, MdStarOutline} from 'react-icons/md'
 import { Payload, removeUser } from "@/services/team/remove";
 import { getUserById, getUsers } from "@/services/users/retrieve";
+import { UserInvite } from "@/services/team/invite";
 
 interface Props {
   teamProp:Team,
   usersProp:Array<User>,
   ownerProp:User
 }
+
+
 
 export default function showTeam ({teamProp, usersProp, ownerProp}: Props) {
     const [team, setTeam] = useState<Team>();
@@ -74,10 +77,37 @@ export default function showTeam ({teamProp, usersProp, ownerProp}: Props) {
     const handleSubmit  = async () => {
 
       setIsLoading(true);
+      const invite :InviteUserToTeam = {
+        team_id: team?.id,
+        user_id: inviteUser
+      }
+
+      const response = await UserInvite(invite);
+
+      if(response.status == "error"){
+        toast(
+          {
+            title: response.message,
+            status: response.status,
+            duration: 3000,
+            isClosable: true,
+          }
+        )
+      } else {
+        toast(
+          {
+            title: response.message,
+            status: response.status,
+            duration: 3000,
+            isClosable: true,
+          }
+        )
+      }
+      router.push("/profile/team/"+team?.id);
       setIsOpenConfirmModal(false);
+
       setIsLoading(false);
       return
-
     }
 
     const handleClick = async (user_id: Number)  => {
