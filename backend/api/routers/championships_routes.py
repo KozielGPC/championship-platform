@@ -16,8 +16,7 @@ from api.utils.auth_services import get_password_hash, oauth2_scheme, get_curren
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import Enum
-
+from sqlalchemy import Enum, func
 from sqlalchemy.orm import joinedload
 from api.schemas.championships_has_teams import ChampionshipWithTeams
 
@@ -52,15 +51,15 @@ async def getAll(
     if game_id is not None:
         query = query.filter(Championship.game_id == game_id)
     if max_teams is not None and isinstance(max_teams, int):
-        query = query.filter(Championship.max_teams <= max_teams)
+        query = query.filter(Championship.max_teams == max_teams)
     if min_teams is not None and isinstance(min_teams, int):
-        query = query.filter(Championship.min_teams >= min_teams)
+        query = query.filter(Championship.min_teams == min_teams)
     if format is not None and isinstance(format, str):
         query = query.filter(Championship.format == format)
     if admin_id is not None and isinstance(admin_id, int):
         query = query.filter(Championship.admin_id == admin_id)
     if name is not None:
-        query = query.filter(Championship.name == name)
+        query = query.filter(func.lower(Championship.name).like(f"%{name.lower()}%"))
 
     championships = query.options(joinedload(Championship.teams)).offset(skip).limit(limit).all()
 
