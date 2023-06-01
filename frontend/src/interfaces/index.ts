@@ -1,6 +1,12 @@
 export interface User {
     id: Number;
     username: string;
+    email: string
+}
+
+export interface Token {
+    id: Number;
+    username: string;
 }
 
 export interface Championship {

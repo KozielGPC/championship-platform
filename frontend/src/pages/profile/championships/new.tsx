@@ -205,7 +205,7 @@ export default function CreateChampionship() {
       if (!values.admin_id) {
         errors.admin_id = "Required";
       }
-      console.log(errors)
+      (errors)
       return errors;
     };
 

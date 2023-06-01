@@ -13,6 +13,7 @@
 -   [#93](https://github.com/KozielGPC/championship-platform/issues/93) - Adicionado tabela e rota para retornar notificações de um usuário
 -   [#105](https://github.com/KozielGPC/championship-platform/issues/105) - Adicionado filtro de admin no get de Campeonatos e recebendo filtros por URL
 -   [#89](https://github.com/KozielGPC/championship-platform/issues/89) - Adicionado rota para cadastrar um Usuário em um Time
+-   [#56](https://github.com/KozielGPC/championship-platform/issues/56) - Adicionando pagina de dados pessoais
 -   [#108](https://github.com/KozielGPC/championship-platform/issues/108) - Adicionado rota para atualizar um Campeonato
 -   [#107](https://github.com/KozielGPC/championship-platform/issues/107) - Adicionado rota para atualizar um Usuário
 -   [#106](https://github.com/KozielGPC/championship-platform/issues/106) - Adicionado rota para cadastrar Time em um Campeonato

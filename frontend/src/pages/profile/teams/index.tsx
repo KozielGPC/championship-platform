@@ -71,13 +71,6 @@ export default function MyTeams({teams}:PropsMyTeams) {
       setIsOpenConfirmModal(true);
     }
 
-
-    useEffect(
-      ()=>{
-        console.log(isOpenConfirmModal)
-      },[isOpenConfirmModal]
-    )
-
     return (
         <Layout>
             <Box>
