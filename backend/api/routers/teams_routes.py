@@ -8,9 +8,11 @@ from api.schemas.teams import (
     AddUserToTeamReturn,
     TeamUpdateRequest,
 )
+from api.schemas.notifications import NotificationSchema
 from api.models.teams import Team
 from api.models.users import User
 from api.models.games import Game
+from api.models.notifications import Notification
 from api.models.team_has_users import TeamsHasUsers
 from api.utils.auth_services import get_password_hash, oauth2_scheme, get_current_user
 from fastapi import APIRouter, HTTPException, Depends
@@ -159,9 +161,57 @@ async def addUserToTeam(input: AddUserToTeamInput, token: Annotated[str, Depends
     if team_has_user != None:
         raise HTTPException(status_code=400, detail="Player is already registered in this Team")
 
+    notification = session.query(Notification).filter(Notification.id == input.notification_id).first()
+    if notification == None:
+        raise HTTPException(status_code=404, detail="Notification not found")
+
     data = TeamsHasUsers(
         user_id=input.user_id,
         team_id=input.team_id,
+    )
+
+    notification.visualized = True
+
+    session.add(data)
+    session.commit()
+    session.refresh(notification)
+    session.refresh(data)
+
+    return data
+
+
+@router.post(
+    "/invite-user",
+    status_code=200,
+    response_model=NotificationSchema,
+    response_description="Sucesso de resposta da aplicação.",
+)
+async def addUserToTeam(input: AddUserToTeamInput, token: Annotated[str, Depends(oauth2_scheme)]):
+    user = await get_current_user(token)
+    player = session.query(User).filter(User.id == input.user_id).first()
+    if player == None:
+        raise HTTPException(status_code=404, detail="Player not found")
+    team = session.query(Team).filter(Team.id == input.team_id).first()
+    if team == None:
+        raise HTTPException(status_code=404, detail="Team not found")
+    if team.owner_id != user.id:
+        raise HTTPException(status_code=401, detail="User is not admin of Team")
+    team_has_user = (
+        session.query(TeamsHasUsers)
+        .filter(
+            TeamsHasUsers.user_id == input.user_id,
+            TeamsHasUsers.team_id == input.team_id,
+        )
+        .first()
+    )
+    if team_has_user != None:
+        raise HTTPException(status_code=400, detail="Player is already registered in this Team")
+
+    data = Notification(
+        name="Convite para o time " + team.name,
+        text="Você foi convidado para o time " + team.name + ", para aceitar acesse o link: ",
+        reference_user_id=player.id,
+        visualized=False,
     )
     session.add(data)
     session.commit()

@@ -58,10 +58,12 @@ class TeamUpdateRequest(BaseModel):
 
     class Config:
         extra = "forbid"
-        
+
+
 class AddUserToTeamInput(BaseModel):
     team_id: int
     user_id: int
+    notification_id: int
 
     @validator("*")
     def check_positive_numbers(cls, v):
@@ -78,6 +80,7 @@ class AddUserToTeamReturn(BaseModel):
 
     class Config:
         orm_mode = True
+
 
 class Response(GenericModel, Generic[T]):
     code: str
