@@ -41,6 +41,18 @@ async def getById(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
     return user
 
 
+@router.get(
+    "/find/",
+    response_model=UserWithTeams,
+    response_description="Sucesso de resposta da aplicação.",
+)
+async def getByUsername(username: str):
+    user = session.query(User).filter(User.username == username).first()
+    if user == None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+
 @router.post(
     "/create",
     status_code=201,
