@@ -7,6 +7,7 @@ from api.schemas.teams import (
     AddUserToTeamInput,
     AddUserToTeamReturn,
     TeamUpdateRequest,
+    AcceptTeamInviteInput,
 )
 from api.schemas.notifications import NotificationSchema
 from api.models.teams import Team
@@ -135,13 +136,23 @@ async def delete(id: int, token: Annotated[str, Depends(oauth2_scheme)]):
 
 
 @router.post(
-    "/add-user",
+    "/accept-invite",
     status_code=200,
     response_model=AddUserToTeamReturn,
     response_description="Sucesso de resposta da aplicação.",
 )
-async def addUserToTeam(input: AddUserToTeamInput, token: Annotated[str, Depends(oauth2_scheme)]):
+async def addUserToTeam(input: AcceptTeamInviteInput, token: Annotated[str, Depends(oauth2_scheme)]):
     user = await get_current_user(token)
+    notification = session.query(Notification).filter(Notification.id == input.notification_id).first()
+    if notification == None:
+        raise HTTPException(status_code=404, detail="Notification not found")
+
+    if input.accepted == False:
+        notification.visualized = True
+        return {
+            "user_id": input.user_id,
+            "team_id": input.team_id,
+        }
     player = session.query(User).filter(User.id == input.user_id).first()
     if player == None:
         raise HTTPException(status_code=404, detail="Player not found")
@@ -160,10 +171,6 @@ async def addUserToTeam(input: AddUserToTeamInput, token: Annotated[str, Depends
     )
     if team_has_user != None:
         raise HTTPException(status_code=400, detail="Player is already registered in this Team")
-
-    notification = session.query(Notification).filter(Notification.id == input.notification_id).first()
-    if notification == None:
-        raise HTTPException(status_code=404, detail="Notification not found")
 
     data = TeamsHasUsers(
         user_id=input.user_id,
@@ -209,7 +216,9 @@ async def addUserToTeam(input: AddUserToTeamInput, token: Annotated[str, Depends
 
     data = Notification(
         name="Convite para o time " + team.name,
-        text="Você foi convidado para o time " + team.name + ", para aceitar acesse o link: ",
+        text="Você foi convidado para o time "
+        + team.name
+        + ", para aceitar acesse as suas notifiações e aceite o convite.",
         reference_user_id=player.id,
         visualized=False,
     )
