@@ -48,7 +48,6 @@ function Home() {
         }
       }
       fetchData()
-      .catch(console.error);
     }, [] 
   )
 

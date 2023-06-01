@@ -138,7 +138,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     const response = await getTeams();
-    console.log(response)
     if(response.status == "error"){
       return {
         redirect: {
