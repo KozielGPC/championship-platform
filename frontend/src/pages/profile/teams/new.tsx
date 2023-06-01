@@ -49,7 +49,6 @@ function CreateTeam(data: User) {
   };
 
   const handleGameChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log(event.target.value);
     setGame(event.target.value);
   };
 

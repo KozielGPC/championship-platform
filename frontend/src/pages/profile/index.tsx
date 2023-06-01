@@ -28,7 +28,7 @@ const defaultData: UserFormData = {
 };
 
 function Profile() {
-  const {id, username, email} = useContext(UserContext);
+  const {id, username, email, setUsername, setEmail} = useContext(UserContext);
   const [formData, setFormData] = useState<UserFormData>(defaultData);
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast()
@@ -36,7 +36,6 @@ function Profile() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
-    console.log(id, username, email)
     if(id){
       setFormData({
         id: id,
@@ -61,6 +60,28 @@ function Profile() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     
+    if(formData.email == ""){
+      toast({
+        title: "Email is empty.",
+        description: "Please try again.",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if(formData.username == ""){
+      toast({
+        title: "Username is empty.",
+        description: "Please try again.",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+      return;
+    }
+
     if(formData.password !== confirmPassword){
         toast({
             title: "Passwords do not match.",
@@ -75,21 +96,31 @@ function Profile() {
     setIsLoading(true);
     
     const copyFormData = copyObject(formData);
+    if (copyFormData.username == username){
+      delete copyFormData.username;
+    }
 
+
+    
     const response = await editUser(copyFormData);
     if(response){
-        setIsLoading(false);
-        toast({
-          title: response.message,
-          status: response.status,
-          duration: 3000,
-          isClosable: true,
-        });
-        if(response.status == "success"){
-          router.push("/");
+      setIsLoading(false);
+      toast({
+        title: response.message,
+        status: response.status,
+        duration: 3000,
+        isClosable: true,
+      });
+      if(response.status == "success" && response.data){
+          if(response.data.email && response.data.username){
+            setUsername(response.data.username)
+            setEmail(response.data.email)
+            router.push("/");
+          }
         }
-  };
-
+      }
+    };
+    
   return (
     <Layout>
       <Box
@@ -126,22 +157,23 @@ function Profile() {
           </FormControl>
 
           <FormControl mt={2}>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>New Password</FormLabel>
               <Input
               type="password"
               name="password"
               value={formData.password}
               onChange={handleInputChange}
-              placeholder={"Password"}
+              placeholder={"New Password"}
               />
           </FormControl>
           <FormControl mt={2}>
-              <FormLabel>Confirm Password</FormLabel>
+              <FormLabel>Confirm new Password</FormLabel>
               <Input
               type="password"
               name="confirmPassword"
               value={confirmPassword}
               onChange={handleConfirmPasswordChange}
+              placeholder={"Confirm new Password"}
               />
           </FormControl>
           <Button mt={2} colorScheme="blue" type="submit" w="40vw">
@@ -151,7 +183,6 @@ function Profile() {
       </Box>
     </Layout>
   )
-}
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

@@ -1,12 +1,7 @@
+import { User } from "@/interfaces";
 import axios, { AxiosResponse } from "axios";
 import { parseCookies } from "nookies";
 
-export interface User {
-    id: Number;
-    username: String;
-    email: String;
-    password: String;
-}
 export  type Status = "success" | "error";
 export  interface ResponseRequest {
     status: Status;

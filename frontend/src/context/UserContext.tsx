@@ -51,7 +51,6 @@ export const UserProvider = ({ children }: UserContextProps)=>{
 
     useEffect(
         () => {
-            console.log("asdasd")
             signin(token);
         },[token]
     )
