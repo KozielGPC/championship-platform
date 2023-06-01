@@ -198,18 +198,34 @@ async def update(id: int, update_request: ChampionshipUpdateRequest, token: Anno
     response_model=AddTeamToChampionshipReturn,
     response_description="Sucesso de resposta da aplicação.",
 )
-async def addTeamToChampionship(input: AddTeamToChampionshipInput, token: Annotated[str, Depends(oauth2_scheme)]):
+async def addTeamToChampionship(
+    input: AddTeamToChampionshipInput,
+    token: Annotated[str, Depends(oauth2_scheme)]
+):
     user = await get_current_user(token)
     championship = session.query(Championship).filter(Championship.id == input.championship_id).first()
-    if championship == None:
+    if championship is None:
         raise HTTPException(status_code=404, detail="Championship not found")
+    
     team = session.query(Team).filter(Team.id == input.team_id).first()
-    if team == None:
+    if team is None:
         raise HTTPException(status_code=404, detail="Team not found")
+
     if team.owner_id != user.id and championship.admin_id != user.id:
-        raise HTTPException(status_code=401, detail="User is not admin of Team or of the Championship")
+        raise HTTPException(status_code=401, detail="User is not the admin of the Team or the Championship")
+    
     if team.game_id != championship.game_id:
-        raise HTTPException(status_code=400, detail="Team is not of the same Game as the Championship")
+        raise HTTPException(status_code=400, detail="Team is not from the same Game as the Championship")
+    
+    quant = (
+        session.query(ChampionshipsHasTeams)
+        .filter(
+            ChampionshipsHasTeams.championship_id == input.championship_id
+        )
+        .count()
+    )
+    if quant >= championship.max_teams:
+        raise HTTPException(status_code=400, detail="Championship is already full")
 
     championship_has_team = (
         session.query(ChampionshipsHasTeams)
@@ -219,7 +235,7 @@ async def addTeamToChampionship(input: AddTeamToChampionshipInput, token: Annota
         )
         .first()
     )
-    if championship_has_team != None:
+    if championship_has_team is not None:
         raise HTTPException(status_code=400, detail="Team is already registered in this Championship")
 
     data = ChampionshipsHasTeams(
@@ -231,6 +247,7 @@ async def addTeamToChampionship(input: AddTeamToChampionshipInput, token: Annota
     session.refresh(data)
 
     return data
+
 
 
 @router.post(

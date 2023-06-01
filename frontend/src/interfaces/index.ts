@@ -1,6 +1,12 @@
 export interface User {
     id: Number;
     username: string;
+    email: string
+}
+
+export interface Token {
+    id: Number;
+    username: string;
 }
 
 export interface Championship {
@@ -16,7 +22,8 @@ export interface Championship {
     contact: string,
     visibility: string,
     game_id: number,
-    admin_id: number
+    admin_id: number,
+    teams: Team[]
 }
 
 export interface Team {
@@ -25,4 +32,5 @@ export interface Team {
     password: string,
     game_id: number,
     owner_id: number
+    championships: Championship[]
 }
