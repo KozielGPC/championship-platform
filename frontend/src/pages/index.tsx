@@ -151,7 +151,6 @@ function Home() {
                 isClosable: true,
             })
             setChampionshipsFiltered([])
-            console.log(championshipsFiltered)
             }
           }
         }

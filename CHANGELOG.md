@@ -8,6 +8,7 @@
 -   [#84](https://github.com/KozielGPC/championship-platform/issues/84) - Resolvida validação do formulário de campeonato no frontend
 
 ### Added
+-   [#48](https://github.com/KozielGPC/championship-platform/issues/48) - Adicionado filtros no homescreen
 -   [#93](https://github.com/KozielGPC/championship-platform/issues/93) - Adicionado tabela e rota para retornar notificações de um usuário
 -   [#105](https://github.com/KozielGPC/championship-platform/issues/105) - Adicionado filtro de admin no get de Campeonatos e recebendo filtros por URL
 -   [#89](https://github.com/KozielGPC/championship-platform/issues/89) - Adicionado rota para cadastrar um Usuário em um Time
