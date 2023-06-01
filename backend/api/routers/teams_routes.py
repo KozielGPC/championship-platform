@@ -216,10 +216,10 @@ async def addUserToTeam(input: AddUserToTeamInput, token: Annotated[str, Depends
         raise HTTPException(status_code=400, detail="Player is already registered in this Team")
 
     data = Notification(
-        name="Convite para o time " + team.name,
-        text="Você foi convidado para o time "
+        name="Invite for the team " + team.name,
+        text="You were invited for the team "
         + team.name
-        + ", para aceitar acesse as suas notifiações e aceite o convite.",
+        + ", to accept acess your notifications",
         reference_user_id=player.id,
         visualized=False,
     )
