@@ -36,3 +36,4 @@
 -   [#54](https://github.com/KozielGPC/championship-platform/issues/54) - Adicionado formulário de criação de campeonato
 -   [#87](https://github.com/KozielGPC/championship-platform/issues/87) - Adicionado Tela de listagem de minhas equipes
 -   [#44](https://github.com/KozielGPC/championship-platform/issues/44) - Adicionado Tela de edição de um campeonato
+-   [#131](https://github.com/KozielGPC/championship-platform/issues/131) - Adicionado Listagem de jogos cadastrados

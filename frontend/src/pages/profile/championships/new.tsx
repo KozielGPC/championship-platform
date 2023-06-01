@@ -18,7 +18,8 @@ import {useContext} from "react";
 import {UserContext} from '../../../context/UserContext'
 import {dateTime} from '../../../utils/dateTime'
 import {FormErrorMessage } from '../../../components/formErrorMessage'
-
+import { getGames } from "@/services/games/retrieve";
+import { Game } from "@/interfaces";
 interface ChampionshipFormData {
     name: string;
     start_time: string;
@@ -65,7 +66,11 @@ const defaultFormData: ChampionshipFormData = {
   admin_id: 0,
 };
 
-export default function CreateChampionship() {
+interface Props {
+  games: Game[];
+}
+
+export default function CreateChampionship({games}:Props) {
     const router = useRouter();
     const {id} = useContext(UserContext)
     //eslint-disable-next-line react-hooks/rules-of-hooks
@@ -198,7 +203,7 @@ export default function CreateChampionship() {
         errors.visibility = "Required";
       }
 
-      if (!values.game_id) {
+      if (values.game_id==null || values.game_id==undefined) {
         errors.game_id = "Required";
       }
 
@@ -362,8 +367,13 @@ export default function CreateChampionship() {
                                 value={formData.game_id}
                                 onChange={handleSelectChange}
                                 >
-                                    <option value="0">League Of Legends</option>
-                                    <option value="1">Valorant</option>
+                                  {
+                                    games.map((game: Game, index) => {
+                                      return (
+                                        <option key={index} value={game.id}>{game.name}</option>
+                                      )
+                                    })
+                                  }
                                 </Select>
                                 
                             </FormControl>
@@ -390,9 +400,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       }
     }
 
+    const response = await getGames();
+
+    const games = response.data || [];
+
     return(
       {
-        props: {}
+        props: {
+          games: games
+        }
       }
     )
 };  
