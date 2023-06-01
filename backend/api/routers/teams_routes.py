@@ -22,6 +22,7 @@ from sqlalchemy.orm import joinedload
 from api.schemas.championships_has_teams import TeamsWithRelations, ChampionshipWithTeams
 from api.schemas.teams_has_users import UserWithTeams
 from fastapi.encoders import jsonable_encoder
+from api.websocket.connection_manager import ws_manager
 
 router = APIRouter(
     prefix="/teams",
@@ -222,6 +223,8 @@ async def addUserToTeam(input: AddUserToTeamInput, token: Annotated[str, Depends
         reference_user_id=player.id,
         visualized=False,
     )
+
+    ws_manager.send_personal_message("new-notification", input.user_id)
     session.add(data)
     session.commit()
     session.refresh(data)
