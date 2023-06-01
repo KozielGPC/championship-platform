@@ -12,6 +12,7 @@ import {deleteTeam} from "@/services/team/delete";
 import { useContext } from "react";
 import { UserContext } from "../../../context/UserContext";
 import {ConfirmModal} from "@/components/confirmModal";
+import Link from "next/link";
 
 interface PropsMyTeams {
   teams:  Array<Team>
@@ -91,29 +92,31 @@ export default function MyTeams({teams}:PropsMyTeams) {
                   <Grid padding={'10'} templateColumns='repeat(4, 1fr)' gap={4} width={'600px'}>
                   {
                     teamsList && teamsList.map((team, index) => (
-                      <GridItem key={index} colSpan={1} bg="white" borderRadius="md" p={5}
-                      boxShadow="md" borderWidth="1px" borderColor="gray.200" maxWidth={"250px"}
-                      transition="all 0.2s ease-in-out"
-                      _hover={
-                        {
-                          cursor: "pointer",
-                          boxShadow: "lg",
-                          borderColor: "blue.500",
-                          transform: `scale(1.05, 1.05)`
+                      <Box onClick={()=>router.push('/profile/team/'+team.id)}>
+                        <GridItem key={index} colSpan={1} bg="white" borderRadius="md" p={5}
+                        boxShadow="md" borderWidth="1px" borderColor="gray.200" maxWidth={"250px"}
+                        transition="all 0.2s ease-in-out"
+                        _hover={
+                          {
+                            cursor: "pointer",
+                            boxShadow: "lg",
+                            borderColor: "blue.500",
+                            transform: `scale(1.05, 1.05)`
+                          }
                         }
-                      }
-                      >
-                        <Text fontSize={'25'} color="black" fontWeight={"900"}>{team.name}</Text>
-                        <Flex justifyContent={"space-between"} width="200px">
-                          <Button  colorScheme={"yellow"} onClick={()=>router.push('/profile/teams/edit/'+team.id)}>
-                            Edit
-                          </Button>
-                          <Button onClick={()=>handleConfirmModal(team.id)}
-                          type='button' colorScheme={"red"}>
-                            Delete
-                          </Button>
-                        </Flex>
-                      </GridItem>
+                        >
+                          <Text fontSize={'25'} color="black" fontWeight={"900"}>{team.name}</Text>
+                          <Flex justifyContent={"space-between"} width="200px">
+                            <Button  colorScheme={"yellow"} onClick={()=>router.push('/profile/teams/edit/'+team.id)}>
+                              Edit
+                            </Button>
+                            <Button onClick={()=>handleConfirmModal(team.id)}
+                            type='button' colorScheme={"red"}>
+                              Delete
+                            </Button>
+                          </Flex>
+                        </GridItem>
+                      </Box>
                     ))
                   }
                   <ConfirmModal

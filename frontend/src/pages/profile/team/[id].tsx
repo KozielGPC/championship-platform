@@ -2,7 +2,7 @@ import  Layout  from "../../../components/layout";
 import { Box, Image, Flex, Button, useToast, Text, Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, TableContainer, Icon, FormControl, FormLabel, Select} from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
-import { getTeamById, getTeams } from "@/services/team/retrieve";
+import { getTeamById, getTeamById2, getTeams } from "@/services/team/retrieve";
 import jwt_decode from "jwt-decode";
 import { User } from "@/interfaces";
 import { Team } from "@/interfaces";
@@ -12,16 +12,17 @@ import {deleteTeam} from "@/services/team/delete";
 import { useContext } from "react";
 import { UserContext } from "../../../context/UserContext";
 import {ConfirmModal} from "@/components/confirmModal"
-import { MdDeleteForever} from 'react-icons/md'
+import { MdDeleteForever, MdStarOutline} from 'react-icons/md'
 import { Payload, removeUser } from "@/services/team/remove";
-import { getUsers } from "@/services/users/retrieve";
+import { getUserById, getUsers } from "@/services/users/retrieve";
 
 interface Props {
   teamProp:Team,
-  usersProp:Array<User>
+  usersProp:Array<User>,
+  ownerProp:User
 }
 
-export default function showTeam ({teamProp, usersProp}: Props) {
+export default function showTeam ({teamProp, usersProp, ownerProp}: Props) {
     const [team, setTeam] = useState<Team>();
     const [users, setUsers] = useState<Array<User>>();
     const [inviteUser, setInviteUser] = useState(0);
@@ -44,11 +45,11 @@ export default function showTeam ({teamProp, usersProp}: Props) {
       () => {
           if(usersProp){
             setUsers(usersProp)
-            
           }
         },[usersProp]
       )
 
+    
     function handleConfirmModal(){
       if (inviteUser == 0) {
         toast({
@@ -109,8 +110,6 @@ export default function showTeam ({teamProp, usersProp}: Props) {
     return (
         <Layout>
             <Image
-              
-              
               width={"100%"}
               maxHeight={'200px'}
               objectFit={'cover'}
@@ -134,7 +133,6 @@ export default function showTeam ({teamProp, usersProp}: Props) {
               <Box>
                 <TableContainer>
                   <Table variant='simple' bgColor={"white"} colorScheme="black" border="1px black solid" w="60vw">
-                    <TableCaption>Imperial to metric conversion factors</TableCaption>
                     <Thead>
                       <Tr>
                         <Th>User</Th>
@@ -148,11 +146,18 @@ export default function showTeam ({teamProp, usersProp}: Props) {
                       </Tr>
                     </Thead>
                     <Tbody>
+                    <Tr bgColor={"yellow.100"}>
+                        <Td>{1}</Td>
+                        <Td>{ownerProp.username} <Icon boxSize='15px' as={MdStarOutline}/></Td>
+                        {
+                        id == team?.owner_id ? (<Td></Td>) : (<></>)
+                        }
+                    </Tr>
                     {
                     team?.users ? 
                     (team.users).map((user, index) => (
                       <Tr>
-                        <Td>{index}</Td>
+                        <Td>{index+2}</Td>
                         <Td>{user.username}</Td>
                         { 
                         id == team?.owner_id ? 
@@ -179,7 +184,7 @@ export default function showTeam ({teamProp, usersProp}: Props) {
                   <Select onChange={handleSelectChange} id="selectOption" placeholder="Selecione uma opção">
                     { 
                     users ?
-                      (team.users).map((user, index) => (
+                      (users).map((user, index) => (
                         <option value={`${user.id}`}>{user.username}</option>
                       )) 
                       : 
@@ -213,9 +218,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         }
       }
     }
+    const userData:User = jwt_decode(token);
 
-    const {id} = context.query;
-    
+    const id_user = userData.id;
+    const {id} = context.query; 
     if(!id){
       return {
         redirect: {
@@ -226,35 +232,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
 
-
-    //const response = await getTeamById(id.toString());
-    const response = {
-      data: {
-        "id": 1,
-        "name": "Kakito LoL",
-        "password": "decode",
-        "owner_id": 1,
-        "game_id": 0,
-        "created_at": "2023-05-30T19:41:15.333Z",
-        "championships": [],
-        "users" : [{
-            "id": 1,
-            "username": "rafa",
-            "password": "string",
-            "email": "string",
-            "teams": []
-        },
-        {
-            "id": 2,
-            "username": "jao",
-            "password": "string",
-            "email": "string",
-            "teams": []
-        }]
-      },
-      status: 'sucess',
-      message: 'sucess'
-    }
+    const response = await getTeamById2(id.toString());
 
     if(response.status == "error"){
       return {
@@ -265,27 +243,39 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         }
     }
 
-    //const response2 =  await getUsers();
-    const response2 = {
-      data: {
-        "users": [{
-          "id": 1,
-          "username": "rafa",
-          "password": "string",
-          "email": "string",
-          "teams": []
-        },
-        {
-          "id": 2,
-          "username": "jomas",
-          "password": "string",
-          "email": "string",
-          "teams": []
+
+
+
+    if(response.data){
+      const user = response.data.users.find(user => user.id === id_user);
+
+      if(!(user || id_user == response.data.owner_id)){
+        return {
+          redirect: {
+            destination: '/',
+            permanent: false,
+          }
         }
-      ]},
-      status: 'sucess',
-      message: 'sucess'
+      }
     }
+
+    const response3 = await getUserById((response ? response.data ? response.data.owner_id : -1 : -1).toString());
+
+
+    if(response3.status == "error"){
+      return {
+          redirect: {
+            destination: '/',
+            permanent: false,
+          }
+        }
+    }
+    
+    const response2 =  await getUsers();
+    
+    const usersAllFiltered = response2.data?.filter((user) => !response.data?.users.some((teamUser) => teamUser.id === user.id));
+    const usersAllFiltered2 = usersAllFiltered?.filter((user) => user.id !== response.data?.owner_id);
+
     if(response2.status == "error"){
       return {
           redirect: {
@@ -295,11 +285,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         }
     }
 
+
+
+
     return(
       {
         props: {
           teamProp: response.data,
-          usersProp: response2.data.users
+          usersProp: usersAllFiltered2,
+          ownerProp: response3.data
+
         }
       }
     )
