@@ -210,6 +210,9 @@ function Home({games}:Props) {
               bg={"white"}
               borderRadius={'none'}
             >
+              <option value="undefined">
+                Select a game...
+              </option>
               {
                 games.map((game) => {
                   return (
