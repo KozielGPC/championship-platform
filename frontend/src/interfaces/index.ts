@@ -34,3 +34,8 @@ export interface Team {
     owner_id: number
     championships: Championship[]
 }
+
+export interface Game {
+    id: number,
+    name: string,
+}
