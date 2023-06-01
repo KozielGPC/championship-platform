@@ -72,13 +72,6 @@ export default function MyTeams({teams}:PropsMyTeams) {
       setIsOpenConfirmModal(true);
     }
 
-
-    useEffect(
-      ()=>{
-        console.log(isOpenConfirmModal)
-      },[isOpenConfirmModal]
-    )
-
     return (
         <Layout>
             <Box>
@@ -145,6 +138,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     const response = await getTeams();
+    console.log(response)
     if(response.status == "error"){
       return {
         redirect: {

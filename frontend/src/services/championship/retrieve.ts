@@ -15,6 +15,16 @@ export  interface ResponseRequestGetChampionshipById {
     data?: Championship;
 }
 
+export interface ChampionshipFiltersProps{
+    game_id?: number;
+    admin_id?: number;
+    max_teams?: number;
+    min_teams?: number;
+    format?: String;
+    name?: String;
+}
+
+
 export const getChampionships = async (): Promise<ResponseRequestGetChampionships> => {
 
   const response = await axios.get<Array<Championship>>(process.env.NEXT_PUBLIC_URL_SERVER+"/championships")
@@ -61,4 +71,47 @@ export const getChampionshipById = async (id:string): Promise<ResponseRequestGet
           }
       );
       return response;
+  };
+
+  export const getChampionshipsFiltered = async (championship?: ChampionshipFiltersProps): Promise<ResponseRequestGetChampionships> => {
+    let queryParams = "";
+    if (championship) {
+        if (championship.game_id) {
+          queryParams += `game_id=${championship.game_id}`;
+        }
+        if (championship.admin_id) {
+          queryParams += queryParams ? `&admin_id=${championship.admin_id}` : `admin_id=${championship.admin_id}`;
+        }
+        if (championship.max_teams) {
+          queryParams += queryParams ? `&max_teams=${championship.max_teams}` : `max_teams=${championship.max_teams}`;
+        }
+        if (championship.min_teams) {
+          queryParams += queryParams ? `&min_teams=${championship.min_teams}` : `min_teams=${championship.min_teams}`;
+        }
+        if (championship.format) {
+          queryParams += queryParams ? `&format=${championship.format}` : `format=${championship.format}`;
+        }
+        if (championship.name) {
+          queryParams += queryParams ? `&name=${championship.name}` : `name=${championship.name}`;
+        }
+      }
+    
+    const response = await axios.get<Array<Championship>>(`${process.env.NEXT_PUBLIC_URL_SERVER}/championships${queryParams ? `?${queryParams}` : ""}`)
+      .then((response: AxiosResponse<Array<Championship>>) => {
+        const status: Status = "success";
+        return {
+          status: status,
+          data: response?.data,
+          message: "Championships received with success"
+        };
+      })
+      .catch((error) => {
+        const status: Status = "error";
+        return {
+          status: status,
+          message: "Error receiving championships"
+        };
+      }
+    );
+    return response;
   };
