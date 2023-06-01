@@ -122,7 +122,10 @@ export default function CreateChampionship() {
             isClosable: true,
           }
         )
+        setIsLoading(false)
       }
+      
+      
     };
   
     const handleInputChange = (
@@ -140,7 +143,6 @@ export default function CreateChampionship() {
     };
 
     function validateChampionship(values: ChampionshipFormData){
-      console.log(values)
       let errors:ChampionshipErrors = {
         name: "",
         start_time: "",
@@ -173,7 +175,7 @@ export default function CreateChampionship() {
       }
   
       if (values.min_teams > values.max_teams) {
-        errors.min_teams = "!!Cannot be greater than maximum number of teams";
+        errors.min_teams = "Cannot be greater than maximum number of teams";
       }
 
       if (!values.prizes) {
@@ -203,6 +205,7 @@ export default function CreateChampionship() {
       if (!values.admin_id) {
         errors.admin_id = "Required";
       }
+      console.log(errors)
       return errors;
     };
 
@@ -260,7 +263,7 @@ export default function CreateChampionship() {
                                 <Input
                                 type="number"
                                 name="min_teams"
-                                min={2}
+                                min={1}
                                 max={formData.max_teams}
                                 value={formData.min_teams}
                                 onChange={handleInputChange}
