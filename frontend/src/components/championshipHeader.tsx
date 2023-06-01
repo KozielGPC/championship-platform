@@ -109,7 +109,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
             overflow={'hidden'}
             alt={'lol-image'}
             src={
-              championship?.game_id == 1 
+              championship?.game_id == 0 
               ?'https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt8979808f7798ecf5/6216ee875fe07272a8a2447a/2021_Key_art.jpg'
               : 'https://iili.io/HrHUeYG.png'
             }
