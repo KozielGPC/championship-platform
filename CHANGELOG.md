@@ -1,6 +1,9 @@
 # CHANGELOG
 ## Unreleased
 
+### Story Board
+-   [#13](https://github.com/KozielGPC/championship-platform/issues/13) - Entrar em um Campeonato
+
 ### Changed
 -   [#65](https://github.com/KozielGPC/championship-platform/issues/65) - Atualizado banco de dados para postgresql
 
