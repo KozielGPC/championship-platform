@@ -53,7 +53,6 @@ function Home({games}:Props) {
         }
       }
       fetchData()
-      .catch(console.error);
     }, [] 
   )
 

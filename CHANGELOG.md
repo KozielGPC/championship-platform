@@ -9,6 +9,7 @@
 -   [#84](https://github.com/KozielGPC/championship-platform/issues/84) - Resolvida validação do formulário de campeonato no frontend
 
 ### Added
+-   [#90](https://github.com/KozielGPC/championship-platform/issues/90) - Adicionando tela de visualizar equipe
 -   [#133](https://github.com/KozielGPC/championship-platform/issues/133) - Adicionado rota para buscar usuario por username
 -   [#48](https://github.com/KozielGPC/championship-platform/issues/48) - Adicionado filtros no homescreen
 -   [#59](https://github.com/KozielGPC/championship-platform/issues/59) - Adicionado Tela de Visualização de Campeonato
