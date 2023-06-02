@@ -2,6 +2,7 @@
 ## Unreleased
 
 ### Story Board
+-   [#37](https://github.com/KozielGPC/championship-platform/issues/37) - Listagem de Equipes
 -   [#13](https://github.com/KozielGPC/championship-platform/issues/13) - Entrar em um Campeonato
 
 ### Changed
