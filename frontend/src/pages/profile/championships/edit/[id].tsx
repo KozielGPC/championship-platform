@@ -1,113 +1,83 @@
-import  Layout  from "../../components/layout";
 import { Box, Flex, useToast } from "@chakra-ui/react";
-import { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
-import { parseCookies } from "nookies";
-import { useEffect, useState } from "react";
 import {
-  FormControl,
-  FormLabel,
-  Input,
-  Button,
-  Textarea,
-  Select,
-  Heading
-} from "@chakra-ui/react";
-import { createChampionship } from "../../services/championship/create";
-import {useContext} from "react";
-import {UserContext} from '../../context/UserContext'
-import {dateTime} from '../../utils/dateTime'
+    FormControl,
+    FormLabel,
+    Input,
+    Button,
+    Textarea,
+    Select,
+    Heading
+  } from "@chakra-ui/react";
+import Layout from "@/components/layout";
+import { GetServerSideProps } from "next";
+import { parseCookies } from "nookies";
+import { useRouter } from 'next/router';
+import { useEffect, useState } from "react";
+import { getChampionshipById } from "@/services/championship/retrieve";
+import {Championship} from '@/interfaces'
+import { editChampionship } from "../../../../services/championship/update";
 
-interface ChampionshipFormData {
-    name: string;
-    start_time: string;
-    created_at: string;
-    min_teams: number;
-    max_teams: number;
-    prizes: string;
-    format: string;
-    rules: string;
-    contact: string;
-    visibility: string;
-    game_id: number;
-    admin_id: number;
+interface PropsEditChampionship {
+    id: number,
+    championship:  Championship
 }
 
-const defaultFormData: ChampionshipFormData = {
-  name: "",
-  start_time: "",
-  created_at: dateTime(),
-  min_teams: 0,
-  max_teams: 0,
-  prizes: "",
-  format: "chaveamento",
-  rules: "",
-  contact: "",
-  visibility: "publico",
-  game_id: 1,
-  admin_id: 0,
-};
+interface EditChampionship {
+    name: string,
+    start_time: string,
+    created_at: string,
+    min_teams: number,
+    max_teams: number,
+    prizes: string,
+    format: string,
+    rules: string,
+    contact: string,
+    visibility: string
+}
 
-export default function CreateChampionship() {
+export default function EditChampionship({id,championship}:PropsEditChampionship) {
     const router = useRouter();
-    const {id} = useContext(UserContext)
-    //eslint-disable-next-line react-hooks/rules-of-hooks
-    const [formData, setFormData] = useState<ChampionshipFormData>(defaultFormData);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const toast = useToast();
-    useEffect(
-      () => {
-        if(id){
-          let createdAt = dateTime();
-          setFormData((prevState:ChampionshipFormData) => (
-            { 
-              ...prevState, 
-              created_at: createdAt,
-              admin_id: Number(id)
-            }
-            ));
-        }
-      },[id]
-    )
-    
+     const [formData, setFormData] = useState<EditChampionship>(championship);
+     const [isLoading, setIsLoading] = useState<boolean>(false);
+     const toast = useToast();
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      setIsLoading(true)
-      const response = await createChampionship(formData);
-      if(response){
-        toast(
-          {
-            title: response.message,
-            status: response.status,
-            duration: 3000,
-            isClosable: true,
+        event.preventDefault();
+        setIsLoading(true)
+        const response = await editChampionship({id: id ,data: formData});
+        if(response){
+          toast(
+            {
+              title: response.message,
+              status: response.status,
+              duration: 3000,
+              isClosable: true,
+            }
+          )
+          if(response.status=="success"){
+            router.push("/profile/championships");
           }
-        )
-        if(response.status=="success"){
-          setFormData(defaultFormData);
-          router.push("/mychampionships");
+          setIsLoading(false)
         }
-        setIsLoading(false)
-      }
-      
-    };
-  
+        
+      };
+    
+
     const handleInputChange = (
-      event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
-      const { name, value } = event.target;
-      setFormData((prevState) => ({ ...prevState, [name]: value }));
+        const { name, value } = event.target;
+        setFormData((prevState) => ({ ...prevState, [name]: value }));
+    };
+    
+    const handleSelectChange = (
+        event: React.ChangeEvent<HTMLSelectElement>
+    ) => {
+        const { name, value } = event.target;
+        setFormData((prevState) => ({ ...prevState, [name]: value }));
     };
   
-    const handleSelectChange = (
-      event: React.ChangeEvent<HTMLSelectElement>
-    ) => {
-      const { name, value } = event.target;
-      setFormData((prevState) => ({ ...prevState, [name]: value }));
-    };
 
-
-    return (
+    return(
         <Layout>
             <Flex width="100%" height="94vh" bg="#555555" justifyContent={"center"} alignItems="center">
                 <Box
@@ -121,7 +91,7 @@ export default function CreateChampionship() {
                 overflowY={"auto"}
                 >
                     <Heading mb="6" textAlign="center">
-                        New Championship
+                        Edit Championship
                     </Heading>
                     <form onSubmit={handleFormSubmit}>
                             
@@ -133,6 +103,7 @@ export default function CreateChampionship() {
                                 value={formData.name}
                                 onChange={handleInputChange}
                                 placeholder="Type the name of championship"
+                                required
                                 />
                             </FormControl>
 
@@ -143,6 +114,7 @@ export default function CreateChampionship() {
                                 name="start_time"
                                 value={formData.start_time}
                                 onChange={handleInputChange}
+                                required
                                 />
                             </FormControl>
 
@@ -153,6 +125,7 @@ export default function CreateChampionship() {
                                 name="min_teams"
                                 value={formData.min_teams}
                                 onChange={handleInputChange}
+                                min="2"
                                 />
                             </FormControl>
 
@@ -163,6 +136,7 @@ export default function CreateChampionship() {
                                 name="max_teams"
                                 value={formData.max_teams}
                                 onChange={handleInputChange}
+                                min={formData.min_teams}
                                 />
                             </FormControl>
 
@@ -219,28 +193,16 @@ export default function CreateChampionship() {
                                 </Select>
                             </FormControl>
 
-                            <FormControl mt={4}>
-                                <FormLabel>Game</FormLabel>
-                                <Select
-                                name="game_id"
-                                value={formData.game_id}
-                                onChange={handleSelectChange}
-                                >
-                                    <option value="1">League Of Legends</option>
-                                    <option value="2">Valorant</option>
-                                </Select>
-                            </FormControl>
-
                             <Button type="submit" mt={4} disabled={isLoading}>
-                                <>{isLoading?"Creating...":"Create Championship"}</>
+                                <>{isLoading?"Editing...":"Edit Championship"}</>
                             </Button>
                     </form>
                 </Box>
             </Flex>
         </Layout>
     )
-
 }
+
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const { "championship-token" : token } = parseCookies(context);
@@ -253,9 +215,43 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       }
     }
 
-    return(
-      {
-        props: {}
+    const { id } = context.query;
+
+    if(!id){
+        return {
+            redirect: {
+              destination: '/profile/championships',
+              permanent: false,
+            }
+          }
+    }
+
+    const response = await getChampionshipById(id.toString());
+    if(response.status == "error"){
+        return {
+            redirect: {
+              destination: '/404',
+              permanent: false,
+            }
+          }
+    }
+    
+    const formattedChampionship = {
+        name: response.data?.name,
+        start_time: response.data?.start_time,
+        min_teams: response.data?.min_teams,
+        max_teams: response.data?.max_teams,
+        prizes: response.data?.prizes,
+        format: response.data?.format,
+        rules: response.data?.rules,
+        contact: response.data?.contact,
+        visibility: response.data?.visibility,
       }
-    )
-};  
+
+    return({
+        props: {
+            championship:formattedChampionship,
+            id: id
+        }
+    })
+  };  

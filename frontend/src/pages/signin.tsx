@@ -46,6 +46,7 @@ function Signin() {
           }
           if(response.data?.access_token){
             signin(response.data?.access_token);
+            router.push("/");
           }
         }
     };
@@ -98,7 +99,7 @@ function Signin() {
             }
            }
           >
-            Creat an account
+            Create an account
           </Text>
         </Flex>
       </Box>

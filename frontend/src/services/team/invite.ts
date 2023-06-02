@@ -1,31 +1,25 @@
+import { InviteUserToTeam } from "@/interfaces";
 import axios, { AxiosResponse } from "axios";
 import { parseCookies } from "nookies";
-
-export interface createTeam {
-  name: string;
-  password: string;
-  owner_id: number;
-  game_id: number;
-}
-
 export type Status = "success" | "error";
 export interface ResponseRequest {
   status: Status;
   message: string;
   data?: {
-    access_token: string;
-    token_type: string;
+    id: number,
+    name: string,
+    text: string,
+    reference_user_id: number,
+    visualized: boolean
   };
 }
 
-export const createTeam = async (
-  data: createTeam
-): Promise<ResponseRequest> => {
+export const UserInvite = async (data: InviteUserToTeam): Promise<ResponseRequest> => {
   const { "championship-token": token } = parseCookies();
 
   const response = await axios
-    .post<createTeam>(
-      process.env.NEXT_PUBLIC_URL_SERVER + "/teams/create",
+    .post<InviteUserToTeam>(
+      process.env.NEXT_PUBLIC_URL_SERVER + "/teams/invite-user",
       data,
       {
         headers: {
@@ -40,14 +34,14 @@ export const createTeam = async (
       return {
         status: status,
         data: response.data,
-        message: "Team created successfully",
+        message: "User invited with successfully",
       };
     })
     .catch((error) => {
       const status: Status = "error";
       return {
         status: status,
-        message: error.response?.data?.detail || "Failed to create team :(",
+        message: error.response?.data?.detail || "Failed to invite user",
       };
     });
 
