@@ -34,3 +34,11 @@ export interface Team {
     owner_id: number
     championships: Championship[]
 }
+
+export interface Notification{
+    id: number,
+    name: string,
+    reference_user_id: number
+    text: string,
+    visualized: boolean
+}
