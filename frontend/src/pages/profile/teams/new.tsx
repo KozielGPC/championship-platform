@@ -23,8 +23,15 @@ import { useContext } from "react";
 import { UserContext } from "../../../context/UserContext";
 import jwt_decode from "jwt-decode";
 import Layout from "@/components/layout";
+import { getGames } from "@/services/games/retrieve";
+import { Game } from "@/interfaces";
 
-function CreateTeam(data: User) {
+interface Props {
+  data: User;
+  games: Game[];
+}
+
+function CreateTeam({games }: Props) {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -179,8 +186,13 @@ function CreateTeam(data: User) {
                 onChange={(e) => handleGameChange(e)}
                 placeholder="Select option"
               >
-                <option value="0">League Of Legends</option>
-                <option value="1">Valorant</option>
+                {
+                  games.map((game: Game, index) => {
+                    return (
+                      <option key={index} value={game.id}>{game.name}</option>
+                    )
+                  })
+                }
               </Select>
             </FormControl>
             <Button colorScheme="blue" type="submit" w="100%">
@@ -204,8 +216,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
+  const response = await getGames();
+
+  const games = response.data || [];
+
   return {
-    props: {},
+    props: {
+      games: games,
+    },
   };
 };
 

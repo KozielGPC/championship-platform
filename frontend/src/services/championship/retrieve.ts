@@ -76,7 +76,7 @@ export const getChampionshipById = async (id:string): Promise<ResponseRequestGet
   export const getChampionshipsFiltered = async (championship?: ChampionshipFiltersProps): Promise<ResponseRequestGetChampionships> => {
     let queryParams = "";
     if (championship) {
-        if (championship.game_id) {
+        if (championship.game_id || championship.game_id == 0) {
           queryParams += `game_id=${championship.game_id}`;
         }
         if (championship.admin_id) {

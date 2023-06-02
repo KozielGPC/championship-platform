@@ -10,6 +10,7 @@
 
 ### Added
 -   [#90](https://github.com/KozielGPC/championship-platform/issues/90) - Adicionando tela de visualizar equipe
+-   [#133](https://github.com/KozielGPC/championship-platform/issues/133) - Adicionado rota para buscar usuario por username
 -   [#48](https://github.com/KozielGPC/championship-platform/issues/48) - Adicionado filtros no homescreen
 -   [#59](https://github.com/KozielGPC/championship-platform/issues/59) - Adicionado Tela de Visualização de Campeonato
 -   [#93](https://github.com/KozielGPC/championship-platform/issues/93) - Adicionado tabela e rota para retornar notificações de um usuário
@@ -37,3 +38,4 @@
 -   [#54](https://github.com/KozielGPC/championship-platform/issues/54) - Adicionado formulário de criação de campeonato
 -   [#87](https://github.com/KozielGPC/championship-platform/issues/87) - Adicionado Tela de listagem de minhas equipes
 -   [#44](https://github.com/KozielGPC/championship-platform/issues/44) - Adicionado Tela de edição de um campeonato
+-   [#131](https://github.com/KozielGPC/championship-platform/issues/131) - Adicionado Listagem de jogos cadastrados

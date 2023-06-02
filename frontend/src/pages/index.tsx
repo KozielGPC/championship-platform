@@ -9,10 +9,15 @@ import {UserContext} from '../context/UserContext'
 import Layout from '@/components/layout';
 import ShowChampionships from '@/components/showChampionships';
 import { ChampionshipFiltersProps, getChampionships, getChampionshipsFiltered } from '@/services/championship/retrieve';
+import { getGames } from '@/services/games/retrieve';
+import { Game } from '@/interfaces';
 
 const championshipsFilter: ChampionshipFiltersProps = {name: '', min_teams: undefined, max_teams: undefined, game_id: undefined};
+interface Props {
+  games: Game[];
+}
 
-function Home() {
+function Home({games}:Props) {
   const [championships, setChampionships] = useState(Array<Championship>);
   const [championshipsFiltered, setChampionshipsFiltered] = useState<Array<Championship> | undefined>(undefined);
   const [buttonContent, setButtonContent] = useState(false);
@@ -197,16 +202,25 @@ function Home() {
               <NumberInputField h="5%" />
             </NumberInput>
             Select a game:
-            <Select h="5%"
+            <Select h="25px"
               w="96%"
               value={selectedGame}
               onChange={handleSelectChange}
               bg={"white"}
               borderRadius={'none'}
             >
-              <option value='undefined'>Select...</option>
-              <option value="0">League of Legends</option>
-              <option value="1">Valorant</option>
+              <option value="undefined">
+                Select a game...
+              </option>
+              {
+                games.map((game) => {
+                  return (
+                    <option key={game.id} value={game.id}>
+                      {game.name}
+                    </option>
+                  );
+                })
+              }
             </Select>
         
             <Button colorScheme="black" variant="outline" size="sm" w="25%" onClick={handleSearchClick} mt={'5px'} mb={'5px'}>
@@ -239,9 +253,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   }
 
+  const response = await getGames();
+
+  const games = response.data || [];
+
+
   return(
     {
-      props: {}
+      props: {
+        games: games
+      }
     }
   )
 
