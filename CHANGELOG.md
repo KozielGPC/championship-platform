@@ -2,6 +2,7 @@
 ## Unreleased
 
 ### Story Board
+-   [#10](https://github.com/KozielGPC/championship-platform/issues/10) - Visualizar Equipe
 -   [#16](https://github.com/KozielGPC/championship-platform/issues/16) - Visualizar um Campeonato específico
 -   [#12](https://github.com/KozielGPC/championship-platform/issues/12) - Filtrar Campeonatos
 -   [#28](https://github.com/KozielGPC/championship-platform/issues/28) - Editar Campeonato
