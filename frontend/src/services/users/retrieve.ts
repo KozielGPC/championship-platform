@@ -1,7 +1,7 @@
 import { Team } from "@/interfaces";
 import axios, { AxiosResponse } from "axios"
 import { parseCookies } from "nookies";
-
+import { Notification } from "@/interfaces";
 export interface User {
     id: Number;
     username: string;
