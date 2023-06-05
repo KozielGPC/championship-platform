@@ -74,6 +74,7 @@ export const UserProvider = ({ children }: UserContextProps)=>{
 
     async function getNotifications(){
         const response = await getMyNotifications();
+        
         if(response && response.data){
             const notificationsArray :Notification[] = response.data;
             setNotifications(notificationsArray)
