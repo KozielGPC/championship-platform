@@ -4,7 +4,7 @@ import {SignoutButton} from './signoutButton'
 import {UserContext} from '../context/UserContext'
 import { useContext } from 'react';
 import { ExternalLinkIcon } from '@chakra-ui/icons'
-import { MdAdd, MdOutlineSupervisorAccount, MdOutlineVideogameAsset } from 'react-icons/md'
+import { MdAdd, MdOutlineSupervisorAccount, MdOutlineVideogameAsset,MdNotificationsNone } from 'react-icons/md'
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -53,31 +53,37 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </Box>
         </Link> 
         <Box display="inline-block" textAlign={'left'} textColor='white'>
-        <Box p='10px'>
-          <Link
-              pt='5px'
-              pb='10px'
-              display='flex' href='/profile/teams'>
-            <Icon boxSize='25px' as={MdOutlineSupervisorAccount} />
-            <Flex pl="5px" >My teams</Flex>
-          </Link>
-          <Link 
-              pt='5px'
-              pb='10px'
-              display='flex' href='/profile/championships' >
-            <Icon boxSize='25px' as={MdOutlineVideogameAsset} />
-            <Flex pl="5px" >My championships</Flex>
-          </Link>
-          <Link
-              pt='5px'
-              pb='10px' 
-              display='flex' href='/profile/championships/new'>
-            <Icon boxSize='25px' as={MdAdd} />
-            <Flex pl="5px">Create Championship</Flex>
-          </Link>
+          <Box p='10px'>
+            <Link
+                pt='5px'
+                pb='10px'
+                display='flex' href='/profile/notifications'>
+              <Icon boxSize='25px' as={MdNotificationsNone} />
+              <Flex pl="5px" >Notificações</Flex>
+            </Link>
+            <Link
+                pt='5px'
+                pb='10px'
+                display='flex' href='/profile/teams'>
+              <Icon boxSize='25px' as={MdOutlineSupervisorAccount} />
+              <Flex pl="5px" >My teams</Flex>
+            </Link>
+            <Link 
+                pt='5px'
+                pb='10px'
+                display='flex' href='/profile/championships' >
+              <Icon boxSize='25px' as={MdOutlineVideogameAsset} />
+              <Flex pl="5px" >My championships</Flex>
+            </Link>
+            <Link
+                pt='5px'
+                pb='10px' 
+                display='flex' href='/profile/championships/new'>
+              <Icon boxSize='25px' as={MdAdd} />
+              <Flex pl="5px">Create Championship</Flex>
+            </Link>
+          </Box>
         </Box>
-      </Box>
-
       </Box>
       <Box overflow={'auto'}
        bgColor={'#4A5568'} width={"80%"} height={"100vh"}>
