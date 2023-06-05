@@ -39,7 +39,6 @@ export interface Team {
 export interface InviteUserToTeam {
   team_id?: number;
   user_id?: number;
-  championships: Championship[];
 }
 
 export interface Game {

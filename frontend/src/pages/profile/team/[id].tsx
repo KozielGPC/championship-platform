@@ -2,7 +2,7 @@ import  Layout  from "../../../components/layout";
 import { Box, Image, Flex, Button, useToast, Text, Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, TableContainer, Icon, FormControl, FormLabel, Select} from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
-import { getTeamById, getTeamById2, getTeams } from "@/services/team/retrieve";
+import { getTeamById } from "@/services/team/retrieve";
 import jwt_decode from "jwt-decode";
 import { InviteUserToTeam, User } from "@/interfaces";
 import { Team } from "@/interfaces";
@@ -25,7 +25,7 @@ interface Props {
 
 
 
-export default function showTeam ({teamProp, usersProp, ownerProp}: Props) {
+export default function ShowTeam ({teamProp, usersProp, ownerProp}: Props) {
     const [team, setTeam] = useState<Team>();
     const [users, setUsers] = useState<Array<User>>();
     const [inviteUser, setInviteUser] = useState(0);
@@ -186,7 +186,7 @@ export default function showTeam ({teamProp, usersProp, ownerProp}: Props) {
                     {
                     team?.users ? 
                     (team.users).map((user, index) => (
-                      <Tr>
+                      <Tr key={index}>
                         <Td>{index+2}</Td>
                         <Td>{user.username}</Td>
                         { 
@@ -215,7 +215,7 @@ export default function showTeam ({teamProp, usersProp, ownerProp}: Props) {
                     { 
                     users ?
                       (users).map((user, index) => (
-                        <option value={`${user.id}`}>{user.username}</option>
+                        <option key={index} value={`${user.id}`}>{user.username}</option>
                       )) 
                       : 
                       (<></>)
@@ -262,7 +262,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
 
-    const response = await getTeamById2(id.toString());
+    const response = await getTeamById(id.toString());
 
     if(response.status == "error"){
       return {
