@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { User, Notification } from "@/interfaces";
-=======
 import { Team } from "@/interfaces";
->>>>>>> development
 import axios, { AxiosResponse } from "axios"
 import { parseCookies } from "nookies";
 
@@ -14,13 +10,8 @@ export interface User {
 }
 export  type Status = "success" | "error";
 
-export  interface ResponseRequestGetUserById {
-    status: Status;
-    message: string;
-    data?: Array<User>;
-}
 
-export  interface ResponseRequest2 {
+export  interface ResponseRequestGetUserById {
     status: Status;
     message: string;
     data?: User;
