@@ -18,27 +18,13 @@ class MatchSchema(BaseModel):
         orm_mode = True
 
 class MatchInput(MatchSchema):
-    id: int
     championship_id: int 
-    game_id: int
     team_1_id: int
     team_2_id: int
-    winner_team_id: int
     bracket: int 
     round: int 
-    resul: str  #ver se é possivel criar partida sem resultado inicial
 
-    @validator("resul")
-    def check_empty_fields(cls, v):
-        assert v != "", "Empty strings are not allowed."
-        return v
-
-    @validator("resul")
-    def check_spaced_fields(cls, v):
-        assert v.strip(), "Empty strings are not allowed."
-        return v
-
-    @validator("id", "championship_id", "team_1_id", "team_2_id", "winner_team_id", "game_id", "bracket", "round")
+    @validator("championship_id", "team_1_id", "team_2_id", "bracket", "round")
     def check_positive_numbers(cls, v):
         assert v >= 0, "Negative numbers are not allowed."
         return v
@@ -47,18 +33,25 @@ class MatchInput(MatchSchema):
         orm_mode = True
 
 class MatchUpdateRequest(BaseModel):
-    winner_team_id: Optional[int] = Field(default=None, foreign_key="teams.id") #ver se fica a chave estrangeira
+    winner_team_id: Optional[int] = Field(default=None, foreign_key="teams.id")
     result: Optional[str] = None
 
-    @validator("*")
+    @validator("result")
     def check_empty_fields(cls, v):
         assert v != "", "Empty strings are not allowed."
         return v
 
-    @validator("*")
+    @validator("result")
     def check_spaced_fields(cls, v):
         assert v.strip(), "Empty strings are not allowed."
         return v
-
+    
+    
     class Config:
-        extra = "forbid"
+        orm_mode = True
+
+class Response(GenericModel, Generic[T]):
+    code: str
+    status: str
+    message: str
+    result: Optional[T]

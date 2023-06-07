@@ -168,11 +168,11 @@ async def update(id: int, update_request: ChampionshipUpdateRequest, token: Anno
         if championship_exists:
             raise HTTPException(status_code=400, detail="Championship with this name already exists")
 
-    if update_request.max_teams and update_request.min_teams == None:
+    if update_request.max_teams and update_request.min_teams is not None:
         if championship.min_teams > update_request.max_teams:
             raise HTTPException(status_code=400, detail="Max Teams cannot be less than Min Teams")
 
-    if update_request.min_teams and update_request.max_teams == None:
+    if update_request.min_teams and update_request.max_teams is not None:
         if championship.max_teams < update_request.min_teams:
             raise HTTPException(status_code=400, detail="Min Teams cannot be greater than Max Teams")
 
