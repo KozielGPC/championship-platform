@@ -1,5 +1,5 @@
 from api.database.config import Session, engine
-
+from typing import List
 from api.schemas.championships import (
     Response,
     ChampionshipInput,
@@ -19,6 +19,8 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy import Enum, func
 from sqlalchemy.orm import joinedload
 from api.schemas.championships_has_teams import ChampionshipWithTeams
+from api.schemas.matches import MatchSchema
+from api.models.matches import Match
 
 
 router = APIRouter(
@@ -79,6 +81,34 @@ async def getById(id: int):
         raise HTTPException(status_code=404, detail="Championship not found")
     return jsonable_encoder(championship)
 
+
+@router.get(
+    "/{id}/matches",
+    response_model=List[MatchSchema],
+    response_description="Success response from the application."
+)
+async def getMatches(id: int,  skip: int = 0, limit: int = 100):
+    session = Session()
+
+    championship = (
+        session.query(Championship)
+        .filter(Championship.id == id)
+        .first()
+    )
+    if championship is None:
+        raise HTTPException(status_code=404, detail="Championship not found")
+
+    matches = (
+        session.query(Match)
+        .filter(Match.championship_id == id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+    if not matches:
+        raise HTTPException(status_code=404, detail="Matches not found")
+    return matches
 
 @router.post(
     "/create",

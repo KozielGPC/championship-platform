@@ -1,3 +1,4 @@
+from typing import List
 from api.database.config import Session, engine
 
 from api.schemas.matches import (
@@ -84,27 +85,30 @@ async def getById(id: int):
         raise HTTPException(status_code=404, detail="Match not found")
     return jsonable_encoder(match)
 
-@router.get(
-    "/championship/{championship_id}",
-    response_model=MatchSchema,
-    response_description="Sucesso de resposta da aplicação.",
-)
+#@router.get(
+#    "/championship/{championship_id}",
+#    response_model=List[MatchSchema],
+#    response_description="Sucesso de resposta da aplicação."
+#)
+#async def getByChampionshipId(championship_id: int, skip: int = 0, limit: int = 100):
+#    championship = session.query(Championship).filter(Championship.id == championship_id).first()
 
-async def getByChampionshipId(championship_id: int, skip: int = 0, limit: int = 100,):
-    camp = session.query(Championship).filter(Championship.id == championship_id).first()
-    
-    if camp == None:
-        raise HTTPException(status_code=404, detail="Championship not found")
-    matches = (session.query
-               .options(joinedload(Championship.matches))
-               .filter(Match.championship_id == championship_id)
-               .offset(skip)
-               .limit(limit)
-               .all()
-    )
-    if matches == None:
-        raise HTTPException(status_code=404, detail="Match not found")
-    return jsonable_encoder(matches)
+#    if championship is None:
+#        raise HTTPException(status_code=404, detail="Championship not found")
+
+#    matches = (
+#        session.query(Match)
+#       .filter(Match.championship_id == championship_id)
+#        .offset(skip)
+#        .limit(limit)
+#        .all()
+#    )
+
+#    if not matches:
+#        raise HTTPException(status_code=404, detail="Matches not found")
+
+#    return matches
+
     
 
 @router.post(
