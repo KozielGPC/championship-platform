@@ -29,5 +29,5 @@ class Championship(Base):
     created_at = Column(DateTime)
     admin_id = Column(Integer, ForeignKey("users.id"))
     game_id = Column(Integer, ForeignKey("games.id"))
-    matches = Column(Integer, ForeignKey("matches.id"))
     teams = relationship("Team", secondary="championship_has_teams", backref="teams")
+    matches = relationship("Match", backref="matches")

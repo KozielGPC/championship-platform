@@ -61,7 +61,7 @@ async def getAll(
     if name is not None:
         query = query.filter(func.lower(Championship.name).like(f"%{name.lower()}%"))
 
-    championships = query.options(joinedload(Championship.teams)).offset(skip).limit(limit).all()
+    championships = query.options(joinedload(Championship.teams), joinedload(Championship.matches)).offset(skip).limit(limit).all()
 
     return jsonable_encoder(championships)
 
@@ -73,7 +73,7 @@ async def getAll(
 )
 async def getById(id: int):
     championship = (
-        session.query(Championship).options(joinedload(Championship.teams)).filter(Championship.id == id).first()
+        session.query(Championship).options(joinedload(Championship.teams), joinedload(Championship.matches)).filter(Championship.id == id).first()
     )
     if championship == None:
         raise HTTPException(status_code=404, detail="Championship not found")
