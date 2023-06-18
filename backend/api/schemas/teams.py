@@ -74,12 +74,10 @@ class AddUserToTeamInput(BaseModel):
 
 
 class AcceptTeamInviteInput(BaseModel):
-    team_id: int
-    user_id: int
     notification_id: int
     accepted: bool
 
-    @validator("team_id", "user_id", "notification_id")
+    @validator("notification_id")
     def check_positive_numbers(cls, v):
         assert v >= 0, "Negative numbers are not allowed."
         return v
@@ -90,7 +88,10 @@ class AcceptTeamInviteInput(BaseModel):
 
 class AddUserToTeamReturn(BaseModel):
     team_id: int
-    user_id: int
+    reference_user_id: int
+    visualized: bool
+    sender_name: str
+    team_name: str
 
     class Config:
         orm_mode = True

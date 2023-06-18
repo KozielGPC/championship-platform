@@ -147,26 +147,25 @@ async def addUserToTeam(input: AcceptTeamInviteInput, token: Annotated[str, Depe
     notification = session.query(Notification).filter(Notification.id == input.notification_id).first()
     if notification == None:
         raise HTTPException(status_code=404, detail="Notification not found")
+    if notification.reference_user_id != user.id:
+        raise HTTPException(status_code=401, detail="Notification is not from this user")
 
     if input.accepted == False:
         notification.visualized = True
-        return {
-            "user_id": input.user_id,
-            "team_id": input.team_id,
-        }
-    player = session.query(User).filter(User.id == input.user_id).first()
+        session.commit()
+        session.refresh(notification)
+        return notification
+    player = session.query(User).filter(User.id == notification.reference_user_id).first()
     if player == None:
         raise HTTPException(status_code=404, detail="Player not found")
-    team = session.query(Team).filter(Team.id == input.team_id).first()
+    team = session.query(Team).filter(Team.id == notification.team_id).first()
     if team == None:
         raise HTTPException(status_code=404, detail="Team not found")
-    if team.owner_id != user.id:
-        raise HTTPException(status_code=401, detail="User is not admin of Team")
     team_has_user = (
         session.query(TeamsHasUsers)
         .filter(
-            TeamsHasUsers.user_id == input.user_id,
-            TeamsHasUsers.team_id == input.team_id,
+            TeamsHasUsers.user_id == notification.reference_user_id,
+            TeamsHasUsers.team_id == notification.team_id,
         )
         .first()
     )
@@ -174,8 +173,8 @@ async def addUserToTeam(input: AcceptTeamInviteInput, token: Annotated[str, Depe
         raise HTTPException(status_code=400, detail="Player is already registered in this Team")
 
     data = TeamsHasUsers(
-        user_id=input.user_id,
-        team_id=input.team_id,
+        user_id=notification.reference_user_id,
+        team_id=notification.team_id,
     )
 
     notification.visualized = True
@@ -194,7 +193,7 @@ async def addUserToTeam(input: AcceptTeamInviteInput, token: Annotated[str, Depe
     response_model=NotificationSchema,
     response_description="Sucesso de resposta da aplicação.",
 )
-async def addUserToTeam(input: AddUserToTeamInput, token: Annotated[str, Depends(oauth2_scheme)]):
+async def inviteUserToTeam(input: AddUserToTeamInput, token: Annotated[str, Depends(oauth2_scheme)]):
     user = await get_current_user(token)
     player = session.query(User).filter(User.id == input.user_id).first()
     if player == None:
@@ -216,11 +215,10 @@ async def addUserToTeam(input: AddUserToTeamInput, token: Annotated[str, Depends
         raise HTTPException(status_code=400, detail="Player is already registered in this Team")
 
     data = Notification(
-        name="Convite para o time " + team.name,
-        text="Você foi convidado para o time "
-        + team.name
-        + ", para aceitar acesse as suas notifiações e aceite o convite.",
+        team_name=team.name,
+        sender_name=user.username,
         reference_user_id=player.id,
+        team_id=team.id,
         visualized=False,
     )
 

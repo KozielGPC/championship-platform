@@ -6,7 +6,8 @@ class Notification(Base):
     __tablename__ = "notifications"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String)
+    team_name = Column(String)
     reference_user_id = Column(Integer, ForeignKey("users.id"))
-    text = Column(Text)
+    sender_name = Column(Text)
+    team_id = Column(Integer)
     visualized = Column(Boolean)
