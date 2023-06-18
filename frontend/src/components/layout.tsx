@@ -59,7 +59,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 pb='10px'
                 display='flex' href='/profile/notifications'>
               <Icon boxSize='25px' as={MdNotificationsNone} />
-              <Flex pl="5px" >Notificações</Flex>
+              <Flex pl="5px" >Invites</Flex>
             </Link>
             <Link
                 pt='5px'

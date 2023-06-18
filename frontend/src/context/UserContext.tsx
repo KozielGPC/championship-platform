@@ -21,7 +21,8 @@ type UserContextType = {
     setNotifications: (notifications: Notification[]) => void;
     clearUser: () => void;
     signin: (token:string) => void
-    signout: () => void
+    signout: () => void;
+    getNotifications: () => void;
 }
 
 
@@ -37,9 +38,35 @@ const initialValue = {
     setNotifications: () => {},
     clearUser: () => {},
     signin: () => {},
-    signout: () => {}
+    signout: () => {},
+    getNotifications: () => {}
     
 }
+
+
+const notificationsFake:Notification[] = [
+    {
+        id: 1,
+        name: "Teste1",
+        reference_user_id: 2,
+        text: "You were invited to the XD Biribiri team",
+        visualized: false
+    },
+    {
+        id: 2,
+        name: "Teste2",
+        reference_user_id: 2,
+        text: "You were invited to the FULLCLEAR team",
+        visualized: true
+    },
+    {
+        id: 3,
+        name: "Teste3",
+        reference_user_id: 3,
+        text: "You were invited to the 777Bros team",
+        visualized: false
+    }
+]
 
 
 export const UserContext = createContext<UserContextType>(initialValue);
@@ -70,10 +97,10 @@ export const UserProvider = ({ children }: UserContextProps)=>{
 
     async function getNotifications(){
         const response = await getMyNotifications();
-        
         if(response && response.data){
             const notificationsArray :Notification[] = response.data;
-            setNotifications(notificationsArray)
+            //setNotifications(notificationsArray);
+            setNotifications(notificationsFake)
         }
     }
 
@@ -116,7 +143,8 @@ export const UserProvider = ({ children }: UserContextProps)=>{
                 email, setEmail,
                 notifications,setNotifications,
                 clearUser,
-                signin, signout
+                signin, signout,
+                getNotifications
             }}
 
         >
