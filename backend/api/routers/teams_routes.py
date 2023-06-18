@@ -71,7 +71,7 @@ async def getById(id: int):
 @router.post(
     "/create",
     status_code=201,
-    response_model=TeamSchema,
+    response_model=TeamsWithRelations,
     response_description="Sucesso de resposta da aplicação.",
 )
 async def create(data: TeamInput, token: Annotated[str, Depends(oauth2_scheme)]):
@@ -85,10 +85,19 @@ async def create(data: TeamInput, token: Annotated[str, Depends(oauth2_scheme)])
 
     hashed_password = get_password_hash(data.password)
     user = await get_current_user(token)
-    team_input = Team(name=data.name, password=hashed_password, owner_id=user.id, game_id=data.game_id)
+    
+    
+    team_input = Team(name=data.name, password=hashed_password, owner_id=user.id, game_id=data.game_id) 
     session.add(team_input)
     session.commit()
     session.refresh(team_input)
+    
+    
+    admin_input = TeamsHasUsers(team_id = team_input.id, user_id = user.id)
+    session.add(admin_input)
+    session.commit()
+    session.refresh(admin_input)
+    
     return team_input
 
 
