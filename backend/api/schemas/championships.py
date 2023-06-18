@@ -47,7 +47,6 @@ class ChampionshipInput(ChampionshipSchema):
     prizes: str
     format: EnumFormat
     rules: str
-    round: int
     contact: str
     visibility: EnumVisibility
     game_id: int
@@ -71,7 +70,7 @@ class ChampionshipInput(ChampionshipSchema):
         if v <= 1:
             raise ValueError("The minimum number of teams must be greater than one")
         return v
-
+    
     @validator("max_teams")
     def max_teams_greater_than_min_teams(cls, v, values):
         if "min_teams" in values and v < values["min_teams"]:

@@ -133,7 +133,7 @@ async def create(data: ChampionshipInput, token: Annotated[str, Depends(oauth2_s
         max_teams=data.max_teams,
         format=data.format,
         rules=data.rules,
-        round=data.round,
+        round=0,
         contact=data.contact,
         visibility=data.visibility,
         admin_id=user.id,
