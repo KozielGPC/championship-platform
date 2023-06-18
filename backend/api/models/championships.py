@@ -22,6 +22,7 @@ class Championship(Base):
     min_teams = Column(Integer)
     max_teams = Column(Integer)
     prizes = Column(Text)
+    round = Column(Integer)
     format = Column(Enum(EnumFormat))
     rules = Column(Text)
     contact = Column(Text)
