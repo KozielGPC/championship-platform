@@ -96,7 +96,14 @@ class AddUserToTeamReturn(BaseModel):
     class Config:
         orm_mode = True
 
+class RemoveUserFromTeamReturn(BaseModel):
+    team_id: int
+    user_id: int
 
+    class Config:
+        orm_mode = True
+        
+        
 class Response(GenericModel, Generic[T]):
     code: str
     status: str

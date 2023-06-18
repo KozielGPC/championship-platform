@@ -23,6 +23,7 @@ from api.schemas.championships_has_teams import TeamsWithRelations, Championship
 from api.schemas.teams_has_users import UserWithTeams
 from fastapi.encoders import jsonable_encoder
 from api.websocket.connection_manager import ws_manager
+from api.schemas.teams import RemoveUserFromTeamReturn
 
 router = APIRouter(
     prefix="/teams",
@@ -184,7 +185,7 @@ async def addUserToTeam(input: AcceptTeamInviteInput, token: Annotated[str, Depe
     session.refresh(notification)
     session.refresh(data)
 
-    return data
+    return notification
 
 
 @router.post(
@@ -233,7 +234,7 @@ async def inviteUserToTeam(input: AddUserToTeamInput, token: Annotated[str, Depe
 @router.post(
     "/remove-user",
     status_code=200,
-    response_model=AddUserToTeamReturn,
+    response_model=RemoveUserFromTeamReturn,
     response_description="Sucesso de resposta da aplicação.",
 )
 async def addUserToTeam(input: AddUserToTeamInput, token: Annotated[str, Depends(oauth2_scheme)]):
