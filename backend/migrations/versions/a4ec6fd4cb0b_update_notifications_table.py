@@ -1,7 +1,7 @@
 """update notifications table
 
 Revision ID: a4ec6fd4cb0b
-Revises: f5191b0310d5
+Revises: 41197dc92dd1
 Create Date: 2023-06-18 19:10:33.836857
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "a4ec6fd4cb0b"
-down_revision = "f5191b0310d5"
+down_revision = "41197dc92dd1"
 branch_labels = None
 depends_on = None
 
