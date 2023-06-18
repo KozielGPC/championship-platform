@@ -1,4 +1,5 @@
 from api.schemas.teams import TeamSchema
+from api.schemas.matches import MatchSchema
 from api.schemas.championships import ChampionshipSchema
 from api.schemas.users import UserSchema
 from typing import List
@@ -11,3 +12,4 @@ class TeamsWithRelations(TeamSchema):
 
 class ChampionshipWithTeams(ChampionshipSchema):
     teams: List[TeamSchema] = []
+    matches: List[MatchSchema] = []

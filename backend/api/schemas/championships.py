@@ -134,7 +134,7 @@ class ChampionshipUpdateRequest(BaseModel):
 
     @validator("max_teams")
     def max_teams_greater_than_min_teams(cls, v, values):
-        print(values)
+        #print(values)
         if values["min_teams"] != None and v < values["min_teams"]:
             raise ValueError("The maximum number of teams must be greater than or equal to the minimum number of teams")
         return v
