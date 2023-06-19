@@ -3,8 +3,9 @@ import jwt_decode from "jwt-decode"
 import {User} from "../interfaces";
 import {destroyCookie, parseCookies,setCookie} from 'nookies'
 import { useRouter } from "next/router";
-import { getUserById } from "@/services/users/retrieve";
-import { Token } from "../interfaces";
+import { getUserById, getMyNotifications } from "@/services/users/retrieve";
+import { Token, Notification } from "../interfaces";
+
 type UserContextProps = {
     children: ReactNode;
 }
@@ -16,9 +17,12 @@ type UserContextType = {
     setUsername: (username: string) => void;
     email: string;
     setEmail: (email: string) => void;
+    notifications: Notification[];
+    setNotifications: (notifications: Notification[]) => void;
     clearUser: () => void;
-    signin: (token:string) => void
-    signout: () => void
+    signin: (token:string) => void;
+    signout: () => void;
+    getNotifications: () => void;
 }
 
 
@@ -30,10 +34,39 @@ const initialValue = {
     setUsername: () => {},
     email: "",
     setEmail: () => {},
+    notifications: [],
+    setNotifications: () => {},
     clearUser: () => {},
     signin: () => {},
-    signout: () => {}
+    signout: () => {},
+    getNotifications: () => {}
+    
 }
+
+
+const notificationsFake:Notification[] = [
+    {
+        id: 1,
+        name: "Teste1",
+        reference_user_id: 2,
+        text: "You were invited to the XD Biribiri team",
+        visualized: false
+    },
+    {
+        id: 2,
+        name: "Teste2",
+        reference_user_id: 2,
+        text: "You were invited to the FULLCLEAR team",
+        visualized: true
+    },
+    {
+        id: 3,
+        name: "Teste3",
+        reference_user_id: 3,
+        text: "You were invited to the 777Bros team",
+        visualized: false
+    }
+]
 
 
 export const UserContext = createContext<UserContextType>(initialValue);
@@ -46,6 +79,7 @@ export const UserProvider = ({ children }: UserContextProps)=>{
     const [id, setId] = useState<Number>(initialValue.id);
     const [username, setUsername] = useState<string>(initialValue.username);
     const [email, setEmail] = useState<string>(initialValue.email);
+    const [notifications, setNotifications] = useState<Notification[]>([]);
 
     const token = parseCookies()["championship-token"];
 
@@ -53,6 +87,7 @@ export const UserProvider = ({ children }: UserContextProps)=>{
         () => {
             if(token){
                 signin(token)
+                getNotifications();
             };
         },[token]
     )
@@ -62,12 +97,18 @@ export const UserProvider = ({ children }: UserContextProps)=>{
         setUsername("");
     }
 
+    async function getNotifications(){
+        const response = await getMyNotifications();
+        if(response && response.data){
+            const notificationsArray :Notification[] = response.data;
+            setNotifications(notificationsArray);
+            //setNotifications(notificationsFake)
+        }
+    }
+
 
     async function signin(token:string){
         try{
-            setCookie(null, "championship-token", token, {
-                maxAge: 60 * 60 * 24, // 24 hours
-            });
             const tokenData:Token = jwt_decode(token);
             if(!tokenData.id){
                 throw new Error("Invalid token");
@@ -99,8 +140,10 @@ export const UserProvider = ({ children }: UserContextProps)=>{
                 id, setId,
                 username,setUsername,
                 email, setEmail,
+                notifications,setNotifications,
                 clearUser,
-                signin, signout
+                signin, signout,
+                getNotifications
             }}
 
         >
@@ -112,6 +155,5 @@ export const UserProvider = ({ children }: UserContextProps)=>{
 
 
 export default UserContext;
-
 
 
