@@ -3,8 +3,9 @@ import jwt_decode from "jwt-decode"
 import {User} from "../interfaces";
 import {destroyCookie, parseCookies,setCookie} from 'nookies'
 import { useRouter } from "next/router";
-import { getUserById } from "@/services/users/retrieve";
-import { Token } from "../interfaces";
+import { getUserById, getMyNotifications } from "@/services/users/retrieve";
+import { Token, Notification } from "../interfaces";
+
 type UserContextProps = {
     children: ReactNode;
 }
@@ -16,9 +17,12 @@ type UserContextType = {
     setUsername: (username: string) => void;
     email: string;
     setEmail: (email: string) => void;
+    notifications: Notification[];
+    setNotifications: (notifications: Notification[]) => void;
     clearUser: () => void;
-    signin: (token:string) => void
-    signout: () => void
+    signin: (token:string) => void;
+    signout: () => void;
+    getNotifications: () => void;
 }
 
 
@@ -30,9 +34,13 @@ const initialValue = {
     setUsername: () => {},
     email: "",
     setEmail: () => {},
+    notifications: [],
+    setNotifications: () => {},
     clearUser: () => {},
     signin: () => {},
-    signout: () => {}
+    signout: () => {},
+    getNotifications: () => {}
+    
 }
 
 
@@ -46,6 +54,7 @@ export const UserProvider = ({ children }: UserContextProps)=>{
     const [id, setId] = useState<Number>(initialValue.id);
     const [username, setUsername] = useState<string>(initialValue.username);
     const [email, setEmail] = useState<string>(initialValue.email);
+    const [notifications, setNotifications] = useState<Notification[]>([]);
 
     const token = parseCookies()["championship-token"];
 
@@ -53,6 +62,7 @@ export const UserProvider = ({ children }: UserContextProps)=>{
         () => {
             if(token){
                 signin(token)
+                getNotifications();
             };
         },[token]
     )
@@ -60,6 +70,14 @@ export const UserProvider = ({ children }: UserContextProps)=>{
     function clearUser(){
         setId(-1);
         setUsername("");
+    }
+
+    async function getNotifications(){
+        const response = await getMyNotifications();
+        if(response && response.data){
+            const notificationsArray :Notification[] = response.data;
+            setNotifications(notificationsArray)
+        }
     }
 
 
@@ -99,8 +117,10 @@ export const UserProvider = ({ children }: UserContextProps)=>{
                 id, setId,
                 username,setUsername,
                 email, setEmail,
+                notifications,setNotifications,
                 clearUser,
-                signin, signout
+                signin, signout,
+                getNotifications
             }}
 
         >
