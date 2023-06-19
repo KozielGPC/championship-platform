@@ -1,7 +1,6 @@
 import { User, Notification } from "@/interfaces";
 import axios, { AxiosResponse } from "axios"
 import { parseCookies } from "nookies";
-
 export  type Status = "success" | "error";
 
 
