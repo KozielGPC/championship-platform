@@ -45,6 +45,10 @@ function Signin() {
             return
           }
           if(response.data?.access_token){
+            setCookie(null, "championship-token", response.data?.access_token, {
+              maxAge: 60 * 60 * 24, // 24 hours
+            });
+            
             signin(response.data?.access_token);
             router.push("/");
           }
