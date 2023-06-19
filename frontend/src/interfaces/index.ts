@@ -42,3 +42,8 @@ export interface Notification{
     text: string,
     visualized: boolean
 }
+
+export interface Game {
+    id: number;
+    name: string;
+  }
