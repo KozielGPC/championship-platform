@@ -1,5 +1,5 @@
 from api.database.config import Session, engine
-
+from typing import List
 from api.schemas.championships import (
     Response,
     ChampionshipInput,
@@ -19,6 +19,8 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy import Enum, func
 from sqlalchemy.orm import joinedload
 from api.schemas.championships_has_teams import ChampionshipWithTeams
+from api.schemas.matches import MatchSchema
+from api.models.matches import Match
 
 
 router = APIRouter(
@@ -42,6 +44,7 @@ async def getAll(
     max_teams: int = None,
     min_teams: int = None,
     format: str = None,
+    round: int = None,
     name: str = None,
     skip: int = 0,
     limit: int = 100,
@@ -61,7 +64,7 @@ async def getAll(
     if name is not None:
         query = query.filter(func.lower(Championship.name).like(f"%{name.lower()}%"))
 
-    championships = query.options(joinedload(Championship.teams)).offset(skip).limit(limit).all()
+    championships = query.options(joinedload(Championship.teams), joinedload(Championship.matches)).offset(skip).limit(limit).all()
 
     return jsonable_encoder(championships)
 
@@ -73,12 +76,40 @@ async def getAll(
 )
 async def getById(id: int):
     championship = (
-        session.query(Championship).options(joinedload(Championship.teams)).filter(Championship.id == id).first()
+        session.query(Championship).options(joinedload(Championship.teams), joinedload(Championship.matches)).filter(Championship.id == id).first()
     )
     if championship == None:
         raise HTTPException(status_code=404, detail="Championship not found")
     return jsonable_encoder(championship)
 
+
+@router.get(
+    "/{id}/matches",
+    response_model=List[MatchSchema],
+    response_description="Success response from the application."
+)
+async def getMatches(id: int,  skip: int = 0, limit: int = 100):
+    session = Session()
+
+    championship = (
+        session.query(Championship)
+        .filter(Championship.id == id)
+        .first()
+    )
+    if championship is None:
+        raise HTTPException(status_code=404, detail="Championship not found")
+
+    matches = (
+        session.query(Match)
+        .filter(Match.championship_id == id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+    if not matches:
+        raise HTTPException(status_code=404, detail="Matches not found")
+    return matches
 
 @router.post(
     "/create",
@@ -102,6 +133,7 @@ async def create(data: ChampionshipInput, token: Annotated[str, Depends(oauth2_s
         max_teams=data.max_teams,
         format=data.format,
         rules=data.rules,
+        round=0,
         contact=data.contact,
         visibility=data.visibility,
         admin_id=user.id,
@@ -120,6 +152,7 @@ async def create(data: ChampionshipInput, token: Annotated[str, Depends(oauth2_s
         "format": championship_input.format,
         "rules": championship_input.rules,
         "contact": championship_input.contact,
+        "round": championship_input.round,
         "visibility": championship_input.visibility,
         "admin_id": championship_input.admin_id,
         "game_id": championship_input.game_id,
@@ -168,11 +201,11 @@ async def update(id: int, update_request: ChampionshipUpdateRequest, token: Anno
         if championship_exists:
             raise HTTPException(status_code=400, detail="Championship with this name already exists")
 
-    if update_request.max_teams and update_request.min_teams == None:
+    if update_request.max_teams and update_request.min_teams is not None:
         if championship.min_teams > update_request.max_teams:
             raise HTTPException(status_code=400, detail="Max Teams cannot be less than Min Teams")
 
-    if update_request.min_teams and update_request.max_teams == None:
+    if update_request.min_teams and update_request.max_teams is not None:
         if championship.max_teams < update_request.min_teams:
             raise HTTPException(status_code=400, detail="Min Teams cannot be greater than Max Teams")
 

@@ -2,9 +2,6 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Enum, DateTime, Text
 from sqlalchemy.orm import relationship
 from api.database.config import Base
 import enum
-from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel
 
 
 class EnumFormat(enum.Enum):
@@ -25,6 +22,7 @@ class Championship(Base):
     min_teams = Column(Integer)
     max_teams = Column(Integer)
     prizes = Column(Text)
+    round = Column(Integer)
     format = Column(Enum(EnumFormat))
     rules = Column(Text)
     contact = Column(Text)
@@ -33,3 +31,4 @@ class Championship(Base):
     admin_id = Column(Integer, ForeignKey("users.id"))
     game_id = Column(Integer, ForeignKey("games.id"))
     teams = relationship("Team", secondary="championship_has_teams", backref="teams")
+    matches = relationship("Match", backref="matches")

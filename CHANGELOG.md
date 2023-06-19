@@ -2,6 +2,7 @@
 ## Unreleased
 
 ### Changed
+-   [#144](https://github.com/KozielGPC/championship-platform/issues/144) - Atualizado tabela de notifications com campos novos
 -   [#65](https://github.com/KozielGPC/championship-platform/issues/65) - Atualizado banco de dados para postgresql
 
 ### Fixed
@@ -9,6 +10,11 @@
 -   [#84](https://github.com/KozielGPC/championship-platform/issues/84) - Resolvida validação do formulário de campeonato no frontend
 
 ### Added
+-   [#148](https://github.com/KozielGPC/championship-platform/issues/148) - Adicionado o admin de um time como player na criação do time
+-   [#145](https://github.com/KozielGPC/championship-platform/issues/145) - Adicionado atributo de round para campeonatos
+-   [#103](https://github.com/KozielGPC/championship-platform/issues/103) - Adicionado CRUD de partidas
+-   [#90](https://github.com/KozielGPC/championship-platform/issues/90) - Adicionando tela de visualizar equipe
+-   [#133](https://github.com/KozielGPC/championship-platform/issues/133) - Adicionado rota para buscar usuario por username
 -   [#48](https://github.com/KozielGPC/championship-platform/issues/48) - Adicionado filtros no homescreen
 -   [#59](https://github.com/KozielGPC/championship-platform/issues/59) - Adicionado Tela de Visualização de Campeonato
 -   [#93](https://github.com/KozielGPC/championship-platform/issues/93) - Adicionado tabela e rota para retornar notificações de um usuário

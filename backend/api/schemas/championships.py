@@ -28,6 +28,7 @@ class ChampionshipSchema(BaseModel):
     prizes: Optional[str] = None
     format: EnumFormat
     rules: Optional[str] = None
+    round: Optional[int] = None
     contact: Optional[str] = None
     visibility: EnumVisibility
     game_id: Optional[int] = Field(default=None, foreign_key="games.id")
@@ -69,7 +70,7 @@ class ChampionshipInput(ChampionshipSchema):
         if v <= 1:
             raise ValueError("The minimum number of teams must be greater than one")
         return v
-
+    
     @validator("max_teams")
     def max_teams_greater_than_min_teams(cls, v, values):
         if "min_teams" in values and v < values["min_teams"]:
@@ -99,6 +100,7 @@ class ChampionshipUpdateRequest(BaseModel):
     prizes: Optional[str] = None
     format: Optional[EnumFormat] = None
     rules: Optional[str] = None
+    round: Optional[int] = None
     contact: Optional[str] = None
     visibility: Optional[EnumVisibility] = None
 
@@ -132,9 +134,15 @@ class ChampionshipUpdateRequest(BaseModel):
             raise ValueError("The minimum number of teams must be greater than one")
         return v
 
+    @validator("round")
+    def round_greater_than_zero(cls, v):
+        if v < 1:
+            raise ValueError("The minimum number of round must be greater than zero")
+        return v
+    
     @validator("max_teams")
     def max_teams_greater_than_min_teams(cls, v, values):
-        print(values)
+        #print(values)
         if values["min_teams"] != None and v < values["min_teams"]:
             raise ValueError("The maximum number of teams must be greater than or equal to the minimum number of teams")
         return v
