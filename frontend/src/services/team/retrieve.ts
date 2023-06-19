@@ -3,19 +3,13 @@ import axios, { AxiosResponse } from "axios"
 
 export  type Status = "success" | "error";
 
-export  interface ResponseRequestGetTeams{
+export  interface ResponseRequest {
     status: Status;
     message: string;
     data?: Array<Team>;
 }
 
-export  interface ResponseRequestGetTeamById {
-    status: Status;
-    message: string;
-    data?: Team;
-}
-
-export const getTeams= async (): Promise<ResponseRequestGetTeams> => {
+export const getTeams= async (): Promise<ResponseRequest> => {
 
   const response = await axios.get<Array<Team>>(process.env.NEXT_PUBLIC_URL_SERVER+"/teams")
     .then(
@@ -39,26 +33,26 @@ export const getTeams= async (): Promise<ResponseRequestGetTeams> => {
     return response;
 };
 
-export const getTeamById = async (id:string): Promise<ResponseRequestGetTeamById> => {
+export const getTeamById = async (id:string): Promise<ResponseRequest> => {
 
-const response = await axios.get<Team>(process.env.NEXT_PUBLIC_URL_SERVER+"/teams/"+id)
-    .then(
-        (response: AxiosResponse<Team>) => {
-            const status: Status = "success";
-            return {
-                status:status,
-                data: response?.data,
-                message: "Team received with sucess"
-            }}
-    )
-    .catch(
-        () => {
-            const status: Status = "error";
-            return {
-                status: status,
-                message: "Error receiving team"
-            }
-        }
-    );
-    return response;
-};
+    const response = await axios.get<Array<Team>>(process.env.NEXT_PUBLIC_URL_SERVER+"/teams/"+id)
+      .then(
+          (response: AxiosResponse<Array<Team>>) => {
+              const status: Status = "success";
+              return {
+                  status:status,
+                  data: response?.data,
+                  message: "Team received with sucess"
+              }}
+      )
+      .catch(
+          () => {
+              const status: Status = "error";
+              return {
+                  status: status,
+                  message: "Error receiving team"
+              }
+          }
+      );
+      return response;
+  };

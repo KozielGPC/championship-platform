@@ -1,15 +1,6 @@
 # CHANGELOG
 ## Unreleased
 
-### Story Board
--   [#31](https://github.com/KozielGPC/championship-platform/issues/31) - Convidar usuários para uma Equipe
--   [#10](https://github.com/KozielGPC/championship-platform/issues/10) - Visualizar Equipe
--   [#16](https://github.com/KozielGPC/championship-platform/issues/16) - Visualizar um Campeonato específico
--   [#12](https://github.com/KozielGPC/championship-platform/issues/12) - Filtrar Campeonatos
--   [#28](https://github.com/KozielGPC/championship-platform/issues/28) - Editar Campeonato
--   [#37](https://github.com/KozielGPC/championship-platform/issues/37) - Listagem de Equipes
--   [#13](https://github.com/KozielGPC/championship-platform/issues/13) - Entrar em um Campeonato
-
 ### Changed
 -   [#144](https://github.com/KozielGPC/championship-platform/issues/144) - Atualizado tabela de notifications com campos novos
 -   [#65](https://github.com/KozielGPC/championship-platform/issues/65) - Atualizado banco de dados para postgresql
@@ -51,4 +42,3 @@
 -   [#54](https://github.com/KozielGPC/championship-platform/issues/54) - Adicionado formulário de criação de campeonato
 -   [#87](https://github.com/KozielGPC/championship-platform/issues/87) - Adicionado Tela de listagem de minhas equipes
 -   [#44](https://github.com/KozielGPC/championship-platform/issues/44) - Adicionado Tela de edição de um campeonato
--   [#131](https://github.com/KozielGPC/championship-platform/issues/131) - Adicionado Listagem de jogos cadastrados
