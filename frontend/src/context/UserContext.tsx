@@ -109,9 +109,6 @@ export const UserProvider = ({ children }: UserContextProps)=>{
 
     async function signin(token:string){
         try{
-            setCookie(null, "championship-token", token, {
-                maxAge: 60 * 60 * 24, // 24 hours
-            });
             const tokenData:Token = jwt_decode(token);
             if(!tokenData.id){
                 throw new Error("Invalid token");
