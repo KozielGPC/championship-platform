@@ -18,6 +18,11 @@ function Notifications() {
         notification: Notification,
         accept: boolean
     }
+
+    useEffect(()=>{
+        getNotifications();
+    },[])
+
     async function handleInvite({notification,accept}:handleInviteProps){
         let data = {
             team_id: 1,//notification.team_id,
@@ -50,13 +55,14 @@ function Notifications() {
                 {
                     notifications && notifications.length>0
                     ?
-                        notifications.map((notification:Notification) => (
+                        notifications.map((notification:Notification, index) => (
                             <Flex height={'60px'} justifyContent={'space-between'}
-                            alignItems={'center'} p={2} key={notification.id} width={'200'} 
-                            borderBottom={'1px solid white'}
-                            opacity={notification.visualized ? 0.5 : 1}
-                            >
-                                <Text>{notification.text}</Text>
+                                alignItems={'center'} p={2} key={notification.id} width={'200'} 
+                                borderBottom={'1px solid white'}
+                                opacity={notification.visualized ? 0.5 : 1}
+                                >   
+                                    
+                                <Text>{notification.sender_name} invited you to team <b>{notification.team_name}</b></Text>
                                 
                                     {
                                         !notification.visualized
@@ -66,7 +72,7 @@ function Notifications() {
                                             <Button colorScheme="red" onClick={()=>handleInvite({notification: notification, accept: false})}>Deny</Button>
                                         </Flex>
                                     }
-                                   
+                                
                             </Flex>
                         ))
                     :

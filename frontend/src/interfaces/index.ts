@@ -48,8 +48,9 @@ export interface Game {
 
 export interface Notification{
   id: number,
-  name: string,
-  reference_user_id: number
-  text: string,
+  reference_user_id: number,
+  sender_name: string,
+  team_id: number,
+  team_name: string,
   visualized: boolean
 }

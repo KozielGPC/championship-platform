@@ -1,6 +1,5 @@
 import axios, { AxiosResponse } from "axios";
 import { parseCookies } from "nookies";
-import { Notification } from "@/interfaces";
 
 export interface acceptInviteData {
     team_id: number;
