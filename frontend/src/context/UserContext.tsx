@@ -1,7 +1,7 @@
 import { createContext, ReactNode,useEffect,useState } from "react";
 import jwt_decode from "jwt-decode"
 import {User} from "../interfaces";
-import {destroyCookie, parseCookies,setCookie} from 'nookies'
+import {destroyCookie, parseCookies} from 'nookies'
 import { useRouter } from "next/router";
 import { getUserById, getMyNotifications } from "@/services/users/retrieve";
 import { Token, Notification } from "../interfaces";
