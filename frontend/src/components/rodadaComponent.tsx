@@ -26,7 +26,7 @@ const RodadaComponent: React.FC<RodadaProps> = ({ rodada }) => {
     () => {
       setIsLoading(true)
       const fetchData1 = async () => {
-        const response = await getTeamByIdNoArray(rodada.team_1_id.toString());
+        const response = await getTeamById(rodada.team_1_id.toString());
         if(response){
           setIsLoading(false)
           if(response.status == "error"){
@@ -42,6 +42,7 @@ const RodadaComponent: React.FC<RodadaProps> = ({ rodada }) => {
             return
           }
           if(response.data){
+            console.log(response.data)
             setTeam1(response.data)
           }
         }
@@ -51,7 +52,7 @@ const RodadaComponent: React.FC<RodadaProps> = ({ rodada }) => {
       }
       const fetchData2 = async () => {
         if(rodada.team_2_id){
-          const response = await getTeamByIdNoArray(rodada.team_2_id.toString());
+          const response = await getTeamById(rodada.team_2_id.toString());
           if(response){
             setIsLoading(false)
             if(response.status == "error"){
