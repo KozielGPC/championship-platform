@@ -60,6 +60,50 @@ class TeamUpdateRequest(BaseModel):
         extra = "forbid"
 
 
+class AddUserToTeamInput(BaseModel):
+    team_id: int
+    user_id: int
+
+    @validator("*")
+    def check_positive_numbers(cls, v):
+        assert v >= 0, "Negative numbers are not allowed."
+        return v
+
+    class Config:
+        orm_mode = True
+
+
+class AcceptTeamInviteInput(BaseModel):
+    notification_id: int
+    accepted: bool
+
+    @validator("notification_id")
+    def check_positive_numbers(cls, v):
+        assert v >= 0, "Negative numbers are not allowed."
+        return v
+
+    class Config:
+        orm_mode = True
+
+
+class AddUserToTeamReturn(BaseModel):
+    team_id: int
+    reference_user_id: int
+    visualized: bool
+    sender_name: str
+    team_name: str
+
+    class Config:
+        orm_mode = True
+
+class RemoveUserFromTeamReturn(BaseModel):
+    team_id: int
+    user_id: int
+
+    class Config:
+        orm_mode = True
+        
+        
 class Response(GenericModel, Generic[T]):
     code: str
     status: str

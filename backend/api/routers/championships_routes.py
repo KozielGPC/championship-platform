@@ -1,10 +1,9 @@
 from api.database.config import Session, engine
-
+from typing import List
 from api.schemas.championships import (
     Response,
     ChampionshipInput,
     ChampionshipSchema,
-    FindManyChampionshipFilters,
     AddTeamToChampionshipInput,
     AddTeamToChampionshipReturn,
     ChampionshipUpdateRequest,
@@ -17,10 +16,11 @@ from api.utils.auth_services import get_password_hash, oauth2_scheme, get_curren
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import Enum
-
+from sqlalchemy import Enum, func
 from sqlalchemy.orm import joinedload
 from api.schemas.championships_has_teams import ChampionshipWithTeams
+from api.schemas.matches import MatchSchema
+from api.models.matches import Match
 
 
 router = APIRouter(
@@ -38,20 +38,33 @@ session = Session(bind=engine)
     response_model=list[ChampionshipWithTeams],
     response_description="Sucesso de resposta da aplicação.",
 )
-async def getAll(filters: FindManyChampionshipFilters | None = None, skip: int = 0, limit: int = 100):
+async def getAll(
+    game_id: int = None,
+    admin_id: int = None,
+    max_teams: int = None,
+    min_teams: int = None,
+    format: str = None,
+    round: int = None,
+    name: str = None,
+    skip: int = 0,
+    limit: int = 100,
+):
     query = session.query(Championship)
 
-    if filters is not None:
-        if filters.game_id is not None:
-            query = query.filter(Championship.game_id == filters.game_id)
-        if filters.max_teams is not None:
-            query = query.filter(Championship.max_teams <= filters.max_teams)
-        if filters.min_teams is not None:
-            query = query.filter(Championship.min_teams >= filters.min_teams)
-        if filters.format is not None:
-            query = query.filter(Championship.format == filters.format)
+    if game_id is not None:
+        query = query.filter(Championship.game_id == game_id)
+    if max_teams is not None and isinstance(max_teams, int):
+        query = query.filter(Championship.max_teams == max_teams)
+    if min_teams is not None and isinstance(min_teams, int):
+        query = query.filter(Championship.min_teams == min_teams)
+    if format is not None and isinstance(format, str):
+        query = query.filter(Championship.format == format)
+    if admin_id is not None and isinstance(admin_id, int):
+        query = query.filter(Championship.admin_id == admin_id)
+    if name is not None:
+        query = query.filter(func.lower(Championship.name).like(f"%{name.lower()}%"))
 
-    championships = query.options(joinedload(Championship.teams)).offset(skip).limit(limit).all()
+    championships = query.options(joinedload(Championship.teams), joinedload(Championship.matches)).offset(skip).limit(limit).all()
 
     return jsonable_encoder(championships)
 
@@ -63,12 +76,40 @@ async def getAll(filters: FindManyChampionshipFilters | None = None, skip: int =
 )
 async def getById(id: int):
     championship = (
-        session.query(Championship).options(joinedload(Championship.teams)).filter(Championship.id == id).first()
+        session.query(Championship).options(joinedload(Championship.teams), joinedload(Championship.matches)).filter(Championship.id == id).first()
     )
     if championship == None:
         raise HTTPException(status_code=404, detail="Championship not found")
     return jsonable_encoder(championship)
 
+
+@router.get(
+    "/{id}/matches",
+    response_model=List[MatchSchema],
+    response_description="Success response from the application."
+)
+async def getMatches(id: int,  skip: int = 0, limit: int = 100):
+    session = Session()
+
+    championship = (
+        session.query(Championship)
+        .filter(Championship.id == id)
+        .first()
+    )
+    if championship is None:
+        raise HTTPException(status_code=404, detail="Championship not found")
+
+    matches = (
+        session.query(Match)
+        .filter(Match.championship_id == id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+    if not matches:
+        raise HTTPException(status_code=404, detail="Matches not found")
+    return matches
 
 @router.post(
     "/create",
@@ -92,6 +133,7 @@ async def create(data: ChampionshipInput, token: Annotated[str, Depends(oauth2_s
         max_teams=data.max_teams,
         format=data.format,
         rules=data.rules,
+        round=0,
         contact=data.contact,
         visibility=data.visibility,
         admin_id=user.id,
@@ -110,6 +152,7 @@ async def create(data: ChampionshipInput, token: Annotated[str, Depends(oauth2_s
         "format": championship_input.format,
         "rules": championship_input.rules,
         "contact": championship_input.contact,
+        "round": championship_input.round,
         "visibility": championship_input.visibility,
         "admin_id": championship_input.admin_id,
         "game_id": championship_input.game_id,
@@ -158,11 +201,11 @@ async def update(id: int, update_request: ChampionshipUpdateRequest, token: Anno
         if championship_exists:
             raise HTTPException(status_code=400, detail="Championship with this name already exists")
 
-    if update_request.max_teams and update_request.min_teams == None:
+    if update_request.max_teams and update_request.min_teams is not None:
         if championship.min_teams > update_request.max_teams:
             raise HTTPException(status_code=400, detail="Max Teams cannot be less than Min Teams")
 
-    if update_request.min_teams and update_request.max_teams == None:
+    if update_request.min_teams and update_request.max_teams is not None:
         if championship.max_teams < update_request.min_teams:
             raise HTTPException(status_code=400, detail="Min Teams cannot be greater than Max Teams")
 
@@ -188,18 +231,34 @@ async def update(id: int, update_request: ChampionshipUpdateRequest, token: Anno
     response_model=AddTeamToChampionshipReturn,
     response_description="Sucesso de resposta da aplicação.",
 )
-async def addTeamToChampionship(input: AddTeamToChampionshipInput, token: Annotated[str, Depends(oauth2_scheme)]):
+async def addTeamToChampionship(
+    input: AddTeamToChampionshipInput,
+    token: Annotated[str, Depends(oauth2_scheme)]
+):
     user = await get_current_user(token)
     championship = session.query(Championship).filter(Championship.id == input.championship_id).first()
-    if championship == None:
+    if championship is None:
         raise HTTPException(status_code=404, detail="Championship not found")
+    
     team = session.query(Team).filter(Team.id == input.team_id).first()
-    if team == None:
+    if team is None:
         raise HTTPException(status_code=404, detail="Team not found")
+
     if team.owner_id != user.id and championship.admin_id != user.id:
-        raise HTTPException(status_code=401, detail="User is not admin of Team or of the Championship")
+        raise HTTPException(status_code=401, detail="User is not the admin of the Team or the Championship")
+    
     if team.game_id != championship.game_id:
-        raise HTTPException(status_code=400, detail="Team is not of the same Game as the Championship")
+        raise HTTPException(status_code=400, detail="Team is not from the same Game as the Championship")
+    
+    quant = (
+        session.query(ChampionshipsHasTeams)
+        .filter(
+            ChampionshipsHasTeams.championship_id == input.championship_id
+        )
+        .count()
+    )
+    if quant >= championship.max_teams:
+        raise HTTPException(status_code=400, detail="Championship is already full")
 
     championship_has_team = (
         session.query(ChampionshipsHasTeams)
@@ -209,7 +268,7 @@ async def addTeamToChampionship(input: AddTeamToChampionshipInput, token: Annota
         )
         .first()
     )
-    if championship_has_team != None:
+    if championship_has_team is not None:
         raise HTTPException(status_code=400, detail="Team is already registered in this Championship")
 
     data = ChampionshipsHasTeams(
@@ -221,6 +280,7 @@ async def addTeamToChampionship(input: AddTeamToChampionshipInput, token: Annota
     session.refresh(data)
 
     return data
+
 
 
 @router.post(

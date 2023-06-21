@@ -3,7 +3,8 @@ import jwt_decode from "jwt-decode"
 import {User} from "../interfaces";
 import {destroyCookie, parseCookies,setCookie} from 'nookies'
 import { useRouter } from "next/router";
-
+import { getUserById } from "@/services/users/retrieve";
+import { Token } from "../interfaces";
 type UserContextProps = {
     children: ReactNode;
 }
@@ -11,8 +12,10 @@ type UserContextProps = {
 type UserContextType = {
     id: Number;
     setId: (id: Number) => void;
-    username: String;
-    setUsername: (username: String) => void;
+    username: string;
+    setUsername: (username: string) => void;
+    email: string;
+    setEmail: (email: string) => void;
     clearUser: () => void;
     signin: (token:string) => void
     signout: () => void
@@ -25,6 +28,8 @@ const initialValue = {
     setId: () => {},
     username: "",
     setUsername: () => {},
+    email: "",
+    setEmail: () => {},
     clearUser: () => {},
     signin: () => {},
     signout: () => {}
@@ -39,30 +44,17 @@ export const UserProvider = ({ children }: UserContextProps)=>{
     
 
     const [id, setId] = useState<Number>(initialValue.id);
-    const [username, setUsername] = useState<String>(initialValue.username);
+    const [username, setUsername] = useState<string>(initialValue.username);
+    const [email, setEmail] = useState<string>(initialValue.email);
+
+    const token = parseCookies()["championship-token"];
 
     useEffect(
         () => {
-            try {
-                const { "championship-token" : token } = parseCookies();
-
-                // Decodifique o token e armazene o resultado em userData
-                const userData:User = jwt_decode(token);
-            
-                if(userData.id && userData.username){
-                    setId(userData.id)
-                    setUsername(userData.username)
-                }else{
-                    destroyCookie(null,'championship-token',{path: '/'});
-                    router.push('/signin');
-                }
-                
-            } catch (error) {
-                // Se houver um erro ao decodificar o token, redirecione para a página de login
-                destroyCookie(null,'championship-token',{path: '/'});
-                router.push('/signin');
-              }
-        },[]
+            if(token){
+                signin(token)
+            };
+        },[token]
     )
 
     function clearUser(){
@@ -71,15 +63,23 @@ export const UserProvider = ({ children }: UserContextProps)=>{
     }
 
 
-    function signin(token:string){
+    async function signin(token:string){
         try{
             setCookie(null, "championship-token", token, {
                 maxAge: 60 * 60 * 24, // 24 hours
             });
-            const userData:User = jwt_decode(token);
+            const tokenData:Token = jwt_decode(token);
+            if(!tokenData.id){
+                throw new Error("Invalid token");
+            }
+            const response = await getUserById(tokenData.id.toString());
+            if(response.status == "error" || !response.data )throw new Error(response.message);
+           
+            const userData:User = response.data;
+
             setId(userData.id);
             setUsername(userData.username);
-            router.push("/")
+            setEmail(userData.email)
         }
         catch{
             signout()
@@ -98,6 +98,7 @@ export const UserProvider = ({ children }: UserContextProps)=>{
             value={{
                 id, setId,
                 username,setUsername,
+                email, setEmail,
                 clearUser,
                 signin, signout
             }}

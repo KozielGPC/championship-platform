@@ -15,22 +15,35 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from "react";
 import { getChampionshipById } from "@/services/championship/retrieve";
 import {Championship} from '@/interfaces'
-import { createChampionship } from "../../../../services/championship/create";
+import { editChampionship } from "../../../../services/championship/update";
 
 interface PropsEditChampionship {
+    id: number,
     championship:  Championship
 }
 
-export default function EditChampionship({championship}:PropsEditChampionship) {
+interface EditChampionship {
+    name: string,
+    start_time: string,
+    created_at: string,
+    min_teams: number,
+    max_teams: number,
+    prizes: string,
+    format: string,
+    rules: string,
+    contact: string,
+    visibility: string
+}
+
+export default function EditChampionship({id,championship}:PropsEditChampionship) {
     const router = useRouter();
-     const [formData, setFormData] = useState<Championship>(championship);
+     const [formData, setFormData] = useState<EditChampionship>(championship);
      const [isLoading, setIsLoading] = useState<boolean>(false);
      const toast = useToast();
-
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setIsLoading(true)
-        const response = await createChampionship(formData);
+        const response = await editChampionship({id: id ,data: formData});
         if(response){
           toast(
             {
@@ -41,7 +54,7 @@ export default function EditChampionship({championship}:PropsEditChampionship) {
             }
           )
           if(response.status=="success"){
-            router.push("/mychampionships");
+            router.push("/profile/championships");
           }
           setIsLoading(false)
         }
@@ -78,7 +91,7 @@ export default function EditChampionship({championship}:PropsEditChampionship) {
                 overflowY={"auto"}
                 >
                     <Heading mb="6" textAlign="center">
-                        New Championship
+                        Edit Championship
                     </Heading>
                     <form onSubmit={handleFormSubmit}>
                             
@@ -90,6 +103,7 @@ export default function EditChampionship({championship}:PropsEditChampionship) {
                                 value={formData.name}
                                 onChange={handleInputChange}
                                 placeholder="Type the name of championship"
+                                required
                                 />
                             </FormControl>
 
@@ -100,6 +114,7 @@ export default function EditChampionship({championship}:PropsEditChampionship) {
                                 name="start_time"
                                 value={formData.start_time}
                                 onChange={handleInputChange}
+                                required
                                 />
                             </FormControl>
 
@@ -110,6 +125,7 @@ export default function EditChampionship({championship}:PropsEditChampionship) {
                                 name="min_teams"
                                 value={formData.min_teams}
                                 onChange={handleInputChange}
+                                min="2"
                                 />
                             </FormControl>
 
@@ -120,6 +136,7 @@ export default function EditChampionship({championship}:PropsEditChampionship) {
                                 name="max_teams"
                                 value={formData.max_teams}
                                 onChange={handleInputChange}
+                                min={formData.min_teams}
                                 />
                             </FormControl>
 
@@ -176,18 +193,6 @@ export default function EditChampionship({championship}:PropsEditChampionship) {
                                 </Select>
                             </FormControl>
 
-                            <FormControl mt={4}>
-                                <FormLabel>Game</FormLabel>
-                                <Select
-                                name="game_id"
-                                value={formData.game_id}
-                                onChange={handleSelectChange}
-                                >
-                                    <option value="1">League Of Legends</option>
-                                    <option value="2">Valorant</option>
-                                </Select>
-                            </FormControl>
-
                             <Button type="submit" mt={4} disabled={isLoading}>
                                 <>{isLoading?"Editing...":"Edit Championship"}</>
                             </Button>
@@ -230,10 +235,23 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             }
           }
     }
+    
+    const formattedChampionship = {
+        name: response.data?.name,
+        start_time: response.data?.start_time,
+        min_teams: response.data?.min_teams,
+        max_teams: response.data?.max_teams,
+        prizes: response.data?.prizes,
+        format: response.data?.format,
+        rules: response.data?.rules,
+        contact: response.data?.contact,
+        visibility: response.data?.visibility,
+      }
 
     return({
         props: {
-            championship: response.data
+            championship:formattedChampionship,
+            id: id
         }
     })
   };  

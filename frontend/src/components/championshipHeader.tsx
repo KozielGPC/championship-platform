@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from 'react';
+
 import {Box, Heading, Tabs, TabList, Tab, TabPanel, TabPanels, Image, Button, Select, useToast, Flex, Grid} from '@chakra-ui/react';
 import { Championship, Rodada, Team } from '@/interfaces';
-import { useContext } from 'react';
 import { addTeam } from '@/services/championship/add';
 import { useRouter } from 'next/router';
 import { ConfirmModal } from './confirmModal';
 import RodadaComponent from './rodadaComponent';
 import UserContext from '@/context/UserContext';
+import React, { useContext, useEffect, useState } from 'react';
+import ChampionshipPreview from './championshipPreview';
+import axios from 'axios';
+import { getTeams } from '@/services/team/retrieve';
+
 
 interface ChampionshipTeam {
   team_id: number;
@@ -38,12 +42,13 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
 
 
 
+
   useEffect(
     () => {
-        if(championshipTeams){
-          setTeamsChampionship(championshipTeams);         
+        if(championshipTeams){       
+          setTeamsChampionship(championshipTeams);
       }
-    },[]
+    },[championship]
   )
 
   const handleTeamChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -72,7 +77,6 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
           team_id: selectedTeam,
           championship_id: championship?.id}
         const response = await addTeam(championshipTeam);
-      
         if(response){
           toast(
             {
@@ -83,7 +87,17 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
             }
           )
           if(response.status=="success"){
-            router.push("/");
+            const response2 = await getTeams();
+            const teamsChampionships = response2.data?.filter((team: Team) => {
+            const filtredChampionships = team.championships.filter((championship_filter: Championship) => championship_filter.id == (championship ? championship.id : 0))
+              if(filtredChampionships.length !== 0){
+                 return filtredChampionships;
+              }
+            })  
+            if(teamsChampionships){
+            setTeamsChampionship(teamsChampionships)
+          }
+            
           }
           setIsLoading(false)
           setIsOpenConfirmModal(false)
@@ -144,7 +158,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
             overflow={'hidden'}
             alt={'lol-image'}
             src={
-              championship?.game_id == 1 
+              championship?.game_id == 0 
               ?'https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt8979808f7798ecf5/6216ee875fe07272a8a2447a/2021_Key_art.jpg'
               : 'https://iili.io/HrHUeYG.png'
             }
