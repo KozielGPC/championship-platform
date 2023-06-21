@@ -106,6 +106,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
     if(championshipTeams && championship){
       const compararAleatoriamente = () => Math.random() - 0.5;
       const timesAleatorizados: Team[] = [...teamsChampionship].sort(compararAleatoriamente);
+      setTeamsChampionship(timesAleatorizados)
       if(timesAleatorizados.length >= championship.min_teams){
         gerar_partidas(timesAleatorizados, rodada)
       }
