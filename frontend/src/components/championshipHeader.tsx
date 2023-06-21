@@ -46,12 +46,6 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
     },[]
   )
 
-  useEffect(
-    () => {
-      console.log(tabIndex)
-    },[tabIndex]
-  )
-
   const handleTeamChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedTeam(Number(event.target.value));
   };

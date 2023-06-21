@@ -42,7 +42,6 @@ const RodadaComponent: React.FC<RodadaProps> = ({ rodada }) => {
             return
           }
           if(response.data){
-            console.log(response.data)
             setTeam1(response.data)
           }
         }
