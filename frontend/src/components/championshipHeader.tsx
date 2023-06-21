@@ -40,9 +40,6 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
   const [chaveamento, setChaveamento] = useState<Array<Rodada>>();
   const [tabIndex, setTabIndex] = useState<Number>(1);
 
-
-
-
   useEffect(
     () => {
         if(championshipTeams){       
@@ -108,7 +105,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
     const rodada=1;
     if(championshipTeams && championship){
       const compararAleatoriamente = () => Math.random() - 0.5;
-      const timesAleatorizados: Team[] = [...championshipTeams].sort(compararAleatoriamente);
+      const timesAleatorizados: Team[] = [...teamsChampionship].sort(compararAleatoriamente);
       if(timesAleatorizados.length >= championship.min_teams){
         gerar_partidas(timesAleatorizados, rodada)
       }
@@ -116,7 +113,6 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
   }
 
   function gerar_partidas(teams:any[], num_rodada:Number){
-    
     if(!championship){
       return
     } else {
@@ -145,8 +141,8 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
         chave++;
       }
       setChaveamento(array_rodadas)
+      console.log(chaveamento)
     }
-    
   }
 
   return (
