@@ -141,10 +141,15 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
         }
         chave++;
       }
-      setChaveamento(array_rodadas)
-      console.log(chaveamento)
+      setChaveamento(array_rodadas) 
     }
   }
+
+  useEffect(
+    () => {    
+        console.log(chaveamento)
+    },[chaveamento]
+  )
 
   return (
         <Box textColor={'black'}>
@@ -187,7 +192,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                 <TabPanel>
                   <Box w="100%" h={"10vh"}>
                     {championship?.admin_id == id ? 
-                    <Button onClick={gerarChaveamento} float="right" colorScheme='blue'>
+                    <Button onClick={() => gerarChaveamento()} float="right" colorScheme='blue'>
                       Gerar chaveamento
                     </Button> 
                     :
@@ -203,7 +208,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                         ))
                         :
                         <></>
-                      }
+                    }
                     </Grid>
                   </Box>
                 </TabPanel>

@@ -5,7 +5,7 @@ import {UserContext} from '../context/UserContext'
 import { useContext } from 'react';
 import { ExternalLinkIcon } from '@chakra-ui/icons'
 import { Championship, Rodada, Team } from '@/interfaces';
-import { getTeamById, getTeamByIdNoArray } from '@/services/team/retrieve';
+import { getTeamById } from '@/services/team/retrieve';
 
 
 interface RodadaProps {
@@ -42,7 +42,7 @@ const RodadaComponent: React.FC<RodadaProps> = ({ rodada }) => {
             return
           }
           if(response.data){
-            console.log(response.data)
+            //console.log(response.data)
             setTeam1(response.data)
           }
         }
@@ -76,16 +76,16 @@ const RodadaComponent: React.FC<RodadaProps> = ({ rodada }) => {
       if(rodada.team_2_id != -1){
         fetchData2()
       }
-    }, [] 
+    }, [rodada] 
   )
 
   
 
   return (
     <Box border={"1px solid white"} p="5px">
-      <Text color={'blue.200'}>{team1?.name + " "}</Text>
+      <Text color={'blue.200'}>{team1?.id + " "}</Text>
        X 
-      <Text color={'red.200'}>{ " " + (team2 ? team2.name : "No opponent")}</Text>
+      <Text color={'red.200'}>{ " " + (team2 ? team2.id : "No opponent")}</Text>
     </Box>
   );
 };
