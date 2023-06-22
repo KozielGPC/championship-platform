@@ -37,13 +37,16 @@ export const UserInvite = async (data: InviteUserToTeam): Promise<ResponseReques
         message: "User invited with successfully",
       };
     })
-    .catch((error) => {
-      const status: Status = "error";
-      return {
-        status: status,
-        message: error.response?.data?.detail || "Failed to invite user",
-      };
-    });
+    .catch(
+      (error) => {
+          const status: Status = "error";
+          const errorDetail = error.response.data.detail;
+          return {
+              status: status,
+              message: errorDetail
+          }
+      }
+  );
 
   return response;
 };

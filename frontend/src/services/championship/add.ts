@@ -37,14 +37,15 @@ export const addTeam = async (data: ChampionshipTeam): Promise<ResponseRequest> 
               }}
       )
       .catch(
-          (error) => {
-              const status: Status = "error";
-              return {
-                  status: status,
-                  message: "Error adding team"
-              }
-          }
-      );
+        (error) => {
+            const status: Status = "error";
+            const errorDetail = error.response.data.detail;
+            return {
+                status: status,
+                message: errorDetail
+            }
+        }
+    );
       
       return response;
   };

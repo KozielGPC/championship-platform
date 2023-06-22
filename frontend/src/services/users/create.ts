@@ -26,9 +26,10 @@ export const createUser = async (data: User): Promise<ResponseRequest> => {
     .catch(
         (error) => {
             const status: Status = "error";
+            const errorDetail = error.response.data.detail;
             return {
                 status: status,
-                message: "Error creating user"
+                message: errorDetail
             }
         }
     );

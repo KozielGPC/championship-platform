@@ -19,6 +19,7 @@
 -   [#84](https://github.com/KozielGPC/championship-platform/issues/84) - Resolvida validação do formulário de campeonato no frontend
 
 ### Added
+-   [#152](https://github.com/KozielGPC/championship-platform/issues/152) - Adicionado mensagem corretas nos responses
 -   [#148](https://github.com/KozielGPC/championship-platform/issues/148) - Adicionado o admin de um time como player na criação do time
 -   [#145](https://github.com/KozielGPC/championship-platform/issues/145) - Adicionado atributo de round para campeonatos
 -   [#103](https://github.com/KozielGPC/championship-platform/issues/103) - Adicionado CRUD de partidas
