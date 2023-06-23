@@ -1,6 +1,6 @@
 
 import {Box, Heading, Tabs, TabList, Tab, TabPanel, TabPanels, Image, Button, Select, useToast, Flex, Grid} from '@chakra-ui/react';
-import { Championship, Rodada, Team } from '@/interfaces';
+import { Championship, Match, Team } from '@/interfaces';
 import { addTeam } from '@/services/championship/add';
 import { useRouter } from 'next/router';
 import { ConfirmModal } from './confirmModal';
@@ -10,6 +10,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import ChampionshipPreview from './championshipPreview';
 import axios from 'axios';
 import { getTeams } from '@/services/team/retrieve';
+import { createMatch } from '@/services/matches/create';
+
 
 
 interface ChampionshipTeam {
@@ -21,6 +23,7 @@ interface ChampionshipHeaderProps {
   championship?: Championship;
   teams?: Array<Team>;
   championshipTeams?: Array<Team>;
+  matches?: Array<Match>;
 }
 
 
@@ -28,7 +31,7 @@ interface ChampionshipHeaderProps {
 let ct: ChampionshipTeam;
 
 
-const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, teams, championshipTeams}) => {
+const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, teams, championshipTeams, matches}) => {
 
   const {id} = useContext(UserContext);
   const router = useRouter();
@@ -37,7 +40,9 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
   const [teamsChampionship, setTeamsChampionship] = useState(Array<Team>);
   const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [chaveamento, setChaveamento] = useState<Array<Rodada>>();
+  
+  const [partidas, setPartidas] = useState<Array<Match>>();
+  const [chaveamento, setChaveamento] = useState<Array<Match>>();
   const [tabIndex, setTabIndex] = useState<Number>(1);
 
   useEffect(
@@ -98,6 +103,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
           }
           setIsLoading(false)
           setIsOpenConfirmModal(false)
+          router.push('/championship/' + championship?.id.toString)
         }
   };
 
@@ -113,43 +119,75 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
     }
   }
 
-  function gerar_partidas(teams:any[], num_rodada:Number){
+  function gerar_partidas(teams:any[], num_rodada:number){ // gera as partidas da rodada 'num_rodada' do campeonato, com os times vindos em 'teams'
     if(!championship){
       return
     } else {
-      let chave = 1;
-      const array_rodadas: Rodada[] = []
+      let bracket = 1;
+      const array_rodadas: Match[] = []
       for (let i = 0; i < teams.length; i += 2) {
         const team: Team[] = teams.slice(i, i + 2);
         if(team[1]){
-          const rodada :Rodada = {
+          const rodada :Match = {
             championship_id: championship?.id,
             team_1_id: team[0].id,
             team_2_id: team[1].id,
-            rodada: num_rodada,
-            chave: chave,
+            round: num_rodada,
+            bracket: bracket,
           }
           array_rodadas.push(rodada)
         } else {
-          var rodada :Rodada = {
+          var rodada :Match = {
             championship_id: championship?.id,
             team_1_id: team[0].id,
-            rodada: num_rodada,
-            chave: chave,
+            round: num_rodada,
+            bracket: bracket,
           }
           array_rodadas.push(rodada)
         }
-        chave++;
+        bracket++;
       }
       setChaveamento(array_rodadas) 
     }
   }
 
-  useEffect(
-    () => {    
-        console.log(chaveamento)
-    },[chaveamento]
-  )
+  async function iniciarCampeonato() {
+    if (chaveamento){
+      try {
+        const promises = chaveamento.map(async (match) => {
+          const response = await createMatch(match);
+          if (response.status !== "success") {
+            throw new Error(response.message);
+          }
+        });
+    
+        await Promise.all(promises);
+        toast({
+          title: "Campeonato iniciado com sucesso",
+          description: "Partidas cadastradas",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      } catch (error: any) {
+        toast({
+          title: "Erro ao iniciar o campeonato:",
+          description: error.message,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } else {
+      toast({
+        title: "Erro ao iniciar campeonato",
+        description: "Aparentemente o chaveamento ainda não foi gerado!",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  }
 
   return (
         <Box textColor={'black'}>
@@ -191,20 +229,30 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                 <TabPanel>{championship?.contact}</TabPanel>
                 <TabPanel>
                   <Box w="100%" h={"10vh"}>
-                    {championship?.admin_id == id ? 
-                    <Button onClick={() => gerarChaveamento()} float="right" colorScheme='blue'>
-                      Gerar chaveamento
-                    </Button> 
-                    :
-                    <></>}
                     <Box float="left">
                       Times no campeonato: {championshipTeams?.length}
+                    </Box>
+                    <Box float="right">
+                      { chaveamento ? 
+                        <Button onClick={() => iniciarCampeonato()} colorScheme='blue'>
+                          Iniciar Campeonato
+                        </Button>
+                        :
+                        <></>
+                      }
+
+                      {(championship?.admin_id == id) && (partidas == null) ? 
+                      <Button onClick={() => gerarChaveamento()} colorScheme='blue' ml="5px">
+                        Gerar chaveamento
+                      </Button>
+                      :
+                      <></>}
                     </Box>
                   </Box>
                   <Box w="100%">
                     <Grid templateColumns={championshipTeams?`repeat(${Math.ceil(championshipTeams.length/2)}, 1fr)`:'repeat(2, 1fr)'} >
-                    {chaveamento ? chaveamento.map((rodada) => (
-                          <RodadaComponent rodada={rodada}></RodadaComponent>
+                    {chaveamento ? chaveamento.map((match) => (
+                          <RodadaComponent match={match} isStarted={partidas ? true : false} isAdmin={championship?.admin_id == id} ></RodadaComponent>
                         ))
                         :
                         <></>

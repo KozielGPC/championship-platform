@@ -36,16 +36,6 @@ export interface Team {
   users: User[];
 }
 
-export interface Rodada {
-  championship_id: Number;
-  team_1_id: Number;
-  team_2_id?: Number;
-  rodada: Number;
-  chave: Number;
-  team_winner_id?: Number;
-}
-
-
 export interface InviteUserToTeam {
   team_id?: number;
   user_id?: number;
@@ -86,11 +76,12 @@ export interface Team {
     championships: Championship[]
 }
 
-export interface Rodada {
-    championship_id: Number;
-    team_1_id: Number;
-    team_2_id?: Number;
-    rodada: Number;
-    chave: Number;
-    team_winner_id?: Number;
-  }
+export interface Match {
+    championship_id: number;
+    team_1_id: number;
+    team_2_id?: number;
+    round: number;
+    bracket: number;
+    result?: string;
+    team_winner_id?: number;
+}

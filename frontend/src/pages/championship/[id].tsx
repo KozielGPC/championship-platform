@@ -76,6 +76,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
     const response = await getChampionshipById(id.toString())
     const response2 = await getTeams()
+    //const response3 = await 
 
 
     const userData:User = jwt_decode(token);
@@ -105,7 +106,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           if(filtredChampionships.length !== 0){
              return filtredChampionships
           }
-        })  
+        })
 
     
   

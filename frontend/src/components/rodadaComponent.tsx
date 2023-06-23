@@ -4,18 +4,20 @@ import {SignoutButton} from './signoutButton'
 import {UserContext} from '../context/UserContext'
 import { useContext } from 'react';
 import { ExternalLinkIcon } from '@chakra-ui/icons'
-import { Championship, Rodada, Team } from '@/interfaces';
+import { Championship, Match, Team } from '@/interfaces';
 import { getTeamById } from '@/services/team/retrieve';
 
 
-interface RodadaProps {
-  rodada: Rodada;
+interface MatchProps {
+  match: Match;
+  isStarted: boolean;
+  isAdmin: boolean;
 }
 
-let cp: Rodada;
+let cp: Match;
 
 
-const RodadaComponent: React.FC<RodadaProps> = ({ rodada }) => {
+const RodadaComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin }) => {
 
   const [team1, setTeam1] = useState<Team>();
   const [team2, setTeam2] = useState<Team>();
@@ -26,7 +28,7 @@ const RodadaComponent: React.FC<RodadaProps> = ({ rodada }) => {
     () => {
       setIsLoading(true)
       const fetchData1 = async () => {
-        const response = await getTeamById(rodada.team_1_id.toString());
+        const response = await getTeamById(match.team_1_id.toString());
         if(response){
           setIsLoading(false)
           if(response.status == "error"){
@@ -47,12 +49,12 @@ const RodadaComponent: React.FC<RodadaProps> = ({ rodada }) => {
           }
         }
       }
-      if(rodada.team_1_id != -1){
+      if(match.team_1_id != -1){
         fetchData1()
       }
       const fetchData2 = async () => {
-        if(rodada.team_2_id){
-          const response = await getTeamById(rodada.team_2_id.toString());
+        if(match.team_2_id){
+          const response = await getTeamById(match.team_2_id.toString());
           if(response){
             setIsLoading(false)
             if(response.status == "error"){
@@ -73,10 +75,10 @@ const RodadaComponent: React.FC<RodadaProps> = ({ rodada }) => {
           }
         }
       }
-      if(rodada.team_2_id != -1){
+      if(match.team_2_id != -1){
         fetchData2()
       }
-    }, [rodada] 
+    }, [match] 
   )
 
   
