@@ -17,7 +17,7 @@ interface MatchProps {
 let cp: Match;
 
 
-const RodadaComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin }) => {
+const MatchComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin }) => {
 
   const [team1, setTeam1] = useState<Team>();
   const [team2, setTeam2] = useState<Team>();
@@ -78,19 +78,21 @@ const RodadaComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin }) =>
       if(match.team_2_id != -1){
         fetchData2()
       }
+      console.log(match)
     }, [match] 
   )
 
   
 
   return (
-    <Box border={"1px solid white"} p="5px">
-      <Text color={'blue.200'}>{team1?.id + " "}</Text>
-       X 
-      <Text color={'red.200'}>{ " " + (team2 ? team2.id : "No opponent")}</Text>
+    <Box display={'inline-block'} border={"1px solid white"} p="5px" m='5px' h="20vh" minW="200px" backgroundColor={'#262e3a'}>
+      <Box borderBottom={'1px solid white'}> Partida {match.bracket} </Box>
+      <Text p='5px' display={'inline-block'} color={'blue.200'}>{team1?.name + " "}</Text>
+      <Text p='5px' display={'inline-block'}>X</Text>
+      <Text p='5px' display={'inline-block'}color={'red.200'}>{ " " + (team2 ? team2.name : "No opponent")}</Text>
     </Box>
   );
 };
 
 
-export default RodadaComponent;
+export default MatchComponent;

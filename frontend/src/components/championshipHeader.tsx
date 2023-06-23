@@ -1,16 +1,16 @@
 
-import {Box, Heading, Tabs, TabList, Tab, TabPanel, TabPanels, Image, Button, Select, useToast, Flex, Grid} from '@chakra-ui/react';
+import {Box, Heading, Tabs, TabList, Tab, TabPanel, TabPanels, Image, Button, Select, useToast, Flex, Grid, Center} from '@chakra-ui/react';
 import { Championship, Match, Team } from '@/interfaces';
 import { addTeam } from '@/services/championship/add';
 import { useRouter } from 'next/router';
 import { ConfirmModal } from './confirmModal';
-import RodadaComponent from './rodadaComponent';
 import UserContext from '@/context/UserContext';
 import React, { useContext, useEffect, useState } from 'react';
 import ChampionshipPreview from './championshipPreview';
 import axios from 'axios';
 import { getTeams } from '@/services/team/retrieve';
 import { createMatch } from '@/services/matches/create';
+import MatchComponent from './matchComponent';
 
 
 
@@ -23,7 +23,7 @@ interface ChampionshipHeaderProps {
   championship?: Championship;
   teams?: Array<Team>;
   championshipTeams?: Array<Team>;
-  matches?: Array<Match>;
+  matchesChampionship?: Array<Match>;
 }
 
 
@@ -31,7 +31,7 @@ interface ChampionshipHeaderProps {
 let ct: ChampionshipTeam;
 
 
-const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, teams, championshipTeams, matches}) => {
+const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, teams, championshipTeams, matchesChampionship}) => {
 
   const {id} = useContext(UserContext);
   const router = useRouter();
@@ -41,14 +41,21 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
   const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   
-  const [partidas, setPartidas] = useState<Array<Match>>();
+  const [matches, setMatches] = useState<Array<Match>>();
+  const [championshipStarted, setChampionshipStarted] = useState(false)
   const [chaveamento, setChaveamento] = useState<Array<Match>>();
   const [tabIndex, setTabIndex] = useState<Number>(1);
 
   useEffect(
     () => {
+        if(matchesChampionship?.length !== 0){
+          setMatches(matchesChampionship)
+          setChampionshipStarted(true);
+          
+        }
         if(championshipTeams){       
           setTeamsChampionship(championshipTeams);
+          
       }
     },[championship]
   )
@@ -114,7 +121,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
       const timesAleatorizados: Team[] = [...teamsChampionship].sort(compararAleatoriamente);
       setTeamsChampionship(timesAleatorizados)
       if(timesAleatorizados.length >= championship.min_teams){
-        gerar_partidas(timesAleatorizados, rodada)
+        setChaveamento(gerar_partidas(timesAleatorizados, rodada))
       }
     }
   }
@@ -124,30 +131,30 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
       return
     } else {
       let bracket = 1;
-      const array_rodadas: Match[] = []
+      const array_matches: Match[] = []
       for (let i = 0; i < teams.length; i += 2) {
         const team: Team[] = teams.slice(i, i + 2);
         if(team[1]){
-          const rodada :Match = {
+          const match :Match = {
             championship_id: championship?.id,
             team_1_id: team[0].id,
             team_2_id: team[1].id,
             round: num_rodada,
             bracket: bracket,
           }
-          array_rodadas.push(rodada)
+          array_matches.push(match)
         } else {
-          var rodada :Match = {
+          var match :Match = {
             championship_id: championship?.id,
             team_1_id: team[0].id,
             round: num_rodada,
             bracket: bracket,
           }
-          array_rodadas.push(rodada)
+          array_matches.push(match)
         }
         bracket++;
       }
-      setChaveamento(array_rodadas) 
+      return array_matches; 
     }
   }
 
@@ -187,6 +194,11 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
         isClosable: true,
       });
     }
+    router.push("/championship/"+championship?.id)
+  }
+
+  async function avancarEtapa() {
+    console.log('Avançando etapa')
   }
 
   return (
@@ -233,7 +245,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                       Times no campeonato: {championshipTeams?.length}
                     </Box>
                     <Box float="right">
-                      { chaveamento ? 
+                      { chaveamento && !championshipStarted ? 
                         <Button onClick={() => iniciarCampeonato()} colorScheme='blue'>
                           Iniciar Campeonato
                         </Button>
@@ -241,24 +253,46 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                         <></>
                       }
 
-                      {(championship?.admin_id == id) && (partidas == null) ? 
+                      {(championship?.admin_id == id) && !championshipStarted ? 
                       <Button onClick={() => gerarChaveamento()} colorScheme='blue' ml="5px">
                         Gerar chaveamento
                       </Button>
                       :
-                      <></>}
+                      <></>
+                      }
+
+                      {(championship?.admin_id == id) && championshipStarted ? 
+                      <Button onClick={() => avancarEtapa()} colorScheme='blue' ml="5px">
+                        Avançar etapa do championship
+                      </Button>
+                      :
+                      <></>
+                      }
                     </Box>
                   </Box>
-                  <Box w="100%">
-                    <Grid templateColumns={championshipTeams?`repeat(${Math.ceil(championshipTeams.length/2)}, 1fr)`:'repeat(2, 1fr)'} >
-                    {chaveamento ? chaveamento.map((match) => (
-                          <RodadaComponent match={match} isStarted={partidas ? true : false} isAdmin={championship?.admin_id == id} ></RodadaComponent>
+                  { chaveamento || matches ?
+                  <Box w="100%" justifyContent={'center'} alignItems={'center'} flexDirection={'column'} display={'flex'} backgroundColor={'#161B22'} border="2px solid white" overflow={'auto'}>
+                    {/* Array.from({ length: championship?.round ? championship?.round : 1 }).map((_, index) => ( */}
+                      <Grid templateColumns={championshipTeams?`repeat(${Math.ceil(championshipTeams.length/2)}, 1fr)`:'repeat(2, 1fr)'} w="100%" pt='10px' pr='10px' pl='10px'>
+                      { matches ? matches.map((match) => (
+                            <MatchComponent match={match} isStarted={matches ? true : false} isAdmin={championship?.admin_id == id} ></MatchComponent>
                         ))
                         :
                         <></>
-                    }
-                    </Grid>
+                      }
+
+                      { chaveamento ? chaveamento.map((match) => (
+                          <MatchComponent match={match} isStarted={matches ? true : false} isAdmin={championship?.admin_id == id} ></MatchComponent>
+                        ))
+                        :
+                        <></>
+                      }
+                      </Grid>
+                    {/*))}*/}
                   </Box>
+                  :
+                  <></>
+                  }
                 </TabPanel>
             </TabPanels>
             </Tabs>

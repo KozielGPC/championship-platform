@@ -3,25 +3,22 @@ import axios, { AxiosResponse } from "axios"
 
 export  type Status = "success" | "error";
 
-export  interface ResponseRequestGetMatches {
+export  interface ResponseRequestGetMatchesByChampionshipId {
     status: Status;
     message: string;
     data?: Array<Match>;
 }
 
+export const getMatchesByChampionshipId = async (id:string): Promise<ResponseRequestGetMatchesByChampionshipId> => {
 
-
-
-export const getChampionships = async (): Promise<ResponseRequestGetMatches> => {
-
-  const response = await axios.get<Array<Match>>(process.env.NEXT_PUBLIC_URL_SERVER+"/matches/")
+  const response = await axios.get<Array<Match>>(process.env.NEXT_PUBLIC_URL_SERVER+"/championships/" + id +"/matches")
     .then(
         (response: AxiosResponse<Array<Match>>) => {
             const status: Status = "success";
             return {
                 status:status,
                 data: response?.data,
-                message: "Championships received with sucess"
+                message: "Matches received with sucess"
             }}
     )
     .catch(
@@ -29,7 +26,7 @@ export const getChampionships = async (): Promise<ResponseRequestGetMatches> => 
             const status: Status = "error";
             return {
                 status: status,
-                message: "Error receiving championships"
+                message: error.message
             }
         }
     );

@@ -21,6 +21,7 @@ export interface Championship {
   rules: string;
   contact: string;
   visibility: string;
+  round: number;
   game_id: number;
   admin_id: number;
   teams: Team[];
