@@ -78,11 +78,12 @@ export interface Team {
 }
 
 export interface Match {
+    id?: number;
     championship_id: number;
     team_1_id: number;
     team_2_id?: number;
     round: number;
     bracket: number;
     result?: string;
-    team_winner_id?: number;
+    winner_team_id?: number;
 }

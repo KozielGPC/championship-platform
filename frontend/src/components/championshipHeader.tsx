@@ -115,14 +115,39 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
   };
 
   function gerarChaveamento() {
+    var teams_lenght = 0;
+    if ( teams?.length ){
+      teams_lenght = teams.length;
+    }
+    const bases = [4,8,16,32]
     const rodada=1;
-    if(championshipTeams && championship){
-      const compararAleatoriamente = () => Math.random() - 0.5;
-      const timesAleatorizados: Team[] = [...teamsChampionship].sort(compararAleatoriamente);
-      setTeamsChampionship(timesAleatorizados)
-      if(timesAleatorizados.length >= championship.min_teams){
-        setChaveamento(gerar_partidas(timesAleatorizados, rodada))
+    if((teams?.length ? teams.length : 0) >= (championship?.min_teams ? championship?.min_teams : -1)){
+      var base_acima;
+      var encontrado = false;
+      bases.forEach(base => {
+        console.log('teams: ' + teams_lenght)
+        console.log('base: ' + base)
+        if(teams_lenght <= base && !encontrado ){
+          base_acima = base;
+          encontrado = true;
+        } 
+      });
+      console.log(base_acima)
+      if(championshipTeams && championship){
+        const compararAleatoriamente = () => Math.random() - 0.5;
+        const timesAleatorizados: Team[] = [...teamsChampionship].sort(compararAleatoriamente);
+        setTeamsChampionship(timesAleatorizados)
+        if(timesAleatorizados.length >= championship.min_teams){
+          setChaveamento(gerar_partidas(timesAleatorizados, rodada))
+        }
       }
+    } else {
+      toast({
+        title: "Erro ao gerar chaveamento",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   }
 
@@ -275,14 +300,14 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                     {/* Array.from({ length: championship?.round ? championship?.round : 1 }).map((_, index) => ( */}
                       <Grid templateColumns={championshipTeams?`repeat(${Math.ceil(championshipTeams.length/2)}, 1fr)`:'repeat(2, 1fr)'} w="100%" pt='10px' pr='10px' pl='10px'>
                       { matches ? matches.map((match) => (
-                            <MatchComponent match={match} isStarted={matches ? true : false} isAdmin={championship?.admin_id == id} ></MatchComponent>
+                            <MatchComponent match={match} isStarted={matches ? true : false} isAdmin={championship?.admin_id == id} championship_id={championship?.id || 0}></MatchComponent>
                         ))
                         :
                         <></>
                       }
 
                       { chaveamento ? chaveamento.map((match) => (
-                          <MatchComponent match={match} isStarted={matches ? true : false} isAdmin={championship?.admin_id == id} ></MatchComponent>
+                          <MatchComponent match={match} isStarted={matches ? true : false} isAdmin={championship?.admin_id == id} championship_id={championship?.id || 0}></MatchComponent>
                         ))
                         :
                         <></>

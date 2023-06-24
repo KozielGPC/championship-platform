@@ -42,17 +42,11 @@ export default function CurrentChampionship({championship, teams, teamsChampions
 
     },[])
 
-    
-
-
-
   return(
      <Layout>
         <ChampionshipHeader championship={currentChampionship} teams={listUserTeam.filter((team: Team) => team.game_id == championship.game_id)} championshipTeams={listChampionshipTeams} matchesChampionship={matchesChampionship}></ChampionshipHeader>
      </Layout>
    )
- 
- 
  
 }
  

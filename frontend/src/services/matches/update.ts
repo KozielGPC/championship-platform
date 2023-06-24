@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import {parseCookies} from "nookies";
 
-interface setResult {
+export interface setResult {
     winner_team_id: number,
     result: string,
 }
