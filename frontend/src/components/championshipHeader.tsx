@@ -200,7 +200,6 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
           const championshipUpdate = {
             "name": championship?.name,
             "start_time": championship?.start_time,
-            "created_at": championship?.created_at,
             "min_teams": championship?.min_teams,
             "max_teams": championship?.max_teams,
             "prizes": championship?.prizes,
@@ -318,7 +317,6 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                 const championshipUpdate = {
                   "name": championship?.name,
                   "start_time": championship?.start_time,
-                  "createdAt": championship?.created_at ? championship?.created_at : "",
                   "min_teams": championship?.min_teams,
                   "max_teams": championship?.max_teams,
                   "prizes": championship?.prizes,
@@ -374,7 +372,8 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                 duration: 3000,
                 isClosable: true,
               });
-              condition=false              
+              condition=false 
+              return       
             }
           } else {
             toast({
@@ -385,6 +384,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
               isClosable: true,
             });
             condition=false
+            return
           }
         }
       }
@@ -395,8 +395,9 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
           status: "success",
           duration: 3000,
           isClosable: true,
+          
         });
-      //router.reload()
+        router.reload()
     }
   }
 
@@ -555,6 +556,5 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
         </Box>
   );
 };
-
 
 export default ChampionshipHeader;
