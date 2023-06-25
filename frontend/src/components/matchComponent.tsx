@@ -18,12 +18,13 @@ interface MatchProps {
   isAdmin: boolean;
   championship_id: number;
   rodada_atual_championship: number;
+  isChampion: boolean;
 }
 
 let cp: Match;
 
 
-const MatchComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin, championship_id, rodada_atual_championship}) => {
+const MatchComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin, championship_id, rodada_atual_championship, isChampion}) => {
 
   const [resultado, setResultado] = useState("Result");
   const [isOpenConfirmResultModal1, setIsOpenConfirmResultModal1] = useState(false);
@@ -213,7 +214,7 @@ const MatchComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin, champ
         :
         <></>
       } 
-      {isAdmin && isStarted && team2 && match.round == rodada_atual_championship ? 
+      {isAdmin && isStarted && team2 && match.round == rodada_atual_championship && !(isChampion) ? 
       <Box mb="10px" borderTop={'1px solid white'}>
         <Text pb="5px">Select Winner:</Text>
         <Button w="45%" onClick={handleConfirmResultModal1} colorScheme='blue' ml="5px" fontWeight={'bold'} textOverflow={'ellipsis'} whiteSpace='nowrap' overflow='hidden' textAlign={'left'}>
