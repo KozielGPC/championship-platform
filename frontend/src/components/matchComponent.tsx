@@ -9,6 +9,7 @@ import { getTeamById } from '@/services/team/retrieve';
 import { MdOutlineSportsScore} from 'react-icons/md'
 import { setResult } from '@/services/matches/update';
 import { useRouter } from 'next/router';
+import { ConfirmResultModal } from './confirmResultModal';
 
 
 interface MatchProps {
@@ -23,6 +24,9 @@ let cp: Match;
 
 const MatchComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin, championship_id}) => {
 
+  const [resultado, setResultado] = useState("Result");
+  const [isOpenConfirmResultModal1, setIsOpenConfirmResultModal1] = useState(false);
+  const [isOpenConfirmResultModal2, setIsOpenConfirmResultModal2] = useState(false);
   const [team1, setTeam1] = useState<Team>();
   const [team2, setTeam2] = useState<Team>();
   const [winner_team, setWinnerTeam] = useState<Team>();
@@ -30,6 +34,11 @@ const MatchComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin, champ
   const toast = useToast()
   const router = useRouter();
 
+  
+  const handleResultChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setResultado(event.target.value);
+  };
+  
   useEffect(
     () => {
       setIsLoading(true)
@@ -89,7 +98,6 @@ const MatchComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin, champ
         if(match.winner_team_id){
           const response = await getTeamById(match.winner_team_id.toString());
           if(response){
-            console.log(response)
             setIsLoading(false)
             if(response.status == "error"){
               toast(
@@ -116,7 +124,9 @@ const MatchComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin, champ
   )
 
   async function selectTeamWinner (winTeam: number){
+    
     var winner: number = 0;
+  
     if(winTeam == 1){
       winner = team1 ? team1?.id : 0
     } else {
@@ -136,34 +146,47 @@ const MatchComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin, champ
     const request = {
       'id': match.id || 0,
       'data': {
-        'winner_team_id': winner,
-        'result': "resultado" //colocar as infos corretas do state da modal
+        "winner_team_id": winner,
+        "result": resultado
       }
     }
 
-    try {
-        const response = await setResult(request);
-        if (response.status !== "success") {
-          toast({
-            title: "Result confirmed succefully",
-            description: "Result registered",
-            status: "success",
-            duration: 3000,
-            isClosable: true,
-          });
-        }
-    } catch (error: any) {
+    const response = await setResult(request);
+    if (response.status == "success") {
       toast({
-        title: "Error when starting the championship:",
-        description: error.message,
+        title: "Result confirmed succefully",
+        description: "Result registered",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      const string = championship_id.toString();
+      setIsOpenConfirmResultModal1(false);
+      setIsOpenConfirmResultModal2(false);
+      router.reload()
+    } else {
+      toast({
+        title: "Error when save result of match:",
+        description: response.message,
         status: "error",
         duration: 3000,
         isClosable: true,
       });
+      setIsOpenConfirmResultModal1(false);
+      setIsOpenConfirmResultModal2(false);
+      return;
     }
-    
-    router.push('/championship/' + championship_id)
   }
+
+  function handleConfirmResultModal1(){
+    console.log('oi')
+    setIsOpenConfirmResultModal1(true);
+  }
+
+  function handleConfirmResultModal2(){
+    setIsOpenConfirmResultModal2(true);
+  }
+
 
   return (
     <Box display={'inline-block'} border={"1px solid white"} p="5px" m='5px' h="auto" minW="200px" backgroundColor={'#262e3a'}>
@@ -193,16 +216,32 @@ const MatchComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin, champ
       {isAdmin && isStarted ? 
       <Box mb="10px" borderTop={'1px solid white'}>
         <Text pb="5px">Select Winner:</Text>
-        <Button w="45%" onClick={() => selectTeamWinner(1)} colorScheme='blue' ml="5px" fontWeight={'bold'} textOverflow={'ellipsis'} whiteSpace='nowrap' overflow='hidden' textAlign={'left'}>
+        <Button w="45%" onClick={handleConfirmResultModal1} colorScheme='blue' ml="5px" fontWeight={'bold'} textOverflow={'ellipsis'} whiteSpace='nowrap' overflow='hidden' textAlign={'left'}>
           {team1?.name}
         </Button>
-        <Button w="45%" onClick={() => selectTeamWinner(2)} colorScheme='red' ml="5px" fontWeight={'bold'} textOverflow={'ellipsis'} whiteSpace='nowrap' overflow='hidden' textAlign={'left'}>
+        <Button w="45%" onClick={handleConfirmResultModal2} colorScheme='red' ml="5px" fontWeight={'bold'} textOverflow={'ellipsis'} whiteSpace='nowrap' overflow='hidden' textAlign={'left'}>
           {team2?.name}
         </Button>
+        
       </Box>
       :
       <></>
-      }      
+      }
+
+        <ConfirmResultModal
+          content={"Are you sure you want select this winner? " + (team1?.name ? team1?.name : 'team')}
+          handleConfirm={() => selectTeamWinner(1)}
+          isOpen={isOpenConfirmResultModal1}
+          setIsOpen={setIsOpenConfirmResultModal1}
+          handleResultChange={handleResultChange}
+        />
+        <ConfirmResultModal
+          content={"Are you sure you want select this winner? " + (team2?.name ? team2?.name : 'team')}
+          handleConfirm={() => selectTeamWinner(2)}
+          isOpen={isOpenConfirmResultModal2}
+          setIsOpen={setIsOpenConfirmResultModal2}
+          handleResultChange={handleResultChange}
+        />
     </Box>
   );
 };

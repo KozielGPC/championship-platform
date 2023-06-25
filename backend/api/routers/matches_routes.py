@@ -159,13 +159,14 @@ async def update(id: int, update_request: MatchUpdateRequest, token: Annotated[s
     if match is None:
         raise HTTPException(status_code=404, detail="Match not found")
     # winner round result
-    venc = (
-        session.query(Team)
-        .filter(Match.team_1_id == update_request.winner_team_id and Match.team_2_id == update_request.winner_team_id)
-        .first()
-    )
-    if venc is None:
-        raise HTTPException(status_code=404, detail="Team not found")
+    #venc = (
+    #    session.query(Team)
+    #    .filter(Match.team_1_id == update_request.winner_team_id and Match.team_2_id == update_request.winner_team_id)
+    #    .first()
+    #)
+
+    #if venc is None:
+    #   raise HTTPException(status_code=404, detail="Team not found")
 
     if update_request.result == None:
         raise HTTPException(status_code=400, detail="Result cannot be None")

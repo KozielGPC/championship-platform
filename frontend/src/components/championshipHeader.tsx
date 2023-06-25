@@ -41,6 +41,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
   const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   
+  const [base, setBase] = useState(1);
   const [matches, setMatches] = useState<Array<Match>>();
   const [championshipStarted, setChampionshipStarted] = useState(false)
   const [chaveamento, setChaveamento] = useState<Array<Match>>();
@@ -51,13 +52,20 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
         if(matchesChampionship?.length !== 0){
           setMatches(matchesChampionship)
           setChampionshipStarted(true);
+          const bases = [4,8,16,32]
+          var encontrado = false;
+          bases.forEach(base_for => {
+            if(((championshipTeams?.length ? championshipTeams.length : 0) <= base_for) && !encontrado){
+              setBase(base_for)
+              encontrado = true;
+            } 
+          });
           
         }
         if(championshipTeams){       
           setTeamsChampionship(championshipTeams);
-          
       }
-    },[championship]
+    },[championship, matchesChampionship]
   )
 
   const handleTeamChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -77,7 +85,6 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
       return
     }
     setIsOpenConfirmModal(true);
-    
   }
 
   const handleButtonClick = async () => {
@@ -116,29 +123,30 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
 
   function gerarChaveamento() {
     var teams_lenght = 0;
-    if ( teams?.length ){
-      teams_lenght = teams.length;
+    if ( championshipTeams?.length ){
+      teams_lenght = championshipTeams.length;
     }
     const bases = [4,8,16,32]
     const rodada=1;
-    if((teams?.length ? teams.length : 0) >= (championship?.min_teams ? championship?.min_teams : -1)){
+    if((championshipTeams?.length ? championshipTeams.length : 0) >= (championship?.min_teams ? championship?.min_teams : -1)){
       var base_acima;
       var encontrado = false;
       bases.forEach(base => {
-        console.log('teams: ' + teams_lenght)
-        console.log('base: ' + base)
-        if(teams_lenght <= base && !encontrado ){
+        if(teams_lenght <= base && !encontrado){
           base_acima = base;
+          setBase(base_acima)
           encontrado = true;
         } 
       });
-      console.log(base_acima)
+
+      
+      var num_matches_no_oponnent = (base_acima ? base_acima : 0) - teams_lenght;
       if(championshipTeams && championship){
         const compararAleatoriamente = () => Math.random() - 0.5;
         const timesAleatorizados: Team[] = [...teamsChampionship].sort(compararAleatoriamente);
         setTeamsChampionship(timesAleatorizados)
         if(timesAleatorizados.length >= championship.min_teams){
-          setChaveamento(gerar_partidas(timesAleatorizados, rodada))
+          setChaveamento(gerar_partidas(teamsChampionship, rodada, num_matches_no_oponnent))
         }
       }
     } else {
@@ -151,13 +159,13 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
     }
   }
 
-  function gerar_partidas(teams:any[], num_rodada:number){ // gera as partidas da rodada 'num_rodada' do campeonato, com os times vindos em 'teams'
+  function gerar_partidas(teams:any[], num_rodada:number, num_matches_no_oponnent:number){ // gera as partidas da rodada 'num_rodada' do campeonato, com os times vindos em 'teams'
     if(!championship){
       return
     } else {
       let bracket = 1;
       const array_matches: Match[] = []
-      for (let i = 0; i < teams.length; i += 2) {
+      for (let i = 0; i < teams.length - num_matches_no_oponnent; i += 2) {
         const team: Team[] = teams.slice(i, i + 2);
         if(team[1]){
           const match :Match = {
@@ -177,6 +185,16 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
           }
           array_matches.push(match)
         }
+        bracket++;
+      }
+      for (let i = teams.length - num_matches_no_oponnent; i < teams.length; i += 1) {
+        var match :Match = {
+          championship_id: championship?.id,
+          team_1_id: teams[i].id,
+          round: num_rodada,
+          bracket: bracket,
+        }
+        array_matches.push(match)
         bracket++;
       }
       return array_matches; 
@@ -298,7 +316,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                   { chaveamento || matches ?
                   <Box w="100%" justifyContent={'center'} alignItems={'center'} flexDirection={'column'} display={'flex'} backgroundColor={'#161B22'} border="2px solid white" overflow={'auto'}>
                     {/* Array.from({ length: championship?.round ? championship?.round : 1 }).map((_, index) => ( */}
-                      <Grid templateColumns={championshipTeams?`repeat(${Math.ceil(championshipTeams.length/2)}, 1fr)`:'repeat(2, 1fr)'} w="100%" pt='10px' pr='10px' pl='10px'>
+                      <Grid templateColumns={championshipTeams?`repeat(${Math.ceil(base / 2)}, 1fr)`:'repeat(2, 1fr)'} w="100%" pt='10px' pr='10px' pl='10px'>
                       { matches ? matches.map((match) => (
                             <MatchComponent match={match} isStarted={matches ? true : false} isAdmin={championship?.admin_id == id} championship_id={championship?.id || 0}></MatchComponent>
                         ))
@@ -307,7 +325,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                       }
 
                       { chaveamento ? chaveamento.map((match) => (
-                          <MatchComponent match={match} isStarted={matches ? true : false} isAdmin={championship?.admin_id == id} championship_id={championship?.id || 0}></MatchComponent>
+                          <MatchComponent match={match} isStarted={false} isAdmin={championship?.admin_id == id} championship_id={championship?.id || 0}></MatchComponent>
                         ))
                         :
                         <></>
@@ -347,10 +365,10 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                   </Select>
                   <Button mb="50px" w="10vw" onClick={handleConfirmModal} colorScheme='blue' size={'md'}>Join</Button>
                   <ConfirmModal
-                        content="Are you sure you want to join in the championship with this team?"
-                        handleConfirm={handleButtonClick}
-                        isOpen={isOpenConfirmModal}
-                        setIsOpen={setIsOpenConfirmModal}
+                    content="Are you sure you want to join in the championship with this team?"
+                    handleConfirm={handleButtonClick}
+                    isOpen={isOpenConfirmModal}
+                    setIsOpen={setIsOpenConfirmModal}
                   />
                 </Box>) 
                 : 
