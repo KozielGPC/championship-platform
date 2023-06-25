@@ -21,7 +21,7 @@ export interface Championship {
   rules: string;
   contact: string;
   visibility: string;
-  round: string;
+  round: number;
   game_id: number;
   admin_id: number;
   teams: Team[];
@@ -81,7 +81,7 @@ export interface Match {
     id?: number;
     championship_id: number;
     team_1_id: number;
-    team_2_id?: number;
+    team_2_id?: number | null;
     round: number;
     bracket: number;
     result?: string;

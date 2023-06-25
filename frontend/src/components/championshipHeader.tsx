@@ -12,7 +12,6 @@ import { getTeams } from '@/services/team/retrieve';
 import { createMatch } from '@/services/matches/create';
 import MatchComponent from './matchComponent';
 import { editChampionship } from '@/services/championship/update';
-import { EditChampionship } from '@/pages/profile/championships/edit/[id]';
 
 interface ChampionshipTeam {
   team_id: number;
@@ -34,8 +33,11 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
   const [selectedTeam, setSelectedTeam] = useState<number>(0);
   const toast = useToast();
   const [teamsChampionship, setTeamsChampionship] = useState(Array<Team>);
+  const [teamsChampionshipNextRound, setTeamsChampionshipNextRound] = useState(Array<Team>);
   const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
   
+  const [champion, setChampion] = useState<Team>();
+  const [isChampion, setIsChampion] = useState(false);
   const [base, setBase] = useState(1);
   const [matches, setMatches] = useState<Array<Match>>();
   const [championshipStarted, setChampionshipStarted] = useState(false)
@@ -55,7 +57,6 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
               encontrado = true;
             } 
           });
-          
         }
         if(championshipTeams){       
           setTeamsChampionship(championshipTeams);
@@ -107,12 +108,12 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
             })  
             if(teamsChampionships){
             setTeamsChampionship(teamsChampionships)
+            router.reload()
           }
             
           }
           setIsLoading(false)
           setIsOpenConfirmModal(false)
-          router.reload()
         }
   };
 
@@ -145,6 +146,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
     } else {
       toast({
         title: "Erro ao gerar chaveamento",
+        description: "O número de times é menor que o mínimo de times do campeonato",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -154,7 +156,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
 
   function gerar_partidas(teams:any[], num_rodada:number, num_matches_no_oponnent:number){ // gera as partidas da rodada 'num_rodada' do campeonato, com os times vindos em 'teams'
     if(!championship){
-      return
+      return [];
     } else {
       let bracket = 1;
       const array_matches: Match[] = []
@@ -176,30 +178,39 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
         var match :Match = {
           championship_id: championship?.id,
           team_1_id: teams[i].id,
-          team_2_id: 0,
+          team_2_id: null,
+          winner_team_id:  teams[i].id,
+          result: "No opponent",
           round: num_rodada,
           bracket: bracket,
         }
+        console.log(match)
         array_matches.push(match)
         bracket++;
       }
       return array_matches; 
     }
+    
   }
 
   async function iniciarCampeonato() {
     if (chaveamento){
       try {
-        const promises = chaveamento.map(async (match) => {
-          const response = await createMatch(match);
-          if (response.status !== "success") {
-            throw new Error(response.message);
+        if( championship?.name && championship?.start_time && championship?.created_at && championship?.min_teams && championship?.max_teams && championship?.prizes && championship?.rules && championship?.contact && championship?.visibility) {
+          const championshipUpdate = {
+            "name": championship?.name,
+            "start_time": championship?.start_time,
+            "created_at": championship?.created_at,
+            "min_teams": championship?.min_teams,
+            "max_teams": championship?.max_teams,
+            "prizes": championship?.prizes,
+            "format": championship?.format,
+            "rules": championship?.rules,
+            "round": '1',
+            "contact": championship?.contact,
+            "visibility": championship?.visibility
           }
-          const championshipUpdate = championship;  
-          if (championshipUpdate){
-            championshipUpdate.round='1'
-          } 
-
+          
           const request = {
             'id': championship?.id || 0,
             'data': championshipUpdate
@@ -207,15 +218,21 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
           
           const response2 = await editChampionship(request)
           if (response2.status !== "success") {
-            throw new Error(response.message);
+            throw new Error(response2.message);
           } else {
             toast({
               title: "Atualizando o campeonato",
-              description: "Round cadastrado iniciado",
-              status: "error",
+              description: "Round cadastrado",
+              status: "success",
               duration: 3000,
               isClosable: true,
             });
+          }
+        }
+        const promises = chaveamento.map(async (match) => {
+          const response = await createMatch(match);
+          if (response.status !== "success") {
+            throw new Error(response.message);
           }
         });
     
@@ -227,6 +244,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
           duration: 3000,
           isClosable: true,
         });
+        router.reload()
       } catch (error: any) {
         toast({
           title: "Erro ao iniciar o campeonato:",
@@ -235,6 +253,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
           duration: 3000,
           isClosable: true,
         });
+        return
       }
     } else {
       toast({
@@ -245,35 +264,140 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
         isClosable: true,
       });
     }
-    router.reload()
   }
 
   async function avancarEtapa() {
-    console.log('Avançando etapa')
+    console.log(championship?.round)
     if (matches) {
+      var condition = true;
+      var ArrayTeams
+      const array_teams: Team[] = []
       matches.forEach(match => {
-        console.log(match.round)
-        console.log(championship?.round)
-        if ((match.round ? match.round : '1') == championship?.round){
-          if(match.winner_team_id == null){
+        if (condition) {
+          if ((match.round ? match.round : '0') == championship?.round){
+            if(match.winner_team_id == null){
+              toast({
+                title: "Erro ao avançar etapa do campeonato",
+                description: "Ainda há partidas sem resultados",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+              });
+              condition=false;
+            } else {
+              const foundTeam = teamsChampionship.find(team => team.id === match.winner_team_id);
+              if (foundTeam)
+                array_teams.push(foundTeam);
+            }
+          }
+        }
+      });
+      
+      if(condition){
+        setTeamsChampionshipNextRound(array_teams)
+        if(array_teams.length == 1){
+          const championship_winner = array_teams[0]
+          setIsChampion(true)
+          setChampion(championship_winner)
+          toast({
+            title: "O time: " + championship_winner.name + " é o campeão!",
+            description: "Sucess",
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+          });
+          return
+        } else {
+          if(championship){
+            console.log(championship?.round)
+            const matchesNextRodada:Array<Match> = gerar_partidas(array_teams, championship.round + 1, 0);
+            try {
+              console.log(championship?.round)
+              console.log(championship)
+              if( championship?.name != null && championship?.start_time != null && championship?.min_teams != null && championship?.max_teams != null && championship?.prizes != null && championship?.rules!= null  && championship?.contact != null && championship?.visibility != null) {
+                const championshipUpdate = {
+                  "name": championship?.name,
+                  "start_time": championship?.start_time,
+                  "createdAt": championship?.created_at ? championship?.created_at : "",
+                  "min_teams": championship?.min_teams,
+                  "max_teams": championship?.max_teams,
+                  "prizes": championship?.prizes,
+                  "format": championship?.format,
+                  "rules": championship?.rules,
+                  "round": championship.round + 1,
+                  "contact": championship?.contact,
+                  "visibility": championship?.visibility
+                }
+
+                console.log(championshipUpdate)
+                
+                const request = {
+                  'id': championship?.id || 0,
+                  'data': championshipUpdate
+                }
+                
+                const response2 = await editChampionship(request)
+                if (response2.status !== "success") {
+                  condition=false
+                  throw new Error(response2.message);
+                } else {
+                  toast({
+                    title: "Atualizando o campeonato",
+                    description: "Round alterado",
+                    status: "success",
+                    duration: 3000,
+                    isClosable: true,
+                  });
+                }
+              }
+              const promises = matchesNextRodada.map(async (match) => {
+                const response = await createMatch(match);
+                if (response.status !== "success") {
+                  condition=false
+                  throw new Error(response.message);
+                }
+              });
+          
+              await Promise.all(promises);
+              toast({
+                title: "Rodada do campeonato avançada com sucesso com sucesso",
+                description: "Partidas cadastradas, round atualizado",
+                status: "success",
+                duration: 3000,
+                isClosable: true,
+              });
+            } catch (error: any) {
+              toast({
+                title: "Erro ao avançar etapa o campeonato:",
+                description: error.message,
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+              });
+              condition=false              
+            }
+          } else {
             toast({
-              title: "Erro ao avançar etapa campeonato",
-              description: "Ainda há partidas sem resultados",
+              title: "Erro ao iniciar campeonato",
+              description: "No championship",
               status: "error",
               duration: 3000,
               isClosable: true,
             });
+            condition=false
           }
         }
-      });
+      }
+      if(condition)
+        toast({
+          title: "Avançando etapa do campeonato",
+          description: "Sucess",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      //router.reload()
     }
-    toast({
-      title: "Avançando etapa campeonato",
-      description: "Sucess",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
   }
 
   return (
@@ -286,7 +410,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
             alt={'lol-image'}
             src={
               championship?.game_id == 0 
-              ?'https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt8979808f7798ecf5/6216ee875fe07272a8a2447a/2021_Key_art.jpg'
+              ? 'https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt8979808f7798ecf5/6216ee875fe07272a8a2447a/2021_Key_art.jpg'
               : 'https://iili.io/HrHUeYG.png'
             }
             borderLeft='1px solid white'
@@ -347,23 +471,28 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                   </Box>
                   { chaveamento || matches ?
                   <Box w="100%" justifyContent={'center'} alignItems={'center'} flexDirection={'column'} display={'flex'} backgroundColor={'#161B22'} border="2px solid white" overflow={'auto'}>
-                    {/* Array.from({ length: championship?.round ? championship?.round : 1 }).map((_, index) => ( */}
+                    { Array.from({ length: championship?.round ? championship?.round : 1 }).map((_, index) => ( 
                       <Grid templateColumns={championshipTeams?`repeat(${Math.ceil(base / 2)}, 1fr)`:'repeat(2, 1fr)'} w="100%" pt='10px' pr='10px' pl='10px'>
-                      { matches ? matches.map((match) => (
-                            <MatchComponent match={match} isStarted={matches ? true : false} isAdmin={championship?.admin_id == id} championship_id={championship?.id || 0}></MatchComponent>
-                        ))
+                      { matches ? matches.map((match) => (<>
+                          { match.round == index + 1?
+                          <MatchComponent match={match} isStarted={matches ? true : false} isAdmin={championship?.admin_id == id} championship_id={championship?.id || 0} rodada_atual_championship={championship?.round || 1}></MatchComponent>
+                          :
+                          <></>
+                          }
+                          </>))
                         :
                         <></>
+                      
                       }
 
                       { chaveamento ? chaveamento.map((match) => (
-                          <MatchComponent match={match} isStarted={false} isAdmin={championship?.admin_id == id} championship_id={championship?.id || 0}></MatchComponent>
+                          <MatchComponent match={match} isStarted={false} isAdmin={championship?.admin_id == id} championship_id={championship?.id || 0} rodada_atual_championship={1}></MatchComponent>
                         ))
                         :
                         <></>
                       }
                       </Grid>
-                    {/*))}*/}
+                    ))}
                   </Box>
                   :
                   <></>

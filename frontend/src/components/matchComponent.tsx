@@ -17,12 +17,13 @@ interface MatchProps {
   isStarted: boolean;
   isAdmin: boolean;
   championship_id: number;
+  rodada_atual_championship: number;
 }
 
 let cp: Match;
 
 
-const MatchComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin, championship_id}) => {
+const MatchComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin, championship_id, rodada_atual_championship}) => {
 
   const [resultado, setResultado] = useState("Result");
   const [isOpenConfirmResultModal1, setIsOpenConfirmResultModal1] = useState(false);
@@ -81,7 +82,7 @@ const MatchComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin, champ
                   position: "top"
                 }
               )
-              return
+              return;
             }
             if(response.data){
               setTeam2(response.data)
@@ -179,7 +180,6 @@ const MatchComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin, champ
   }
 
   function handleConfirmResultModal1(){
-    console.log('oi')
     setIsOpenConfirmResultModal1(true);
   }
 
@@ -213,12 +213,13 @@ const MatchComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin, champ
         :
         <></>
       } 
-      {isAdmin && isStarted ? 
+      {isAdmin && isStarted && team2 && match.round == rodada_atual_championship ? 
       <Box mb="10px" borderTop={'1px solid white'}>
         <Text pb="5px">Select Winner:</Text>
         <Button w="45%" onClick={handleConfirmResultModal1} colorScheme='blue' ml="5px" fontWeight={'bold'} textOverflow={'ellipsis'} whiteSpace='nowrap' overflow='hidden' textAlign={'left'}>
           {team1?.name}
         </Button>
+        
         <Button w="45%" onClick={handleConfirmResultModal2} colorScheme='red' ml="5px" fontWeight={'bold'} textOverflow={'ellipsis'} whiteSpace='nowrap' overflow='hidden' textAlign={'left'}>
           {team2?.name}
         </Button>

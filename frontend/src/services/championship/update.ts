@@ -3,7 +3,7 @@ import {parseCookies} from "nookies";
 interface EditChampionship {
     name: string,
     start_time: string,
-    created_at: string,
+    created_at?: string,
     min_teams: number,
     max_teams: number,
     prizes: string,
