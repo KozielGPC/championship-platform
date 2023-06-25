@@ -30,7 +30,7 @@ export interface EditChampionship {
     max_teams: number,
     prizes: string,
     format: string,
-    round: string,
+    round: number,
     rules: string,
     contact: string,
     visibility: string
@@ -45,7 +45,7 @@ export default function EditChampionship({id,championship}:PropsEditChampionship
         event.preventDefault();
         setIsLoading(true)
         const payload = formData;
-        payload.round = championship.round ? championship.round : '1'
+        payload.round = championship.round ? championship.round : 1
         const response = await editChampionship({id: id ,data: payload});
         if(response){
           toast(
