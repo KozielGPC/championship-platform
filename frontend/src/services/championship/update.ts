@@ -22,7 +22,7 @@ export  interface ResponseRequest {
 
 export type Props = {
     id: number;
-    data: EditChampionship
+    data?: EditChampionship
 }
 
 export const editChampionship = async ({id, data}:Props): Promise<ResponseRequest> => {

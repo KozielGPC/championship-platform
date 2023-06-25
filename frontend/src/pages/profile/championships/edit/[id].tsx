@@ -22,7 +22,7 @@ interface PropsEditChampionship {
     championship:  Championship
 }
 
-interface EditChampionship {
+export interface EditChampionship {
     name: string,
     start_time: string,
     created_at: string,
@@ -30,6 +30,7 @@ interface EditChampionship {
     max_teams: number,
     prizes: string,
     format: string,
+    round: string,
     rules: string,
     contact: string,
     visibility: string
@@ -37,13 +38,15 @@ interface EditChampionship {
 
 export default function EditChampionship({id,championship}:PropsEditChampionship) {
     const router = useRouter();
-     const [formData, setFormData] = useState<EditChampionship>(championship);
-     const [isLoading, setIsLoading] = useState<boolean>(false);
-     const toast = useToast();
+    const [formData, setFormData] = useState<EditChampionship>(championship);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const toast = useToast();
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setIsLoading(true)
-        const response = await editChampionship({id: id ,data: formData});
+        const payload = formData;
+        payload.round = championship.round ? championship.round : '1'
+        const response = await editChampionship({id: id ,data: payload});
         if(response){
           toast(
             {

@@ -11,8 +11,8 @@ import axios from 'axios';
 import { getTeams } from '@/services/team/retrieve';
 import { createMatch } from '@/services/matches/create';
 import MatchComponent from './matchComponent';
-
-
+import { editChampionship } from '@/services/championship/update';
+import { EditChampionship } from '@/pages/profile/championships/edit/[id]';
 
 interface ChampionshipTeam {
   team_id: number;
@@ -26,20 +26,15 @@ interface ChampionshipHeaderProps {
   matchesChampionship?: Array<Match>;
 }
 
-
-
-let ct: ChampionshipTeam;
-
-
 const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, teams, championshipTeams, matchesChampionship}) => {
 
   const {id} = useContext(UserContext);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
   const [selectedTeam, setSelectedTeam] = useState<number>(0);
   const toast = useToast();
   const [teamsChampionship, setTeamsChampionship] = useState(Array<Team>);
   const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   
   const [base, setBase] = useState(1);
   const [matches, setMatches] = useState<Array<Match>>();
@@ -117,7 +112,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
           }
           setIsLoading(false)
           setIsOpenConfirmModal(false)
-          router.push('/championship/' + championship?.id.toString)
+          router.reload()
         }
   };
 
@@ -126,7 +121,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
     if ( championshipTeams?.length ){
       teams_lenght = championshipTeams.length;
     }
-    const bases = [4,8,16,32]
+    const bases = [2,4,8,16,32]
     const rodada=1;
     if((championshipTeams?.length ? championshipTeams.length : 0) >= (championship?.min_teams ? championship?.min_teams : -1)){
       var base_acima;
@@ -138,8 +133,6 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
           encontrado = true;
         } 
       });
-
-      
       var num_matches_no_oponnent = (base_acima ? base_acima : 0) - teams_lenght;
       if(championshipTeams && championship){
         const compararAleatoriamente = () => Math.random() - 0.5;
@@ -176,14 +169,6 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
             bracket: bracket,
           }
           array_matches.push(match)
-        } else {
-          var match :Match = {
-            championship_id: championship?.id,
-            team_1_id: team[0].id,
-            round: num_rodada,
-            bracket: bracket,
-          }
-          array_matches.push(match)
         }
         bracket++;
       }
@@ -191,6 +176,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
         var match :Match = {
           championship_id: championship?.id,
           team_1_id: teams[i].id,
+          team_2_id: 0,
           round: num_rodada,
           bracket: bracket,
         }
@@ -209,12 +195,34 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
           if (response.status !== "success") {
             throw new Error(response.message);
           }
+          const championshipUpdate = championship;  
+          if (championshipUpdate){
+            championshipUpdate.round='1'
+          } 
+
+          const request = {
+            'id': championship?.id || 0,
+            'data': championshipUpdate
+          }
+          
+          const response2 = await editChampionship(request)
+          if (response2.status !== "success") {
+            throw new Error(response.message);
+          } else {
+            toast({
+              title: "Atualizando o campeonato",
+              description: "Round cadastrado iniciado",
+              status: "error",
+              duration: 3000,
+              isClosable: true,
+            });
+          }
         });
     
         await Promise.all(promises);
         toast({
           title: "Campeonato iniciado com sucesso",
-          description: "Partidas cadastradas",
+          description: "Partidas cadastradas, round atualizado",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -237,11 +245,35 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
         isClosable: true,
       });
     }
-    router.push("/championship/"+championship?.id)
+    router.reload()
   }
 
   async function avancarEtapa() {
     console.log('Avançando etapa')
+    if (matches) {
+      matches.forEach(match => {
+        console.log(match.round)
+        console.log(championship?.round)
+        if ((match.round ? match.round : '1') == championship?.round){
+          if(match.winner_team_id == null){
+            toast({
+              title: "Erro ao avançar etapa campeonato",
+              description: "Ainda há partidas sem resultados",
+              status: "error",
+              duration: 3000,
+              isClosable: true,
+            });
+          }
+        }
+      });
+    }
+    toast({
+      title: "Avançando etapa campeonato",
+      description: "Sucess",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
   }
 
   return (
@@ -339,54 +371,57 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                 </TabPanel>
             </TabPanels>
             </Tabs>
-            { (tabIndex != 4) ?
-            (
-              (teams) != null ? 
-              (teams.length != 0 ? (
-                <Box mt="150px" w="100%" flexDirection={"column"} display="flex" alignItems={"center"} justifyContent={"center"} textAlign={"center"}>
-                  <Heading color={'white'} h={'4vh'} size={'sm'} textAlign={'center'} bottom={'10'}>Select a team:</Heading>
-                  <Select
-                    color={'black'}
-                    colorScheme={'blackAlpha'}
-                    size={'sm'}
-                    mb="10px"
-                    width={"30vw"}
-                    iconSize={'100px'}
-                    name="game_id"
-                    value={selectedTeam || ''}
-                    onChange={handleTeamChange}
-                    >
-                    <option value='0'>Selecione...</option>            
-                    {teams?.map((team) => (
-                      <option key={team.id} value = {team.id}>
-                        {team.name}
-                      </option>
-                    ))}
-                  </Select>
-                  <Button mb="50px" w="10vw" onClick={handleConfirmModal} colorScheme='blue' size={'md'}>Join</Button>
-                  <ConfirmModal
-                    content="Are you sure you want to join in the championship with this team?"
-                    handleConfirm={handleButtonClick}
-                    isOpen={isOpenConfirmModal}
-                    setIsOpen={setIsOpenConfirmModal}
-                  />
-                </Box>) 
-                : 
-                (
-                  <Box mb="50px" mt="150px" w="100%" flexDirection={"column"} display="flex" alignItems={"center"} justifyContent={"center"} textAlign={"center"}>
-                    <Heading color={'white'} h={'4vh'} size={'sm'} textAlign={'center'}> Looks like you don't have a team yet</Heading>
-                    <Button colorScheme={"blue"} onClick={()=>router.push('/profile/teams/new')}>
-                        Create Team
-                    </Button>
-                  </Box>
-                )) 
-                : 
-                (
-                <></>
-                ) 
-              )
-              :
-              (<></>)
+            { !matches ?
+            (tabIndex != 4) ?
+              (
+                (teams) != null ? 
+                (teams.length != 0 ? (
+                  <Box mt="150px" w="100%" flexDirection={"column"} display="flex" alignItems={"center"} justifyContent={"center"} textAlign={"center"}>
+                    <Heading color={'white'} h={'4vh'} size={'sm'} textAlign={'center'} bottom={'10'}>Select a team:</Heading>
+                    <Select
+                      color={'black'}
+                      colorScheme={'blackAlpha'}
+                      size={'sm'}
+                      mb="10px"
+                      width={"30vw"}
+                      iconSize={'100px'}
+                      name="game_id"
+                      value={selectedTeam || ''}
+                      onChange={handleTeamChange}
+                      >
+                      <option value='0'>Selecione...</option>            
+                      {teams?.map((team) => (
+                        <option key={team.id} value = {team.id}>
+                          {team.name}
+                        </option>
+                      ))}
+                    </Select>
+                    <Button mb="50px" w="10vw" onClick={handleConfirmModal} colorScheme='blue' size={'md'}>Join</Button>
+                    <ConfirmModal
+                      content="Are you sure you want to join in the championship with this team?"
+                      handleConfirm={handleButtonClick}
+                      isOpen={isOpenConfirmModal}
+                      setIsOpen={setIsOpenConfirmModal}
+                    />
+                  </Box>) 
+                  : 
+                  (
+                    <Box mb="50px" mt="150px" w="100%" flexDirection={"column"} display="flex" alignItems={"center"} justifyContent={"center"} textAlign={"center"}>
+                      <Heading color={'white'} h={'4vh'} size={'sm'} textAlign={'center'}> Looks like you don't have a team yet</Heading>
+                      <Button colorScheme={"blue"} onClick={()=>router.push('/profile/teams/new')}>
+                          Create Team
+                      </Button>
+                    </Box>
+                  )) 
+                  : 
+                  (
+                  <></>
+                  ) 
+                )
+                :
+                (<></>)
+            :
+            <></>
             }
         </Box>
   );
