@@ -11,6 +11,7 @@
 -   [#13](https://github.com/KozielGPC/championship-platform/issues/13) - Entrar em um Campeonato
 
 ### Changed
+-   [#154](https://github.com/KozielGPC/championship-platform/issues/154) - Atualizado layout da pagina MyChampionships
 -   [#144](https://github.com/KozielGPC/championship-platform/issues/144) - Atualizado tabela de notifications com campos novos
 -   [#65](https://github.com/KozielGPC/championship-platform/issues/65) - Atualizado banco de dados para postgresql
 
