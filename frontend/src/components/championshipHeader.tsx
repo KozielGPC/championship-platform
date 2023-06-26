@@ -160,7 +160,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
         const timesAleatorizados: Team[] = [...teamsChampionship].sort(compararAleatoriamente);
         setTeamsChampionship(timesAleatorizados)
         if(timesAleatorizados.length >= championship.min_teams){
-          setChaveamento(gerar_partidas(teamsChampionship, rodada, num_matches_no_oponnent))
+          setChaveamento(gerar_partidas(timesAleatorizados, rodada, num_matches_no_oponnent))
         }
       }
     } else {
