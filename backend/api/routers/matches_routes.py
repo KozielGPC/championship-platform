@@ -95,9 +95,11 @@ async def create(data: MatchInput, token: Annotated[str, Depends(oauth2_scheme)]
     time1 = session.query(Team).filter(Team.id == data.team_1_id).first()
     if time1 == None:
         raise HTTPException(status_code=404, detail="Team 1 not found")
-    time2 = session.query(Team).filter(Team.id == data.team_2_id).first()
-    if time2 == None:
-        raise HTTPException(status_code=404, detail="Team 2 not found")
+
+    if data.team_2_id != None:
+        time2 = session.query(Team).filter(Team.id == data.team_2_id).first()
+        if time2 == None:
+            raise HTTPException(status_code=404, detail="Team 2 not found")
     championship = session.query(Championship).filter(Championship.id == data.championship_id).first()
     if championship == None:
         raise HTTPException(status_code=404, detail="Championship not found")
@@ -159,13 +161,14 @@ async def update(id: int, update_request: MatchUpdateRequest, token: Annotated[s
     if match is None:
         raise HTTPException(status_code=404, detail="Match not found")
     # winner round result
-    venc = (
-        session.query(Team)
-        .filter(Match.team_1_id == update_request.winner_team_id and Match.team_2_id == update_request.winner_team_id)
-        .first()
-    )
-    if venc is None:
-        raise HTTPException(status_code=404, detail="Team not found")
+    # venc = (
+    #    session.query(Team)
+    #    .filter(Match.team_1_id == update_request.winner_team_id and Match.team_2_id == update_request.winner_team_id)
+    #    .first()
+    # )
+
+    # if venc is None:
+    #   raise HTTPException(status_code=404, detail="Team not found")
 
     if update_request.result == None:
         raise HTTPException(status_code=400, detail="Result cannot be None")

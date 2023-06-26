@@ -102,6 +102,7 @@ async def getMatches(id: int,  skip: int = 0, limit: int = 100):
     matches = (
         session.query(Match)
         .filter(Match.championship_id == id)
+        .order_by(Match.bracket)
         .offset(skip)
         .limit(limit)
         .all()

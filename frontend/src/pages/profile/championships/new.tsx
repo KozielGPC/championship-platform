@@ -168,8 +168,6 @@ export default function CreateChampionship({ games }: Props) {
     }
 
     if (Number(values.min_teams) > Number(values.max_teams)) {
-      console.log(typeof values.min_teams, typeof values.max_teams);
-      console.log(values.min_teams > values.max_teams);
       errors.min_teams = "Cannot be greater than maximum number of teams";
     }
 
