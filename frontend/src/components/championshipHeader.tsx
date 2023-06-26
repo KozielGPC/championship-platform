@@ -543,11 +543,13 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                       onChange={handleTeamChange}
                       >
                       <option value='0'>Selecione...</option>            
-                      {teams?.map((team) => (
-                        <option key={team.id} value = {team.id}>
+                      {teams
+                      .filter(team => !teamsChampionship.some(championshipTeam => championshipTeam.id === team.id))
+                      .map(team => (
+                        <option key={team.id} value={team.id}>
                           {team.name}
                         </option>
-                      ))}
+                      ))};
                     </Select>
                     <Button mb="50px" w="10vw" onClick={handleConfirmModal} colorScheme='blue' size={'md'}>Join</Button>
                     <ConfirmModal
