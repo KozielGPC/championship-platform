@@ -3,7 +3,6 @@ import {parseCookies} from "nookies";
 interface EditChampionship {
     name: string,
     start_time: string,
-    created_at: string,
     min_teams: number,
     max_teams: number,
     prizes: string,
@@ -22,7 +21,7 @@ export  interface ResponseRequest {
 
 export type Props = {
     id: number;
-    data: EditChampionship
+    data?: EditChampionship
 }
 
 export const editChampionship = async ({id, data}:Props): Promise<ResponseRequest> => {
