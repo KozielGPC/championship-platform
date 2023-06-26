@@ -92,7 +92,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
     if(selectedTeam == 0){
       toast(
         {
-          title: "Selecione um time",
+          title: "Select a team",
           status: "error", 
           duration: 3000,
           isClosable: true,
@@ -165,8 +165,8 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
       }
     } else {
       toast({
-        title: "Erro ao gerar chaveamento",
-        description: "O número de times é menor que o mínimo de times do campeonato",
+        title: "Error generating brackets",
+        description: "Number of teams is lower than the minimun of teams of championship!",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -207,7 +207,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
         array_matches.push(match)
         bracket++;
       }
-      return array_matches; 
+      return array_matches;
     }
     
   }
@@ -239,8 +239,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
             throw new Error(response2.message);
           } else {
             toast({
-              title: "Atualizando o campeonato",
-              description: "Round cadastrado",
+              title: "Updating the championship",
               status: "success",
               duration: 3000,
               isClosable: true,
@@ -250,17 +249,19 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
             }
           }
         }
+
         const promises = chaveamento.map(async (match) => {
           const response = await createMatch(match);
           if (response.status !== "success") {
             throw new Error(response.message);
           }
         });
+        setMatches(chaveamento);
     
         await Promise.all(promises);
         toast({
-          title: "Campeonato iniciado com sucesso",
-          description: "Partidas cadastradas, round atualizado",
+          title: "Championship started with success!",
+          description: "Matches registered, round updated!",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -269,7 +270,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
         return
       } catch (error: any) {
         toast({
-          title: "Erro ao iniciar o campeonato:",
+          title: "Error starting championship:",
           description: error.message,
           status: "error",
           duration: 3000,
@@ -358,8 +359,8 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                   throw new Error(response2.message);
                 } else {
                   toast({
-                    title: "Atualizando o campeonato",
-                    description: "Round alterado",
+                    title: "Championship updated!",
+                    description: "Round updated",
                     status: "success",
                     duration: 3000,
                     isClosable: true,
@@ -376,15 +377,15 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
           
               await Promise.all(promises);
               toast({
-                title: "Rodada do campeonato avançada com sucesso com sucesso",
-                description: "Partidas cadastradas, round atualizado",
+                title: "Round of the championship successfully advanced!",
+                description: "Matches registered, round updated",
                 status: "success",
                 duration: 3000,
                 isClosable: true,
               });
             } catch (error: any) {
               toast({
-                title: "Erro ao avançar etapa o campeonato:",
+                title: "Error to advance round of championship:",
                 description: error.message,
                 status: "error",
                 duration: 3000,
@@ -395,7 +396,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
             }
           } else {
             toast({
-              title: "Erro ao iniciar campeonato",
+              title: "Error to start championship",
               description: "No championship",
               status: "error",
               duration: 3000,
@@ -408,8 +409,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
       }
       if(condition) {
         toast({
-          title: "Avançando etapa do campeonato",
-          description: "Sucess",
+          title: "Advancing championship round!",
           status: "success",
           duration: 3000,
           isClosable: true,
