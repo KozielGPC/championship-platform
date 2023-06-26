@@ -36,13 +36,16 @@ export const removeUser = async (data:Payload): Promise<ResponseRequest> => {
         message: "User removed successfully",
       };
     })
-    .catch((error) => {
-      const status: Status = "error";
-      return {
-        status: status,
-        message: error.response?.data?.detail || "Failed to remove user from team",
-      };
-    });
+    .catch(
+      (error) => {
+          const status: Status = "error";
+          const errorDetail = error.response.data.detail;
+          return {
+              status: status,
+              message: errorDetail
+          }
+      }
+  );
 
   return response;
 };

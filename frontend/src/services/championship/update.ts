@@ -49,14 +49,15 @@ export const editChampionship = async ({id, data}:Props): Promise<ResponseReques
               }}
       )
       .catch(
-          (error) => {
-              const status: Status = "error";
-              return {
-                  status: status,
-                  message: "Error editing championship"
-              }
-          }
-      );
+        (error) => {
+            const status: Status = "error";
+            const errorDetail = error.response.data.detail;
+            return {
+                status: status,
+                message: errorDetail
+            }
+        }
+    );
       
       return response;
   };
