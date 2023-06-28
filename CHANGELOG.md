@@ -11,14 +11,20 @@
 -   [#13](https://github.com/KozielGPC/championship-platform/issues/13) - Entrar em um Campeonato
 
 ### Changed
+-   [#154](https://github.com/KozielGPC/championship-platform/issues/154) - Atualizado layout da pagina MyChampionships
 -   [#144](https://github.com/KozielGPC/championship-platform/issues/144) - Atualizado tabela de notifications com campos novos
 -   [#65](https://github.com/KozielGPC/championship-platform/issues/65) - Atualizado banco de dados para postgresql
+-   [#160](https://github.com/KozielGPC/championship-platform/issues/160) - Atualizando tela de times, lista de jogadores sendo atualizada ao excluir jogador
 
 ### Fixed
 -   [#126](https://github.com/KozielGPC/championship-platform/issues/127) - Resolvida validação de inserção de um time em um campeonato cheio
 -   [#84](https://github.com/KozielGPC/championship-platform/issues/84) - Resolvida validação do formulário de campeonato no frontend
 
 ### Added
+-   [#99](https://github.com/KozielGPC/championship-platform/issues/99) - Adicionando botão para iniciar campeonato
+-   [#91](https://github.com/KozielGPC/championship-platform/issues/51) - Adicionando botão de recriar matchmaking
+-   [#152](https://github.com/KozielGPC/championship-platform/issues/152) - Adicionado mensagem corretas nos responses
+-   [#100](https://github.com/KozielGPC/championship-platform/issues/100) - Adicionando geração de chaveamento e funcionamento do campeonato
 -   [#148](https://github.com/KozielGPC/championship-platform/issues/148) - Adicionado o admin de um time como player na criação do time
 -   [#145](https://github.com/KozielGPC/championship-platform/issues/145) - Adicionado atributo de round para campeonatos
 -   [#103](https://github.com/KozielGPC/championship-platform/issues/103) - Adicionado CRUD de partidas
@@ -32,6 +38,7 @@
 -   [#56](https://github.com/KozielGPC/championship-platform/issues/56) - Adicionando pagina de dados pessoais
 -   [#108](https://github.com/KozielGPC/championship-platform/issues/108) - Adicionado rota para atualizar um Campeonato
 -   [#107](https://github.com/KozielGPC/championship-platform/issues/107) - Adicionado rota para atualizar um Usuário
+-   [#59](https://github.com/KozielGPC/championship-platform/issues/59) - Adicionado Tela de Visualização de Campeonato
 -   [#106](https://github.com/KozielGPC/championship-platform/issues/106) - Adicionado rota para cadastrar Time em um Campeonato
 -   [#96](https://github.com/KozielGPC/championship-platform/issues/96) - Adicionado conexão com Socket
 -   [#106](https://github.com/KozielGPC/championship-platform/issues/106) - Adicionado rota de update para Teams e validações extras na criação de Teams

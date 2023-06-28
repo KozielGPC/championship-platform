@@ -105,13 +105,15 @@ export const getChampionshipById = async (id:string): Promise<ResponseRequestGet
           message: "Championships received with success"
         };
       })
-      .catch((error) => {
-        const status: Status = "error";
-        return {
-          status: status,
-          message: "Error receiving championships"
-        };
-      }
+      .catch(
+        (error) => {
+            const status: Status = "error";
+            const errorDetail = error.response.data.detail;
+            return {
+                status: status,
+                message: errorDetail
+            }
+        }
     );
     return response;
   };
