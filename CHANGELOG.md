@@ -14,6 +14,7 @@
 -   [#154](https://github.com/KozielGPC/championship-platform/issues/154) - Atualizado layout da pagina MyChampionships
 -   [#144](https://github.com/KozielGPC/championship-platform/issues/144) - Atualizado tabela de notifications com campos novos
 -   [#65](https://github.com/KozielGPC/championship-platform/issues/65) - Atualizado banco de dados para postgresql
+-   [#160](https://github.com/KozielGPC/championship-platform/issues/160) - Atualizando tela de times, lista de jogadores sendo atualizada ao excluir jogador
 
 ### Fixed
 -   [#126](https://github.com/KozielGPC/championship-platform/issues/127) - Resolvida validação de inserção de um time em um campeonato cheio
@@ -21,6 +22,8 @@
 
 ### Added
 -   [#157](https://github.com/KozielGPC/championship-platform/issues/157) - Adicionado tela de edição de time
+-   [#99](https://github.com/KozielGPC/championship-platform/issues/99) - Adicionando botão para iniciar campeonato
+-   [#91](https://github.com/KozielGPC/championship-platform/issues/51) - Adicionando botão de recriar matchmaking
 -   [#152](https://github.com/KozielGPC/championship-platform/issues/152) - Adicionado mensagem corretas nos responses
 -   [#100](https://github.com/KozielGPC/championship-platform/issues/100) - Adicionando geração de chaveamento e funcionamento do campeonato
 -   [#148](https://github.com/KozielGPC/championship-platform/issues/148) - Adicionado o admin de um time como player na criação do time

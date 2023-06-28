@@ -2,7 +2,7 @@ import  Layout  from "../../../components/layout";
 import { Box, Image, Flex, Button, useToast, Text, Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, TableContainer, Icon, FormControl, FormLabel, Select} from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
-import { getTeamById } from "@/services/team/retrieve";
+import { getTeamById, getTeams } from "@/services/team/retrieve";
 import jwt_decode from "jwt-decode";
 import { InviteUserToTeam, User } from "@/interfaces";
 import { Team } from "@/interfaces";
@@ -22,8 +22,6 @@ interface Props {
   usersProp:Array<User>,
   ownerProp:User
 }
-
-
 
 export default function ShowTeam ({teamProp, usersProp, ownerProp}: Props) {
     const [team, setTeam] = useState<Team>();
@@ -135,6 +133,43 @@ export default function ShowTeam ({teamProp, usersProp, ownerProp}: Props) {
           }
         )
       }
+      const response2 = await getTeamById(teamProp.id.toString());
+      if(response2.status == 'error'){
+        toast(
+          {
+            title: response2.message,
+            status: response2.status,
+            duration: 3000,
+            isClosable: true,
+          }
+        )
+      } else {
+        setTeam(response2.data)
+        toast(
+          {
+            title: response2.message,
+            status: response2.status,
+            duration: 3000,
+            isClosable: true,
+          }
+        )
+      }
+
+      const response3 =  await getUsers();
+    
+      const usersAllFiltered = response3.data?.filter((user) => !response2.data?.users.some((teamUser) => teamUser.id === user.id));
+      const usersAllFiltered2 = usersAllFiltered?.filter((user) => user.id !== response2.data?.owner_id);
+
+      setUsers(usersAllFiltered2)
+  
+      if(response2.status == "error"){
+        return {
+            redirect: {
+              destination: '/',
+              permanent: false,
+            }
+          }
+      }
     }
 
     return (
@@ -186,15 +221,18 @@ export default function ShowTeam ({teamProp, usersProp, ownerProp}: Props) {
                     {
                     team?.users ? 
                     (team.users).map((user, index) => (
+                      user.id == ownerProp.id ?
+                      <></>
+                      :
                       <Tr key={index}>
-                        <Td>{index+2}</Td>
+                        <Td>{index+1}</Td>
                         <Td>{user.username}</Td>
-                        { 
-                        id == team?.owner_id ? 
-                        <Td isNumeric><Button onClick={() => handleClick(user.id)} colorScheme="red"><Icon boxSize='25px' as={MdDeleteForever}/></Button></Td>
-                        : 
-                        <></>
-                        }
+                          { 
+                          id == team?.owner_id ? 
+                          <Td isNumeric><Button onClick={() => handleClick(user.id)} colorScheme="red"><Icon boxSize='25px' as={MdDeleteForever}/></Button></Td>
+                          : 
+                          <></>
+                          }
                       </Tr>
                       )
                     )
@@ -208,21 +246,21 @@ export default function ShowTeam ({teamProp, usersProp, ownerProp}: Props) {
               </Box>
               { 
               id == team?.owner_id ? 
-              <Box>
-                <FormControl>
-                  <FormLabel htmlFor="selectOption">Selecione um usuário para convidar:</FormLabel>
-                  <Select onChange={handleSelectChange} id="selectOption" placeholder="Selecione uma opção">
+              <Box w="25vw" pt="50px">
+                <FormControl pb="10px">
+                  <FormLabel color={'white'} htmlFor="selectOption">Select a user to invite:</FormLabel>
+                  <Select bgColor={"white"} onChange={handleSelectChange} id="selectOption" placeholder={users?.length ? "Select a user": "No have users to invite"}>
                     { 
                     users ?
                       (users).map((user, index) => (
                         <option key={index} value={`${user.id}`}>{user.username}</option>
-                      )) 
+                      ))
                       : 
                       (<></>)
                     }
                   </Select>
                 </FormControl>
-                <Button onClick={handleConfirmModal}> Convidar um usuário para equipe </Button>
+                <Button onClick={handleConfirmModal} w="100%" colorScheme="blue"> Invite user to team </Button>
                 <ConfirmModal
                       content="Are you sure you want to invite this player to this team?"
                       handleConfirm={handleSubmit}
@@ -261,7 +299,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       }
     }
 
-
     const response = await getTeamById(id.toString());
 
     if(response.status == "error"){
@@ -272,9 +309,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           }
         }
     }
-
-
-
 
     if(response.data){
       const user = response.data.users.find(user => user.id === id_user);
@@ -314,9 +348,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           }
         }
     }
-
-
-
 
     return(
       {
