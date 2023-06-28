@@ -20,7 +20,7 @@
 -   [#84](https://github.com/KozielGPC/championship-platform/issues/84) - Resolvida validação do formulário de campeonato no frontend
 
 ### Added
--   [#154](https://github.com/KozielGPC/championship-platform/issues/154) - Adicionado tela de edição de time
+-   [#157](https://github.com/KozielGPC/championship-platform/issues/157) - Adicionado tela de edição de time
 -   [#152](https://github.com/KozielGPC/championship-platform/issues/152) - Adicionado mensagem corretas nos responses
 -   [#100](https://github.com/KozielGPC/championship-platform/issues/100) - Adicionando geração de chaveamento e funcionamento do campeonato
 -   [#148](https://github.com/KozielGPC/championship-platform/issues/148) - Adicionado o admin de um time como player na criação do time
