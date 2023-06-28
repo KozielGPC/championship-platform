@@ -21,6 +21,7 @@
 -   [#84](https://github.com/KozielGPC/championship-platform/issues/84) - Resolvida validação do formulário de campeonato no frontend
 
 ### Added
+-   [#157](https://github.com/KozielGPC/championship-platform/issues/157) - Adicionado tela de edição de time
 -   [#99](https://github.com/KozielGPC/championship-platform/issues/99) - Adicionando botão para iniciar campeonato
 -   [#91](https://github.com/KozielGPC/championship-platform/issues/51) - Adicionando botão de recriar matchmaking
 -   [#152](https://github.com/KozielGPC/championship-platform/issues/152) - Adicionado mensagem corretas nos responses
