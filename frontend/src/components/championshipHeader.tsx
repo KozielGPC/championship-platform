@@ -12,6 +12,8 @@ import { getTeams } from '@/services/team/retrieve';
 import { createMatch } from '@/services/matches/create';
 import MatchComponent from './matchComponent';
 import { editChampionship } from '@/services/championship/update';
+import { getChampionshipById } from '@/services/championship/retrieve';
+import { getMatchesByChampionshipId } from '@/services/matches/retrieve';
 
 interface ChampionshipTeam {
   team_id: number;
@@ -29,6 +31,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
 
   const {id} = useContext(UserContext);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [championshipState, setChampionshipState] = useState<Championship>();
   const router = useRouter();
   const [selectedTeam, setSelectedTeam] = useState<number>(0);
   const toast = useToast();
@@ -44,8 +47,19 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
   const [chaveamento, setChaveamento] = useState<Array<Match>>();
   const [tabIndex, setTabIndex] = useState<Number>(1);
 
+
   useEffect(
     () => {
+      if(matches){
+        setChampionshipStarted(true)
+      }
+    }),[matches]
+
+  useEffect(
+    () => {
+      console.log(matchesChampionship)
+      
+      setChampionshipState(championship)
         if(matchesChampionship?.length !== 0){
           setMatches(matchesChampionship)
           setChampionshipStarted(true);
@@ -58,31 +72,40 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
             } 
           });
         }
-        if(championshipTeams){       
-          setTeamsChampionship(championshipTeams);
-      }
 
       var cont = 0;
       const array_teams: Team[] = []
       var foundTeam : Team | undefined;
+      console.log('matchesChampionship')
+      console.log(matchesChampionship)
       if(matchesChampionship){
           matchesChampionship.forEach(match => {
             if ((match.round != null ? match.round : '0') == (championship?.round != null ? championship.round : 1)){
               cont++;
-              if(!(match.winner_team_id == null)){
-                foundTeam = teamsChampionship.find(team => team.id === match.winner_team_id);
+              console.log(match)
+              console.log(match.winner_team_id)
+              if((match.winner_team_id !== null)){
+                foundTeam = championshipTeams?.find(team => team.id === match.winner_team_id);
                 if (foundTeam)
                   array_teams.push(foundTeam);
               }
             }
           });
+        console.log(cont)
+        console.log(foundTeam)
         if(cont == 1 && foundTeam != null){
+          
           setIsChampion(true)
           setChampion(foundTeam)
         }
       }
-    },[championship, matchesChampionship, teamsChampionship]
+      if(championshipTeams){       
+        setTeamsChampionship(championshipTeams);
+      }
+    },[championship, matchesChampionship, championshipTeams]
   )
+
+
 
   const handleTeamChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedTeam(Number(event.target.value));
@@ -107,7 +130,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
     setIsLoading(true)
     const championshipTeam: ChampionshipTeam = {
       team_id: selectedTeam,
-      championship_id: championship?.id}
+      championship_id: championshipState?.id}
     const response = await addTeam(championshipTeam);
     if(response){
       toast(
@@ -121,30 +144,29 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
       if(response.status=="success"){
         const response2 = await getTeams();
         const teamsChampionships = response2.data?.filter((team: Team) => {
-        const filtredChampionships = team.championships.filter((championship_filter: Championship) => championship_filter.id == (championship ? championship.id : 0))
-          if(filtredChampionships.length !== 0){
-             return filtredChampionships;
-          }
+          const filtredChampionships = team.championships.filter((championship_filter: Championship) => championship_filter.id == (championshipState ? championshipState.id : 0))
+            if(filtredChampionships.length !== 0){
+              return filtredChampionships;
+            }
         })
         if(teamsChampionships){
           setTeamsChampionship(teamsChampionships)
-          router.reload()
         }
       }
       setIsLoading(false)
       setIsOpenConfirmModal(false)
-      
     }
   };
 
   function gerarChaveamento() {
+    console.log(chaveamento)
     var teams_lenght = 0;
-    if ( championshipTeams?.length ){
-      teams_lenght = championshipTeams.length;
+    if ( teamsChampionship?.length ){
+      teams_lenght = teamsChampionship.length;
     }
     const bases = [2,4,8,16,32]
     const rodada=1;
-    if((championshipTeams?.length ? championshipTeams.length : 0) >= (championship?.min_teams ? championship?.min_teams : -1)){
+    if((teamsChampionship?.length ? teamsChampionship.length : 0) >= (championshipState?.min_teams ? championshipState?.min_teams : -1)){
       var base_acima;
       var encontrado = false;
       bases.forEach(base => {
@@ -155,11 +177,11 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
         } 
       });
       var num_matches_no_oponnent = (base_acima ? base_acima : 0) - teams_lenght;
-      if(championshipTeams && championship){
+      if(teamsChampionship && championshipState){
         const compararAleatoriamente = () => Math.random() - 0.5;
         const timesAleatorizados: Team[] = [...teamsChampionship].sort(compararAleatoriamente);
         setTeamsChampionship(timesAleatorizados)
-        if(timesAleatorizados.length >= championship.min_teams){
+        if(timesAleatorizados.length >= championshipState.min_teams){
           setChaveamento(gerar_partidas(timesAleatorizados, rodada, num_matches_no_oponnent))
         }
       }
@@ -175,7 +197,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
   }
 
   function gerar_partidas(teams:any[], num_rodada:number, num_matches_no_oponnent:number){ // gera as partidas da rodada 'num_rodada' do campeonato, com os times vindos em 'teams'
-    if(!championship){
+    if(!championshipState){
       return [];
     } else {
       let bracket = 1;
@@ -184,7 +206,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
         const team: Team[] = teams.slice(i, i + 2);
         if(team[1]){
           const match :Match = {
-            championship_id: championship?.id,
+            championship_id: championshipState?.id,
             team_1_id: team[0].id,
             team_2_id: team[1].id,
             round: num_rodada,
@@ -196,7 +218,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
       }
       for (let i = teams.length - num_matches_no_oponnent; i < teams.length; i += 1) {
         var match :Match = {
-          championship_id: championship?.id,
+          championship_id: championshipState?.id,
           team_1_id: teams[i].id,
           team_2_id: null,
           winner_team_id:  teams[i].id,
@@ -215,22 +237,22 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
   async function iniciarCampeonato() {
     if (chaveamento){
       try {
-        if( championship?.name != null && championship?.start_time != null && championship?.min_teams != null && championship?.max_teams != null && championship?.prizes != null && championship?.rules!= null  && championship?.contact != null && championship?.visibility != null) {
+        if( championshipState?.name != null && championshipState?.start_time != null && championshipState?.min_teams != null && championshipState?.max_teams != null && championshipState?.prizes != null && championshipState?.rules!= null  && championshipState?.contact != null && championshipState?.visibility != null) {
           const championshipUpdate = {
-            "name": championship?.name,
-            "start_time": championship?.start_time,
-            "min_teams": championship?.min_teams,
-            "max_teams": championship?.max_teams,
-            "prizes": championship?.prizes,
-            "format": championship?.format,
-            "rules": championship?.rules,
+            "name": championshipState?.name,
+            "start_time": championshipState?.start_time,
+            "min_teams": championshipState?.min_teams,
+            "max_teams": championshipState?.max_teams,
+            "prizes": championshipState?.prizes,
+            "format": championshipState?.format,
+            "rules": championshipState?.rules,
             "round": '1',
-            "contact": championship?.contact,
-            "visibility": championship?.visibility
+            "contact": championshipState?.contact,
+            "visibility": championshipState?.visibility
           }
           
           const request = {
-            'id': championship?.id || 0,
+            'id': championshipState?.id || 0,
             'data': championshipUpdate
           }
           
@@ -240,12 +262,13 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
           } else {
             toast({
               title: "Updating the championship",
-              status: "success",
+              description: response2.message,
+              status: response2.status,
               duration: 3000,
               isClosable: true,
             });
-            if(championship){
-              championship.round = 1
+            if(championshipState){
+              championshipState.round = 1
             }
           }
         }
@@ -266,7 +289,8 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
           duration: 3000,
           isClosable: true,
         });
-        router.reload()
+        setChaveamento([])
+        handleMatchResult()
         return
       } catch (error: any) {
         toast({
@@ -280,8 +304,8 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
       }
     } else {
       toast({
-        title: "Erro ao iniciar campeonato",
-        description: "Aparentemente o chaveamento ainda não foi gerado!",
+        title: "Error to start championship",
+        description: "The bracket has not been generated yet!",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -296,11 +320,11 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
       const array_teams: Team[] = []
       matches.forEach(match => {
         if (condition) {
-          if ((match.round != null ? match.round : '0') == (championship?.round != null ? championship.round : 1)){
+          if ((match.round != null ? match.round : '0') == (championshipState?.round != null ? championshipState.round : 1)){
             if(match.winner_team_id == null){
               toast({
-                title: "Erro ao avançar etapa do campeonato",
-                description: "Ainda há partidas sem resultados",
+                title: "Error advancing championship round!",
+                description: "There are matches without results.",
                 status: "error",
                 duration: 3000,
                 isClosable: true,
@@ -323,33 +347,33 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
           setIsChampion(true)
           setChampion(championship_winner)
           toast({
-            title: "O time: " + championship_winner.name + " é o campeão!",
-            description: "Sucess",
+            title: "TEAM: " + championship_winner.name + " IS CHAMPION!",
+            description: "Congratulations",
             status: "success",
             duration: 3000,
             isClosable: true,
           });
           return
         } else {
-          if(championship){
-            const matchesNextRodada:Array<Match> = gerar_partidas(array_teams, championship.round + 1, 0);
+          if(championshipState){
+            const matchesNextRodada:Array<Match> = gerar_partidas(array_teams, championshipState.round + 1, 0);
             try {
-              if( championship?.name != null && championship?.start_time != null && championship?.min_teams != null && championship?.max_teams != null && championship?.prizes != null && championship?.rules!= null  && championship?.contact != null && championship?.visibility != null) {
+              if( championshipState?.name != null && championshipState?.start_time != null && championshipState?.min_teams != null && championshipState?.max_teams != null && championshipState?.prizes != null && championshipState?.rules!= null  && championshipState?.contact != null && championshipState?.visibility != null) {
                 const championshipUpdate = {
-                  "name": championship?.name,
-                  "start_time": championship?.start_time,
-                  "min_teams": championship?.min_teams,
-                  "max_teams": championship?.max_teams,
-                  "prizes": championship?.prizes,
-                  "format": championship?.format,
-                  "rules": championship?.rules,
-                  "round": championship.round + 1,
-                  "contact": championship?.contact,
-                  "visibility": championship?.visibility
+                  "name": championshipState?.name,
+                  "start_time": championshipState?.start_time,
+                  "min_teams": championshipState?.min_teams,
+                  "max_teams": championshipState?.max_teams,
+                  "prizes": championshipState?.prizes,
+                  "format": championshipState?.format,
+                  "rules": championshipState?.rules,
+                  "round": championshipState.round + 1,
+                  "contact": championshipState?.contact,
+                  "visibility": championshipState?.visibility
                 }
                 
                 const request = {
-                  'id': championship?.id || 0,
+                  'id': championshipState?.id || 0,
                   'data': championshipUpdate
                 }
                 
@@ -360,8 +384,8 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                 } else {
                   toast({
                     title: "Championship updated!",
-                    description: "Round updated",
-                    status: "success",
+                    description: response2.message,
+                    status: response2.status,
                     duration: 3000,
                     isClosable: true,
                   });
@@ -383,11 +407,13 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                 duration: 3000,
                 isClosable: true,
               });
+
+              
             } catch (error: any) {
               toast({
                 title: "Error to advance round of championship:",
                 description: error.message,
-                status: "error",
+                status: error.status,
                 duration: 3000,
                 isClosable: true,
               });
@@ -414,9 +440,59 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
           duration: 3000,
           isClosable: true,
         });
-        router.reload()
+        handleMatchResult()
+        handleChampionshipRound()
+        //router.reload()
       }
        
+    }
+  }
+
+  const handleMatchResult = async () => {
+    if(championshipState){
+      const response = await getMatchesByChampionshipId(championshipState.id.toString())
+      if(response.status == "error"){
+        toast(
+          {
+            title: response.message,
+            status: response.status,
+            duration: 3000,
+            isClosable: true,
+          }
+        )
+        return {
+          redirect: {
+            destination: '/',
+            permanent: false,
+          }
+        }
+      } else {
+        setMatches(response.data)
+      }
+    }
+  }
+
+  const handleChampionshipRound = async () => {
+    if(championshipState){
+      const response = await getChampionshipById(championshipState.id.toString())
+      if(response.status == "error"){
+        toast(
+          {
+            title: response.message,
+            status: response.status,
+            duration: 3000,
+            isClosable: true,
+          }
+        )
+        return {
+          redirect: {
+            destination: '/',
+            permanent: false,
+          }
+        }
+      } else {
+        setChampionshipState(response.data)
+      }
     }
   }
 
@@ -429,7 +505,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
             overflow={'hidden'}
             alt={'lol-image'}
             src={
-              championship?.game_id == 0 
+              championshipState?.game_id == 0 
               ? 'https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt8979808f7798ecf5/6216ee875fe07272a8a2447a/2021_Key_art.jpg'
               : 'https://iili.io/HrHUeYG.png'
             }
@@ -439,7 +515,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
              
             />
             <Heading textAlign={'center'} color={'white'} pt={'20px'} h={'10vh'}>
-               {championship?.name}
+               {championshipState?.name}
             </Heading>
             <Tabs onChange={(index) => setTabIndex(index)} color={'white'} marginTop={'5'} colorScheme={'whiteAlpha'} size={'md'} textAlign={'center'} align={'center'} borderColor={'white'} >
                 <TabList>
@@ -450,21 +526,21 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                     <Tab>Brackets</Tab>
                 </TabList>
             <TabPanels>
-                <TabPanel>{championship?.rules}</TabPanel>
-                <TabPanel>{championship?.prizes}</TabPanel>
+                <TabPanel>{championshipState?.rules}</TabPanel>
+                <TabPanel>{championshipState?.prizes}</TabPanel>
                 <TabPanel>
                   {teamsChampionship?.map((team, index) => (
                     <p key={index}>{team.name}</p>
                   ))}
                 </TabPanel>
-                <TabPanel>{championship?.contact}</TabPanel>
+                <TabPanel>{championshipState?.contact}</TabPanel>
                 <TabPanel>
                   <Box w="100%" h={"10vh"}>
                     <Box float="left">
-                      Times no campeonato: {championshipTeams?.length}
+                      Times no campeonato: {teamsChampionship?.length}
                     </Box>
                     <Box float="right">
-                      { chaveamento && !championshipStarted ? 
+                      { chaveamento?.length != 0 && chaveamento && !championshipStarted ? 
                         <Button onClick={() => iniciarCampeonato()} colorScheme='blue'>
                           Iniciar Campeonato
                         </Button>
@@ -472,7 +548,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                         <></>
                       }
 
-                      {(championship?.admin_id == id) && !championshipStarted ? 
+                      {(championshipState?.admin_id == id) && !championshipStarted ? 
                       <Button onClick={() => gerarChaveamento()} colorScheme='blue' ml="5px">
                         Gerar chaveamento
                       </Button>
@@ -480,7 +556,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                       <></>
                       }
 
-                      {(championship?.admin_id == id) && championshipStarted && !isChampion ? 
+                      {(championshipState?.admin_id == id) && championshipStarted && !isChampion ? 
                       <Button onClick={() => avancarEtapa()} colorScheme='blue' ml="5px">
                         Avançar etapa do championship
                       </Button>
@@ -490,12 +566,12 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                     </Box>
                   </Box>
                   { chaveamento || matches ?
-                  <Box w="100%" justifyContent={'center'} alignItems={'center'} flexDirection={'column'} display={'flex'} backgroundColor={'#161B22'} border="2px solid white" overflow={'auto'}>
-                    { Array.from({ length: championship?.round ? championship?.round : 1 }).map((_, index) => ( 
+                  <Box w="100%" justifyContent={'center'} alignItems={'center'} flexDirection={'column'} display={'flex'} backgroundColor={'#161B22'} border="2px solid white" overflow={'auto'} pb="20px">
+                    { Array.from({ length: championshipState?.round ? championshipState?.round : 1 }).map((_, index) => ( 
                       <Grid templateColumns={championshipTeams?`repeat(${Math.ceil(base / 2)}, 1fr)`:'repeat(2, 1fr)'} w="100%" pt='10px' pr='10px' pl='10px'>
                       { matches ? matches.map((match) => (<>
                           { match.round == index + 1?
-                          <MatchComponent match={match} isStarted={matches ? true : false} isAdmin={championship?.admin_id == id} championship_id={championship?.id || 0} rodada_atual_championship={championship?.round || 1} isChampion={isChampion}></MatchComponent>
+                          <MatchComponent match={match} isStarted={matches ? true : false} isAdmin={championshipState?.admin_id == id} championship_id={championshipState?.id || 0} rodada_atual_championship={championshipState?.round || 1} isChampion={isChampion} reqMatches={handleMatchResult}></MatchComponent>
                           :
                           <></>
                           }
@@ -506,7 +582,7 @@ const ChampionshipHeader: React.FC<ChampionshipHeaderProps> = ({ championship, t
                       }
 
                       { chaveamento ? chaveamento.map((match) => (
-                          <MatchComponent match={match} isStarted={false} isAdmin={championship?.admin_id == id} championship_id={championship?.id || 0} rodada_atual_championship={1} isChampion={isChampion}></MatchComponent>
+                          <MatchComponent match={match} isStarted={false} isAdmin={championshipState?.admin_id == id} championship_id={championshipState?.id || 0} rodada_atual_championship={1} isChampion={isChampion} reqMatches={handleMatchResult}></MatchComponent>
                         ))
                         :
                         <></>
