@@ -24,7 +24,7 @@ function Notifications() {
 
   async function handleInvite({ notification, accept }: handleInviteProps) {
     let data = {
-      team_id: 1, //notification.team_id,
+      team_id:notification.team_id ,
       user_id: id,
       notification_id: notification.id,
       accepted: accept,
@@ -33,7 +33,7 @@ function Notifications() {
     if (response) {
       toast({
         title: response.message,
-        status: response.status,
+        status: response.status=="error"?"error":'info',
         duration: 3000,
         isClosable: true,
       });

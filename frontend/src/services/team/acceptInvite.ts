@@ -38,7 +38,7 @@ export const acceptInvite = async (
         return {
             status: status,
             data: response.data,
-            message: "Invite accepted successfully",
+            message: "Operação realizada com sucesso!",
         }
     })
     .catch((error) => {
