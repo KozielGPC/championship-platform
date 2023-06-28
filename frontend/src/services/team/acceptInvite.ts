@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import { parseCookies } from "nookies";
 
 export interface acceptInviteData {
-    team_id: number;
+    //team_id: number;
     user_id: Number;
     notification_id: number;
     accepted: boolean;

@@ -24,7 +24,6 @@ function Notifications() {
 
   async function handleInvite({ notification, accept }: handleInviteProps) {
     let data = {
-      team_id:notification.team_id ,
       user_id: id,
       notification_id: notification.id,
       accepted: accept,
@@ -41,6 +40,8 @@ function Notifications() {
         await getNotifications();
         if (accept) {
           return router.push(`/profile/team/${response.data.team_id}`);
+        }else{
+          return router.push(`/`);
         }
       }
     }
