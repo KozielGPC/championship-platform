@@ -20,7 +20,7 @@ import { getTeamById } from "@/services/team/retrieve";
 
 interface PropsEditTeam {
   id: number,
-  team:  Team
+  team: Team
 }
 
 export interface EditTeam {
@@ -34,6 +34,7 @@ export default function EditTeam({id,team}:PropsEditTeam) {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [confirmPassword, setConfirmPassword] = useState(formData.password)
     const toast = useToast();
+    const [pass, setPass] =  useState(formData.password)
 
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -76,8 +77,22 @@ export default function EditTeam({id,team}:PropsEditTeam) {
     };
 
     const handleConfirmPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setConfirmPassword(event.target.value);
-      };
+      const value = event.target.value;
+      if (value === '') {
+        setConfirmPassword(formData.password);
+      } else {
+        setConfirmPassword(value);
+      }
+    };
+
+    const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+          const value = event.target.value;
+          if (value === ''){
+             formData.password = pass;
+          } else {
+             formData.password = value;
+          }
+    };
 
     return(
         <Layout>
@@ -113,7 +128,7 @@ export default function EditTeam({id,team}:PropsEditTeam) {
                                 <Input
                                 type="password"
                                 name="password"
-                                onChange={handleInputChange}
+                                onChange={handlePasswordChange}
                                 placeholder="Type the password"
                                 />
                             </FormControl>
