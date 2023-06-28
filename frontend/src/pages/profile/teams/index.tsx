@@ -8,6 +8,7 @@ import {
   GridItem,
   Grid,
   ScaleFade,
+  Icon,
 } from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
@@ -22,18 +23,21 @@ import { useContext } from "react";
 import { UserContext } from "../../../context/UserContext";
 import { ConfirmModal } from "@/components/confirmModal";
 import Link from "next/link";
+import {MdOutlineStarPurple500} from 'react-icons/md'
 
 interface PropsMyTeams {
   teams: Array<Team>;
+  teamsOwned: Array<Team>;
 }
 
-export default function MyTeams({ teams }: PropsMyTeams) {
+export default function MyTeams({ teams, teamsOwned }: PropsMyTeams) {
   const [teamsList, setTeamsList] = useState<Team[]>([]);
   const router = useRouter();
   const { id } = useContext(UserContext);
   const toast = useToast();
   const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
   const [idSelectedTeam, setIdSelectedTeam] = useState<number>(-1);
+
 
   useEffect(() => {
     if (teams) {
@@ -115,7 +119,7 @@ export default function MyTeams({ teams }: PropsMyTeams) {
                   }}
                 >
                   <Text fontSize={"25"} color="black" fontWeight={"900"}>
-                    {team.name}
+                    {team.name} {teamsOwned.some((ownedTeam) => ownedTeam.name === team.name) && <Icon boxSize='20px' as={MdOutlineStarPurple500} />}
                   </Text>
                   <Flex justifyContent={"space-between"} width="200px">
                     <Button
@@ -177,12 +181,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
   const userData: User = jwt_decode(token);
 
-  const teams = response.data?.filter(
+
+
+  const teamsJoined = 
+  response.data?.filter((team: Team) => team.users.some(user => user.id === userData.id));
+
+  const teamsOwned = response.data?.filter(
     (team: Team) => team.owner_id == userData.id
   );
+
+
+
   return {
     props: {
-      teams: teams,
+      teams: teamsJoined,
+      teamsOwned: teamsOwned
     },
   };
 };
