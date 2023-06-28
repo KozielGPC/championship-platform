@@ -12,7 +12,7 @@ type Props = {
 export const ConfirmResultModal: React.FC<Props>= ({isOpen,setIsOpen,content, handleConfirm, handleResultChange}) => {
 
 
-    const [resultado, setResultado] = useState("Resultado");
+    const [resultado, setResultado] = useState("Result");
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setResultado(event.target.value);
@@ -51,7 +51,7 @@ export const ConfirmResultModal: React.FC<Props>= ({isOpen,setIsOpen,content, ha
                 </Box>
                 <Box>
                     <FormLabel ml="5px" color={"black"}> Write result of match:</FormLabel>
-                    <Input mb="15px" color={"black"} type="text" value={resultado} onChange={handleInputChange}/>
+                    <Input mb="15px" color={"black"} type="text" placeholder="Write result of match" value={resultado} onChange={handleInputChange}/>
                     
                     <Button colorScheme={'green'} mr="2" p="2" onClick={()=>handleConfirm()}>
                         Confirm

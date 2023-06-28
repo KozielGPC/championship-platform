@@ -19,12 +19,13 @@ interface MatchProps {
   championship_id: number;
   rodada_atual_championship: number;
   isChampion: boolean;
+  reqMatches: () => void;
 }
 
 let cp: Match;
 
 
-const MatchComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin, championship_id, rodada_atual_championship, isChampion}) => {
+const MatchComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin, championship_id, rodada_atual_championship, isChampion, reqMatches }) => {
 
   const [resultado, setResultado] = useState("Result");
   const [isOpenConfirmResultModal1, setIsOpenConfirmResultModal1] = useState(false);
@@ -145,6 +146,7 @@ const MatchComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin, champ
       return;
     }
 
+    //console.log(match)
     const request = {
       'id': match.id || 0,
       'data': {
@@ -153,24 +155,25 @@ const MatchComponent: React.FC<MatchProps> = ({ match, isStarted, isAdmin, champ
       }
     }
 
+    //console.log(request)
     const response = await setResult(request);
     if (response.status == "success") {
       toast({
         title: "Result confirmed succefully",
-        description: "Result registered",
-        status: "success",
+        description: response.message,
+        status: response.status,
         duration: 3000,
         isClosable: true,
       });
       const string = championship_id.toString();
       setIsOpenConfirmResultModal1(false);
       setIsOpenConfirmResultModal2(false);
-      router.reload()
+      reqMatches()
     } else {
       toast({
         title: "Error when save result of match:",
         description: response.message,
-        status: "error",
+        status: response.status,
         duration: 3000,
         isClosable: true,
       });
