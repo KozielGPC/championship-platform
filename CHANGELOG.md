@@ -14,6 +14,7 @@
 -   [#154](https://github.com/KozielGPC/championship-platform/issues/154) - Atualizado layout da pagina MyChampionships
 -   [#144](https://github.com/KozielGPC/championship-platform/issues/144) - Atualizado tabela de notifications com campos novos
 -   [#65](https://github.com/KozielGPC/championship-platform/issues/65) - Atualizado banco de dados para postgresql
+-   [#160](https://github.com/KozielGPC/championship-platform/issues/160) - Atualizando tela de times, lista de jogadores sendo atualizada ao excluir jogador
 
 ### Fixed
 -   [#126](https://github.com/KozielGPC/championship-platform/issues/127) - Resolvida validação de inserção de um time em um campeonato cheio
