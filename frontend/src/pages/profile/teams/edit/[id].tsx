@@ -32,7 +32,7 @@ export default function EditTeam({id,team}:PropsEditTeam) {
     const router = useRouter();
     const [formData, setFormData] = useState<EditTeam>(team);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [confirmPassword, setConfirmPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState(formData.password)
     const toast = useToast();
 
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -123,7 +123,6 @@ export default function EditTeam({id,team}:PropsEditTeam) {
                                 <Input
                                 type="password"
                                 name="confirmPassword"               
-                                value={confirmPassword}
                                 onChange={handleConfirmPasswordChange}
                                 placeholder="Confirm the password"
                                 />
