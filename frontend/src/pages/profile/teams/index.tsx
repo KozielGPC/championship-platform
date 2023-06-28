@@ -8,6 +8,7 @@ import {
   GridItem,
   Grid,
   ScaleFade,
+  Icon,
 } from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
@@ -22,18 +23,21 @@ import { useContext } from "react";
 import { UserContext } from "../../../context/UserContext";
 import { ConfirmModal } from "@/components/confirmModal";
 import Link from "next/link";
+import {MdOutlineStarPurple500} from 'react-icons/md'
 
 interface PropsMyTeams {
   teams: Array<Team>;
+  teamsOwned: Array<Team>;
 }
 
-export default function MyTeams({ teams }: PropsMyTeams) {
+export default function MyTeams({ teams, teamsOwned }: PropsMyTeams) {
   const [teamsList, setTeamsList] = useState<Team[]>([]);
   const router = useRouter();
   const { id } = useContext(UserContext);
   const toast = useToast();
   const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
   const [idSelectedTeam, setIdSelectedTeam] = useState<number>(-1);
+
 
   useEffect(() => {
     if (teams) {
@@ -94,54 +98,62 @@ export default function MyTeams({ teams }: PropsMyTeams) {
             gap={4}
             width={"600px"}
           >
-            {teamsList &&
-              teamsList.map((team, index) => (
-                <GridItem
-                  key={index}
-                  colSpan={1}
-                  bg="white"
-                  borderRadius="md"
-                  p={5}
-                  boxShadow="md"
-                  borderWidth="1px"
-                  borderColor="gray.200"
-                  maxWidth={"250px"}
-                  transition="all 0.2s ease-in-out"
-                  _hover={{
-                    cursor: "pointer",
-                    boxShadow: "lg",
-                    borderColor: "blue.500",
-                    transform: `scale(1.05, 1.05)`,
-                  }}
+              {teamsList &&
+     teamsList.map((team, index) => {
+      const isOwner = teamsOwned.some((ownedTeam) => ownedTeam.name === team.name);
+      
+      return (
+        <GridItem
+          key={index}
+          colSpan={1}
+          bg="white"
+          borderRadius="md"
+          p={5}
+          boxShadow="md"
+          borderWidth="1px"
+          borderColor="gray.200"
+          maxWidth={"250px"}
+          transition="all 0.2s ease-in-out"
+          _hover={{
+            cursor: "pointer",
+            boxShadow: "lg",
+            borderColor: "blue.500",
+            transform: `scale(1.05, 1.05)`,
+          }}
+        >
+          <Text fontSize={"25"} color="black" fontWeight={"900"}>
+            {team.name} {isOwner && <Icon boxSize='20px' as={MdOutlineStarPurple500} />}
+          </Text>
+          <Flex justifyContent={"space-between"} width="200px">
+            <Button
+              colorScheme={"blue"}
+              onClick={() => router.push("/profile/team/" + team.id)}
+            >
+              View
+            </Button>
+            {isOwner && (
+              <>
+                <Button
+                  colorScheme={"yellow"}
+                  onClick={() =>
+                    router.push("/profile/teams/edit/" + team.id)
+                  }
                 >
-                  <Text fontSize={"25"} color="black" fontWeight={"900"}>
-                    {team.name}
-                  </Text>
-                  <Flex justifyContent={"space-between"} width="200px">
-                    <Button
-                      colorScheme={"blue"}
-                      onClick={() => router.push("/profile/team/" + team.id)}
-                    >
-                      View
-                    </Button>
-                    <Button
-                      colorScheme={"yellow"}
-                      onClick={() =>
-                        router.push("/profile/teams/edit/" + team.id)
-                      }
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      onClick={() => handleConfirmModal(team.id)}
-                      type="button"
-                      colorScheme={"red"}
-                    >
-                      Delete
-                    </Button>
-                  </Flex>
-                </GridItem>
-              ))}
+                  Edit
+                </Button>
+                <Button
+                  onClick={() => handleConfirmModal(team.id)}
+                  type="button"
+                  colorScheme={"red"}
+                >
+                  Delete
+                </Button>
+              </>
+             )}
+          </Flex>
+        </GridItem>
+
+              )})}
             <ConfirmModal
               content="Are you sure you want to delete this team?"
               handleConfirm={() => handleDelete(idSelectedTeam)}
@@ -177,12 +189,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
   const userData: User = jwt_decode(token);
 
-  const teams = response.data?.filter(
+
+
+  const teamsJoined = 
+  response.data?.filter((team: Team) => team.users.some(user => user.id === userData.id));
+
+  const teamsOwned = response.data?.filter(
     (team: Team) => team.owner_id == userData.id
   );
+
+
+
   return {
     props: {
-      teams: teams,
+      teams: teamsJoined,
+      teamsOwned: teamsOwned
     },
   };
 };
