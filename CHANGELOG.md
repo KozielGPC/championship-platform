@@ -21,6 +21,7 @@
 
 ### Added
 -   [#99](https://github.com/KozielGPC/championship-platform/issues/99) - Adicionando botão para iniciar campeonato
+-   [#91](https://github.com/KozielGPC/championship-platform/issues/51) - Adicionando botão de recriar matchmaking
 -   [#152](https://github.com/KozielGPC/championship-platform/issues/152) - Adicionado mensagem corretas nos responses
 -   [#100](https://github.com/KozielGPC/championship-platform/issues/100) - Adicionando geração de chaveamento e funcionamento do campeonato
 -   [#148](https://github.com/KozielGPC/championship-platform/issues/148) - Adicionado o admin de um time como player na criação do time
