@@ -98,54 +98,62 @@ export default function MyTeams({ teams, teamsOwned }: PropsMyTeams) {
             gap={4}
             width={"600px"}
           >
-            {teamsList &&
-              teamsList.map((team, index) => (
-                <GridItem
-                  key={index}
-                  colSpan={1}
-                  bg="white"
-                  borderRadius="md"
-                  p={5}
-                  boxShadow="md"
-                  borderWidth="1px"
-                  borderColor="gray.200"
-                  maxWidth={"250px"}
-                  transition="all 0.2s ease-in-out"
-                  _hover={{
-                    cursor: "pointer",
-                    boxShadow: "lg",
-                    borderColor: "blue.500",
-                    transform: `scale(1.05, 1.05)`,
-                  }}
+              {teamsList &&
+     teamsList.map((team, index) => {
+      const isOwner = teamsOwned.some((ownedTeam) => ownedTeam.name === team.name);
+      
+      return (
+        <GridItem
+          key={index}
+          colSpan={1}
+          bg="white"
+          borderRadius="md"
+          p={5}
+          boxShadow="md"
+          borderWidth="1px"
+          borderColor="gray.200"
+          maxWidth={"250px"}
+          transition="all 0.2s ease-in-out"
+          _hover={{
+            cursor: "pointer",
+            boxShadow: "lg",
+            borderColor: "blue.500",
+            transform: `scale(1.05, 1.05)`,
+          }}
+        >
+          <Text fontSize={"25"} color="black" fontWeight={"900"}>
+            {team.name} {isOwner && <Icon boxSize='20px' as={MdOutlineStarPurple500} />}
+          </Text>
+          <Flex justifyContent={"space-between"} width="200px">
+            <Button
+              colorScheme={"blue"}
+              onClick={() => router.push("/profile/team/" + team.id)}
+            >
+              View
+            </Button>
+            {isOwner && (
+              <>
+                <Button
+                  colorScheme={"yellow"}
+                  onClick={() =>
+                    router.push("/profile/teams/edit/" + team.id)
+                  }
                 >
-                  <Text fontSize={"25"} color="black" fontWeight={"900"}>
-                    {team.name} {teamsOwned.some((ownedTeam) => ownedTeam.name === team.name) && <Icon boxSize='20px' as={MdOutlineStarPurple500} />}
-                  </Text>
-                  <Flex justifyContent={"space-between"} width="200px">
-                    <Button
-                      colorScheme={"blue"}
-                      onClick={() => router.push("/profile/team/" + team.id)}
-                    >
-                      View
-                    </Button>
-                    <Button
-                      colorScheme={"yellow"}
-                      onClick={() =>
-                        router.push("/profile/teams/edit/" + team.id)
-                      }
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      onClick={() => handleConfirmModal(team.id)}
-                      type="button"
-                      colorScheme={"red"}
-                    >
-                      Delete
-                    </Button>
-                  </Flex>
-                </GridItem>
-              ))}
+                  Edit
+                </Button>
+                <Button
+                  onClick={() => handleConfirmModal(team.id)}
+                  type="button"
+                  colorScheme={"red"}
+                >
+                  Delete
+                </Button>
+              </>
+             )}
+          </Flex>
+        </GridItem>
+
+              )})}
             <ConfirmModal
               content="Are you sure you want to delete this team?"
               handleConfirm={() => handleDelete(idSelectedTeam)}
