@@ -1,35 +1,27 @@
 import axios, { AxiosResponse } from "axios";
 import {parseCookies} from "nookies";
-interface EditChampionship {
+interface EditTeam {
     name: string,
-    start_time: string,
-    min_teams: number,
-    max_teams: number,
-    prizes: string,
-    format: string,
-    rules: string,
-    contact: string,
-    visibility: string
+    password: string
 }
-
 export  type Status = "success" | "error";
 export  interface ResponseRequest {
     status: Status;
     message: string;
-    data?: EditChampionship;
+    data?: EditTeam;
 }
 
 export type Props = {
     id: number;
-    data?: EditChampionship
+    data?: EditTeam
 }
 
-export const editChampionship = async ({id, data}:Props): Promise<ResponseRequest> => {
+export const editTeam = async ({id, data}:Props): Promise<ResponseRequest> => {
     
     const { "championship-token" : token } = parseCookies();  
 
-    const response = await axios.put<EditChampionship>(
-        process.env.NEXT_PUBLIC_URL_SERVER+"/championships/update/"+id, 
+    const response = await axios.put<EditTeam>(
+        process.env.NEXT_PUBLIC_URL_SERVER+"/teams/update/"+id, 
         data,
         {
             headers:{
@@ -45,7 +37,7 @@ export const editChampionship = async ({id, data}:Props): Promise<ResponseReques
               return {
                   status:status,
                   data: response?.data,
-                  message: "Championship edited successfully"
+                  message: "Team edited successfully"
               }}
       )
       .catch(

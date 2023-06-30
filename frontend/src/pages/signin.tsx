@@ -45,6 +45,7 @@ function Signin() {
             return
           }
           if(response.data?.access_token){
+            setCookie(null, "championship-token", response.data?.access_token);
             signin(response.data?.access_token);
             router.push("/");
           }

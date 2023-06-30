@@ -43,13 +43,16 @@ export const createTeam = async (
         message: "Team created successfully",
       };
     })
-    .catch((error) => {
-      const status: Status = "error";
-      return {
-        status: status,
-        message: error.response?.data?.detail || "Failed to create team :(",
-      };
-    });
+    .catch(
+      (error) => {
+          const status: Status = "error";
+          const errorDetail = error.response.data.detail;
+          return {
+              status: status,
+              message: errorDetail
+          }
+      }
+  );
 
   return response;
 };

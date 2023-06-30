@@ -9,6 +9,12 @@ export  interface ResponseRequestGetTeams{
     data?: Array<Team>;
 }
 
+export  interface ResponseRequestNoArray {
+    status: Status;
+    message: string;
+    data?: Team;
+}
+
 export  interface ResponseRequestGetTeamById {
     status: Status;
     message: string;

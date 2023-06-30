@@ -45,15 +45,14 @@ export const createChampionship = async (data: Championship): Promise<ResponseRe
                   message: "Championship created successfully"
               }}
       )
-      .catch(
-          (error) => {
-              const status: Status = "error";
-              return {
-                  status: status,
-                  message: "Error creating championship"
-              }
-          }
-      );
+      .catch((error) => {
+        const status: Status = "error";
+        const errorDetail = error.response.data.detail[0]?.msg || "Championship with this name already exists";
+        return {
+          status: status,
+          message: errorDetail,
+        };
+      });
       
       return response;
   };

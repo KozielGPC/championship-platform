@@ -45,3 +45,12 @@ export interface Game {
   id: number;
   name: string;
 }
+
+export interface Notification{
+  id: number,
+  reference_user_id: number,
+  sender_name: string,
+  team_id: number,
+  team_name: string,
+  visualized: boolean
+}

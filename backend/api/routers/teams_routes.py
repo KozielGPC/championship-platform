@@ -85,19 +85,17 @@ async def create(data: TeamInput, token: Annotated[str, Depends(oauth2_scheme)])
 
     hashed_password = get_password_hash(data.password)
     user = await get_current_user(token)
-    
-    
-    team_input = Team(name=data.name, password=hashed_password, owner_id=user.id, game_id=data.game_id) 
+
+    team_input = Team(name=data.name, password=hashed_password, owner_id=user.id, game_id=data.game_id)
     session.add(team_input)
     session.commit()
     session.refresh(team_input)
-    
-    
-    admin_input = TeamsHasUsers(team_id = team_input.id, user_id = user.id)
+
+    admin_input = TeamsHasUsers(team_id=team_input.id, user_id=user.id)
     session.add(admin_input)
     session.commit()
     session.refresh(admin_input)
-    
+
     return team_input
 
 
@@ -160,41 +158,42 @@ async def addUserToTeam(input: AcceptTeamInviteInput, token: Annotated[str, Depe
     if notification.reference_user_id != user.id:
         raise HTTPException(status_code=401, detail="Notification is not from this user")
 
-    if input.accepted == False:
+    if input.accepted == True:
+        player = session.query(User).filter(User.id == notification.reference_user_id).first()
+        if player == None:
+            raise HTTPException(status_code=404, detail="Player not found")
+        team = session.query(Team).filter(Team.id == notification.team_id).first()
+        if team == None:
+            raise HTTPException(status_code=404, detail="Team not found")
+        team_has_user = (
+            session.query(TeamsHasUsers)
+            .filter(
+                TeamsHasUsers.user_id == notification.reference_user_id,
+                TeamsHasUsers.team_id == notification.team_id,
+            )
+            .first()
+        )
+        if team_has_user != None:
+            raise HTTPException(status_code=400, detail="Player is already registered in this Team")
+
+        data = TeamsHasUsers(
+            user_id=notification.reference_user_id,
+            team_id=notification.team_id,
+        )
+
         notification.visualized = True
+
+        session.add(data)
         session.commit()
         session.refresh(notification)
+        session.refresh(data)
+
         return notification
-    player = session.query(User).filter(User.id == notification.reference_user_id).first()
-    if player == None:
-        raise HTTPException(status_code=404, detail="Player not found")
-    team = session.query(Team).filter(Team.id == notification.team_id).first()
-    if team == None:
-        raise HTTPException(status_code=404, detail="Team not found")
-    team_has_user = (
-        session.query(TeamsHasUsers)
-        .filter(
-            TeamsHasUsers.user_id == notification.reference_user_id,
-            TeamsHasUsers.team_id == notification.team_id,
-        )
-        .first()
-    )
-    if team_has_user != None:
-        raise HTTPException(status_code=400, detail="Player is already registered in this Team")
 
-    data = TeamsHasUsers(
-        user_id=notification.reference_user_id,
-        team_id=notification.team_id,
-    )
-
-    notification.visualized = True
-
-    session.add(data)
-    session.commit()
-    session.refresh(notification)
-    session.refresh(data)
-
-    return notification
+    else:
+        notification.visualized = True
+        session.commit()
+        return notification
 
 
 @router.post(

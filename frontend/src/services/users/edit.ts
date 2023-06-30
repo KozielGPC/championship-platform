@@ -33,9 +33,10 @@ export const editUser = async (data: Partial<User>): Promise<ResponseRequest> =>
         .catch(
             (error) => {
                 const status: Status = "error";
+                const errorDetail = error.response.data.detail;
                 return {
                     status: status,
-                    message: "Error to edited user"
+                    message: errorDetail
                 }
             }
         );

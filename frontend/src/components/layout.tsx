@@ -4,7 +4,7 @@ import {SignoutButton} from './signoutButton'
 import {UserContext} from '../context/UserContext'
 import { useContext } from 'react';
 import { ExternalLinkIcon } from '@chakra-ui/icons'
-import { MdAdd, MdOutlineSupervisorAccount, MdOutlineVideogameAsset } from 'react-icons/md'
+import { MdAdd, MdOutlineSupervisorAccount, MdOutlineVideogameAsset,MdNotificationsNone } from 'react-icons/md'
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -54,6 +54,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </Link> 
         <Box display="inline-block" textAlign={'left'} textColor='white'>
         <Box p='10px'>
+          <Link
+                pt='5px'
+                pb='10px'
+                display='flex' href='/profile/notifications'>
+              <Icon boxSize='25px' as={MdNotificationsNone} />
+              <Flex pl="5px" >Invites</Flex>
+            </Link>
           <Link
               pt='5px'
               pb='10px'
