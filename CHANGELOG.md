@@ -2,6 +2,7 @@
 ## Unreleased
 
 ### Story Board
+-   [#32](https://github.com/KozielGPC/championship-platform/issues/32) - Visualizar informações de um campeonato em andamento
 -   [#34](https://github.com/KozielGPC/championship-platform/issues/34) - Visualizar informações de uma partida
 -   [#31](https://github.com/KozielGPC/championship-platform/issues/31) - Convidar usuários para uma Equipe
 -   [#10](https://github.com/KozielGPC/championship-platform/issues/10) - Visualizar Equipe
