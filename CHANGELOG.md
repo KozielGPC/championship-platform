@@ -2,6 +2,7 @@
 ## Unreleased
 
 ### Story Board
+-   [#30](https://github.com/KozielGPC/championship-platform/issues/30) - Gerar rodadas de um campeonato
 -   [#33](https://github.com/KozielGPC/championship-platform/issues/33) - Gerar chaveamento
 -   [#34](https://github.com/KozielGPC/championship-platform/issues/34) - Visualizar informações de uma partida
 -   [#31](https://github.com/KozielGPC/championship-platform/issues/31) - Convidar usuários para uma Equipe
