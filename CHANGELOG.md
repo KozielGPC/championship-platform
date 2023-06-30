@@ -2,6 +2,7 @@
 ## Unreleased
 
 ### Story Board
+-   [#33](https://github.com/KozielGPC/championship-platform/issues/33) - Gerar chaveamento
 -   [#31](https://github.com/KozielGPC/championship-platform/issues/31) - Convidar usuários para uma Equipe
 -   [#10](https://github.com/KozielGPC/championship-platform/issues/10) - Visualizar Equipe
 -   [#16](https://github.com/KozielGPC/championship-platform/issues/16) - Visualizar um Campeonato específico
