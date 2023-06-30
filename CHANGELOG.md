@@ -2,6 +2,7 @@
 ## Unreleased
 
 ### Story Board
+-   [#25](https://github.com/KozielGPC/championship-platform/issues/25) - Visualizar informações de um campeonato em andamento
 -   [#30](https://github.com/KozielGPC/championship-platform/issues/30) - Gerar rodadas de um campeonato
 -   [#32](https://github.com/KozielGPC/championship-platform/issues/32) - Visualizar informações de um campeonato em andamento
 -   [#33](https://github.com/KozielGPC/championship-platform/issues/33) - Gerar chaveamento
