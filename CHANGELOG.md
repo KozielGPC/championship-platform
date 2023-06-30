@@ -2,6 +2,7 @@
 ## Unreleased
 
 ### Story Board
+-   [#11](https://github.com/KozielGPC/championship-platform/issues/11) - Perfil pessoal
 -   [#15](https://github.com/KozielGPC/championship-platform/issues/15) - Recusar convite de equipe
 -   [#18](https://github.com/KozielGPC/championship-platform/issues/18) - Visualizar notificações
 -   [#21](https://github.com/KozielGPC/championship-platform/issues/21) - Confirmar resultado de uma partida
