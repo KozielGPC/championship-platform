@@ -389,7 +389,12 @@ export default function CreateChampionship({ games }: Props) {
               </Select>
             </FormControl>
 
-            <Button type="submit" mt={4} disabled={isLoading}>
+            <Button
+              type="submit"
+              mt={4}
+              disabled={isLoading}
+              colorScheme="blue"
+            >
               <>{isLoading ? "Creating..." : "Create Championship"}</>
             </Button>
           </form>
