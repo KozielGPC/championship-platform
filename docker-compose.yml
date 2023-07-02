@@ -37,27 +37,27 @@ services:
   #   depends_on:
   #     - postgres
 
-  fastapi:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - 8000:8000
-    env_file:
-      - ./backend/.env
-    networks:
-      - app-network
+  # fastapi:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 8000:8000
+  #   env_file:
+  #     - ./backend/.env
+  #   networks:
+  #     - app-network
 
-  nextjs:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - 3000:3000
-    env_file:
-      - ./frontend/.env
-    networks:
-      - app-network
+  # nextjs:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 3000:3000
+  #   env_file:
+  #     - ./frontend/.env
+  #   networks:
+  #     - app-network
   # frontend:
   #   build:
   #     context: ./frontend
