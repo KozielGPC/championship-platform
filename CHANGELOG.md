@@ -34,7 +34,8 @@
 -   [#84](https://github.com/KozielGPC/championship-platform/issues/84) - Resolvida validação do formulário de campeonato no frontend
 
 ### Added
--   [#88] (https://github.com/KozielGPC/championship-platform/issues/88) - Adicionado botão para aceitar convite de equipe
+-   [#182](https://github.com/KozielGPC/championship-platform/issues/182) - Adicionado docker-compose na raiz do projeto para subir todas as dependencias ao mesmo tempo
+-   [#88](https://github.com/KozielGPC/championship-platform/issues/88) - Adicionado botão para aceitar convite de equipe
 -   [#157](https://github.com/KozielGPC/championship-platform/issues/157) - Adicionado tela de edição de time
 -   [#99](https://github.com/KozielGPC/championship-platform/issues/99) - Adicionando botão para iniciar campeonato
 -   [#91](https://github.com/KozielGPC/championship-platform/issues/51) - Adicionando botão de recriar matchmaking
